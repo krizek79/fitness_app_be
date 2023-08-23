@@ -1,14 +1,14 @@
-package sk.krizan.fitness_app_be.configuration;
+package sk.krizan.fitness_app_be.configuration.jwt;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Data
+@Getter
 @NoArgsConstructor
 @Component
-public class JwtConfig {
+public class JwtValues {
 
     @Value("${security.jwt.uri}")
     private String Uri;
@@ -20,7 +20,7 @@ public class JwtConfig {
     private String prefix;
 
     @Value("${security.jwt.expiration}")
-    private int expiration;
+    private Long expiration;
 
     @Value("${security.jwt.secret}")
     private String secret;

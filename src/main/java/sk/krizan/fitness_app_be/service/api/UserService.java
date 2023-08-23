@@ -1,0 +1,12 @@
+package sk.krizan.fitness_app_be.service.api;
+
+import org.springframework.security.core.userdetails.UserDetailsService;
+import sk.krizan.fitness_app_be.controller.request.RegistrationRequest;
+import sk.krizan.fitness_app_be.model.User;
+import sk.krizan.fitness_app_be.model.enums.Role;
+
+public interface UserService extends UserDetailsService {
+
+    User getUserById(Long id);
+    User createUser(RegistrationRequest request, Role role);
+}

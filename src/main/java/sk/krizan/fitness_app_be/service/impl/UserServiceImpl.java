@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
-import sk.krizan.fitness_app_be.controller.request.RegistrationRequest;
+import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.model.CustomUserDetails;
 import sk.krizan.fitness_app_be.model.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(RegistrationRequest request, Role role) {
+    public User createUser(SignUpRequest request, Role role) {
         return null;
     }
 }

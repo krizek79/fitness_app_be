@@ -24,7 +24,6 @@ public class JwtProvider {
         Instant now = Instant.now();
         long expiresIn = jwtValues.getExpiration();
 
-        // Prepare a claim called authorities.
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(" "));

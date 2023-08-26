@@ -1,14 +1,18 @@
 package sk.krizan.fitness_app_be.service.impl;
 
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.model.CustomUserDetails;
 import sk.krizan.fitness_app_be.model.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
+import sk.krizan.fitness_app_be.model.mapper.UserMapper;
 import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
@@ -17,6 +21,7 @@ import sk.krizan.fitness_app_be.service.api.UserService;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -33,7 +38,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(SignUpRequest request, Role role) {
-        return null;
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+            () -> new NotFoundException("User with email { " + email + " } does not exist."));
+    }
+
+    @Override
+    public User createUser(SignUpRequest request, Set<Role> roles) {
+        Boolean existsByEmail = userRepository.existsByEmail(request.email());
+        if (existsByEmail) {
+            throw new IllegalOperationException(
+                "User with email { " + request.email() + " } already exists.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.password());
+        User user = UserMapper.signUpRequestToUser(request, roles, encodedPassword);
+        return userRepository.save(user);
     }
 }

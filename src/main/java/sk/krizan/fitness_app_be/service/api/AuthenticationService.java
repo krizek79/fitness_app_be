@@ -7,8 +7,8 @@ import sk.krizan.fitness_app_be.controller.response.AuthenticationResponse;
 
 public interface AuthenticationService {
 
-    AuthenticationResponse authenticateLocal(LocalAuthenticationRequest request);
-    AuthenticationResponse authenticateMeta(ClientAuthenticationRequest request);
-    AuthenticationResponse authenticateGoogle(ClientAuthenticationRequest request);
-    String signup(SignUpRequest request);
+    AuthenticationResponse signInLocal(LocalAuthenticationRequest request);
+    AuthenticationResponse signInMeta(ClientAuthenticationRequest request);
+    AuthenticationResponse signInGoogle(ClientAuthenticationRequest request);
+    String signUp(SignUpRequest request);
 }

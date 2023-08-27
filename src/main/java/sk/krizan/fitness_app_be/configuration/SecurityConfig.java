@@ -16,11 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import sk.krizan.fitness_app_be.configuration.entryPoint.CustomBasicAuthenticationEntryPoint;
-import sk.krizan.fitness_app_be.configuration.entryPoint.CustomBearerTokenAuthenticationEntryPoint;
-import sk.krizan.fitness_app_be.configuration.handler.CustomBearerTokenAccessDeniedHandler;
 
 @Configuration
 @EnableMethodSecurity
@@ -28,12 +24,9 @@ import sk.krizan.fitness_app_be.configuration.handler.CustomBearerTokenAccessDen
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userService;
-    private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
-    private final CustomBearerTokenAuthenticationEntryPoint
-        customBearerTokenAuthenticationEntryPoint;
-    private final CustomBearerTokenAccessDeniedHandler customBearerTokenAccessDeniedHandler;
 
     @Value("${open.endpoints}")
     private String[] openEndpoints;
@@ -48,12 +41,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .httpBasic(httpBasic -> httpBasic
-                .authenticationEntryPoint(customBasicAuthenticationEntryPoint))
             .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-                .jwt(Customizer.withDefaults())
-                .authenticationEntryPoint(customBearerTokenAuthenticationEntryPoint)
-                .accessDeniedHandler(customBearerTokenAccessDeniedHandler))
+                .jwt(jwtConfigurer -> jwtConfigurer
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter)))
+            .httpBasic(Customizer.withDefaults())
             .build();
     }
 
@@ -71,18 +62,4 @@ public class SecurityConfig {
         provider.setUserDetailsService(userService);
         return provider;
     }
-
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
-            new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
-
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
-            jwtGrantedAuthoritiesConverter);
-        return jwtAuthenticationConverter;
-    }
-
 }

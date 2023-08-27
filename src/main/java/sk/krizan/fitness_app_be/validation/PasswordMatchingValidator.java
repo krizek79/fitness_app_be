@@ -1,26 +1,26 @@
 package sk.krizan.fitness_app_be.validation;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 import java.util.Objects;
 import org.springframework.beans.BeanWrapperImpl;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PasswordMatchingValidator implements ConstraintValidator<PasswordMatching, Object> {
 
-    private String password;
-    private String matchingPassword;
+    private String field;
+    private String matchField;
 
     @Override
     public void initialize(PasswordMatching constraintAnnotation) {
-        this.password = constraintAnnotation.password();
-        this.matchingPassword = constraintAnnotation.matchingPassword();
+        field = constraintAnnotation.password();
+        matchField = constraintAnnotation.matchingPassword();
     }
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        Object passwordValue = new BeanWrapperImpl(value).getPropertyValue(password);
-        Object matchingPasswordValue = new BeanWrapperImpl(value).getPropertyValue(matchingPassword);
+        Object fieldValue = new BeanWrapperImpl(value).getPropertyValue(field);
+        Object matchFieldValue = new BeanWrapperImpl(value).getPropertyValue(matchField);
 
-        return Objects.equals(passwordValue, matchingPasswordValue);
+        return Objects.equals(fieldValue, matchFieldValue);
     }
 }

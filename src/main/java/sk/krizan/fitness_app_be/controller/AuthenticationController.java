@@ -3,6 +3,7 @@ package sk.krizan.fitness_app_be.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.LocalAuthenticationRequest;
@@ -18,12 +19,14 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("sign-in/local")
-    public AuthenticationResponse signInLocal(@Valid LocalAuthenticationRequest request) {
+    public AuthenticationResponse signInLocal(
+        @Valid @RequestBody LocalAuthenticationRequest request
+    ) {
         return authenticationService.signInLocal(request);
     }
 
     @PostMapping("sign-up")
-    public String signUp(@Valid SignUpRequest request) {
+    public String signUp(@Valid @RequestBody SignUpRequest request) {
         return authenticationService.signUp(request);
     }
 }

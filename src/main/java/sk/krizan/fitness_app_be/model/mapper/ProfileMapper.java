@@ -13,6 +13,10 @@ import sk.krizan.fitness_app_be.model.User;
 public class ProfileMapper {
 
     public static ProfileResponse profileToResponse(Profile profile) {
+        if (profile == null) {
+            return null;
+        }
+
         return ProfileResponse.builder()
             .id(profile.getId())
             .userId(profile.getUser().getId())

@@ -10,13 +10,13 @@ import sk.krizan.fitness_app_be.validation.PasswordMatching;
     matchingPassword = "matchingPassword"
 )
 public record SignUpRequest(
-    @NotEmpty
-    @Email
+    @NotEmpty(message = "Email is mandatory.")
+    @Email(message = "Email is not valid.")
     String email,
-    @NotEmpty
-    @Size(min = 8, message = "Password should have at least 8 characters")
+    @NotEmpty(message = "Password is mandatory.")
+    @Size(min = 4, message = "Password should have at least 4 characters")
     String password,
-    @NotEmpty
+    @NotEmpty(message = "Matching password is mandatory.")
     String matchingPassword
 ) {
 }

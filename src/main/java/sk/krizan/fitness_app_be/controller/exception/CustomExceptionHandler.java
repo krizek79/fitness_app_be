@@ -1,14 +1,15 @@
 package sk.krizan.fitness_app_be.controller.exception;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -27,14 +28,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         @NonNull HttpStatusCode status,
         @NonNull WebRequest request
     ) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String message = error.getDefaultMessage();
-            errors.put(fieldName, message);
-        });
+        List<String> errors = new ArrayList<>();
+        ex.getAllErrors().forEach(err -> errors.add(err.getDefaultMessage()));
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("errors", errors);
+
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -48,21 +48,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public final ExceptionResponse handleForbiddenException(ForbiddenException exception) {
+    ExceptionResponse handleAccessDeniedException() {
         return ExceptionResponse.builder()
             .timestamp(LocalDateTime.now())
-            .message(exception.getMessage())
-            .build();
-    }
-
-    @ExceptionHandler(IllegalOperationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final ExceptionResponse handleIllegalOperationException(
-        IllegalOperationException exception
-    ) {
-        return ExceptionResponse.builder()
-            .timestamp(LocalDateTime.now())
-            .message(exception.getMessage())
+            .message("No permission.")
             .build();
     }
 }

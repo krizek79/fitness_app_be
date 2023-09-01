@@ -1,4 +1,4 @@
-package sk.krizan.fitness_app_be.model;
+package sk.krizan.fitness_app_be.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +9,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,7 +48,8 @@ public class User {
     @OneToOne
     private Profile profile;
 
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
+
     private Boolean active;
     private Boolean locked;
     private Boolean enabled;

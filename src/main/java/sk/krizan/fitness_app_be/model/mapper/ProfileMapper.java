@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.controller.request.CreateProfileRequest;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
-import sk.krizan.fitness_app_be.model.Profile;
-import sk.krizan.fitness_app_be.model.User;
+import sk.krizan.fitness_app_be.model.entity.Profile;
+import sk.krizan.fitness_app_be.model.entity.User;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

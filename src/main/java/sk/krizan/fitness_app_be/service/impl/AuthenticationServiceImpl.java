@@ -15,7 +15,7 @@ import sk.krizan.fitness_app_be.controller.request.ClientAuthenticationRequest;
 import sk.krizan.fitness_app_be.controller.request.LocalAuthenticationRequest;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.controller.response.AuthenticationResponse;
-import sk.krizan.fitness_app_be.model.User;
+import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.UserMapper;
 import sk.krizan.fitness_app_be.service.api.AuthenticationService;
@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String signUp(SignUpRequest request) {
         Set<Role> roles = new HashSet<>();
-        roles.add(Role.LOCAL_USER);
+        roles.add(Role.USER);
 
         userService.createUser(request, roles);
         return "Registration successful";

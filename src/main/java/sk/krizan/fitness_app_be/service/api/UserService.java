@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.service.api;
 import java.util.Set;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
-import sk.krizan.fitness_app_be.model.User;
+import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
 public interface UserService extends UserDetailsService {

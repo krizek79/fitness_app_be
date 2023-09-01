@@ -10,7 +10,7 @@ import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.model.CustomUserDetails;
-import sk.krizan.fitness_app_be.model.User;
+import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.UserMapper;
 import sk.krizan.fitness_app_be.repository.UserRepository;

@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.repository;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import sk.krizan.fitness_app_be.model.User;
+import sk.krizan.fitness_app_be.model.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

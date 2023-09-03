@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,5 +27,5 @@ public class Exercise {
 
     private String name;
 
-    private MuscleGroup muscleGroup;
+    private Set<MuscleGroup> muscleGroups = new HashSet<>();
 }

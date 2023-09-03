@@ -1,4 +1,4 @@
-package sk.krizan.fitness_app_be.controller;
+package sk.krizan.fitness_app_be.controller.endpoint;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

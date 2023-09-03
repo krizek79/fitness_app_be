@@ -7,7 +7,8 @@ public enum MuscleGroup {
     BACK("Back"),
     BICEPS("Biceps"),
     TRICEPS("Triceps"),
-    ABS("Abs");
+    ABS("Abs"),
+    FULL_BODY("Full body");
 
     public final String value;
 

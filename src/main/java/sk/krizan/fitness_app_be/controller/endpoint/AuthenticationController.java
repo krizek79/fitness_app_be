@@ -1,4 +1,4 @@
-package sk.krizan.fitness_app_be.controller;
+package sk.krizan.fitness_app_be.controller.endpoint;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

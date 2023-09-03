@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,9 +32,13 @@ public class Profile {
     @JoinColumn(nullable = false)
     private User user;
 
+    @Column(length = 64)
     private String displayName;
 
     private String profilePictureUrl;
+
+    @Column(length = 128)
+    private String bio;
 
     @OneToMany(mappedBy = "author")
     private List<Workout> authoredWorkouts = new ArrayList<>();

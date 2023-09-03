@@ -3,11 +3,11 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import sk.krizan.fitness_app_be.validation.PasswordMatching;
+import sk.krizan.fitness_app_be.validation.ValueMatching;
 
-@PasswordMatching(
-    password = "password",
-    matchingPassword = "matchingPassword"
+@ValueMatching(
+    value = "password",
+    matchingValue = "matchingPassword"
 )
 public record SignUpRequest(
     @NotEmpty(message = "Email is mandatory.")

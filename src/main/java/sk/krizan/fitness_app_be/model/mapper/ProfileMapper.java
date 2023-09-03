@@ -31,6 +31,7 @@ public class ProfileMapper {
             .displayName(request.displayName())
             .profilePictureUrl(
                 request.profilePictureUrl().isBlank() ? null : request.profilePictureUrl())
+            .bio(request.bio().isBlank() ? "" : request.bio())
             .build();
     }
 }

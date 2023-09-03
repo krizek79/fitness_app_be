@@ -5,15 +5,15 @@ import org.springframework.beans.BeanWrapperImpl;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PasswordMatchingValidator implements ConstraintValidator<PasswordMatching, Object> {
+public class ValueMatchingValidator implements ConstraintValidator<ValueMatching, Object> {
 
     private String field;
     private String matchField;
 
     @Override
-    public void initialize(PasswordMatching constraintAnnotation) {
-        field = constraintAnnotation.password();
-        matchField = constraintAnnotation.matchingPassword();
+    public void initialize(ValueMatching constraintAnnotation) {
+        field = constraintAnnotation.value();
+        matchField = constraintAnnotation.matchingValue();
     }
 
     @Override

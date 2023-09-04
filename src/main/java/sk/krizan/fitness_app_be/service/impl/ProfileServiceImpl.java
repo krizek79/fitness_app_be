@@ -2,14 +2,21 @@ package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.request.CreateProfileRequest;
 import sk.krizan.fitness_app_be.model.entity.Profile;
+import sk.krizan.fitness_app_be.model.entity.User;
+import sk.krizan.fitness_app_be.model.mapper.ProfileMapper;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.service.api.ProfileService;
+import sk.krizan.fitness_app_be.service.api.UserService;
 
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+
+    private final UserService userService;
 
     private final ProfileRepository profileRepository;
 
@@ -24,6 +31,17 @@ public class ProfileServiceImpl implements ProfileService {
         return profileRepository.findByDisplayName(displayName).orElseThrow(
             () -> new NotFoundException(
                 "Profile with displayName { " + displayName + " } does not exist."));
+    }
+
+    @Override
+    public Profile createProfile(CreateProfileRequest request) {
+        User user = userService.getUserById(request.userId());
+        if (user.getProfile() != null) {
+            throw new IllegalOperationException(
+                "User { " + user.getEmail() + " } already has an assigned profile.");
+        }
+
+        return ProfileMapper.createProfileRequestToProfile(request, user);
     }
 
     @Override

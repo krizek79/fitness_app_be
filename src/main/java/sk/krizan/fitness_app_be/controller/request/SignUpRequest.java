@@ -17,6 +17,7 @@ public record SignUpRequest(
     @Size(min = 4, message = "Password should have at least 4 characters")
     String password,
     @NotEmpty(message = "Matching password is mandatory.")
-    String matchingPassword
+    String matchingPassword,
+    CreateProfileRequest createProfileRequest
 ) {
 }

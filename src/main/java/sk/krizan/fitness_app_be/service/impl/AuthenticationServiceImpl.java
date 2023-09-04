@@ -19,6 +19,7 @@ import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.UserMapper;
 import sk.krizan.fitness_app_be.service.api.AuthenticationService;
+import sk.krizan.fitness_app_be.service.api.ProfileService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
 @Service
@@ -26,6 +27,7 @@ import sk.krizan.fitness_app_be.service.api.UserService;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserService userService;
+    private final ProfileService profileService;
     private final JwtProvider jwtProvider;
     private final JwtValues jwtValues;
     private final AuthenticationManager authenticationManager;
@@ -65,6 +67,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         roles.add(Role.USER);
 
         userService.createUser(request, roles);
+        profileService.createProfile(request.createProfileRequest());
+
         return "Registration successful";
     }
 }

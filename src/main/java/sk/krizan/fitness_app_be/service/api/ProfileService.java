@@ -7,6 +7,6 @@ public interface ProfileService {
 
     Profile getProfileById(Long id);
     Profile getProfileByDisplayName(String displayName);
-    Profile createProfile(CreateProfileRequest request);
+    Profile createProfile(CreateProfileRequest request, Long userId);
     Long deleteProfile(Long id);
 }

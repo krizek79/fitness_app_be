@@ -1,5 +1,8 @@
 package sk.krizan.fitness_app_be.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Level {
 
     BEGINNER("Beginner"),

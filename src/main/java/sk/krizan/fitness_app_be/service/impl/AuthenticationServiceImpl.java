@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.configuration.jwt.JwtProvider;
 import sk.krizan.fitness_app_be.configuration.jwt.JwtValues;
@@ -42,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             )
         );
 
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtProvider.generateToken(authentication);
 
         return AuthenticationResponse.builder()
@@ -66,8 +68,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
 
-        userService.createUser(request, roles);
-        profileService.createProfile(request.createProfileRequest());
+        User user = userService.createUser(request, roles);
+        profileService.createProfile(request.createProfileRequest(), user.getId());
 
         return "Registration successful";
     }

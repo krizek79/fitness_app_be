@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAuthority('LOCAL_USER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public UserResponse getUserById(@PathVariable Long id) {
         return UserMapper.userToResponse(userService.getUserById(id));
     }

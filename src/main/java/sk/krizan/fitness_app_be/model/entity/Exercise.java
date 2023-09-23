@@ -11,11 +11,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldNameConstants
 @Getter
 @Setter
 @Builder

@@ -10,5 +10,6 @@ public interface UserService extends UserDetailsService {
 
     User getUserById(Long id);
     User getUserByEmail(String email);
+    User getCurrentUser();
     User createUser(SignUpRequest request, Set<Role> roles);
 }

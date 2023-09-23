@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record CreateProfileRequest(
-    @NotEmpty(message = "User id is mandatory.")
-    Long userId,
-    @NotEmpty
+    @NotEmpty(message = "Display name is mandatory.")
     @Size(
         min = 2,
         max = 64,

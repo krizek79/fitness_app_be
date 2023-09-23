@@ -23,25 +23,28 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LOCAL_USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ProfileResponse getProfileById(@PathVariable Long id) {
         return ProfileMapper.profileToResponse(profileService.getProfileById(id));
     }
 
     @GetMapping("displayName/{displayName}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LOCAL_USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ProfileResponse getProfileByDisplayName(@PathVariable String displayName) {
         return ProfileMapper.profileToResponse(profileService.getProfileByDisplayName(displayName));
     }
 
-    @PostMapping
+    @PostMapping("{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ProfileResponse createProfile(@Valid @RequestBody CreateProfileRequest request) {
-        return ProfileMapper.profileToResponse(profileService.createProfile(request));
+    public ProfileResponse createProfile(
+        @PathVariable Long userId,
+        @Valid @RequestBody CreateProfileRequest request
+    ) {
+        return ProfileMapper.profileToResponse(profileService.createProfile(request, userId));
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LOCAL_USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public Long deleteProfile(@PathVariable Long id) {
         return profileService.deleteProfile(id);
     }

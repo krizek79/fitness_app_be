@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.controller.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -18,6 +19,7 @@ public record SignUpRequest(
     String password,
     @NotEmpty(message = "Matching password is mandatory.")
     String matchingPassword,
+    @Valid
     CreateProfileRequest createProfileRequest
 ) {
 }

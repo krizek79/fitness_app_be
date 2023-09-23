@@ -48,10 +48,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    ExceptionResponse handleAccessDeniedException() {
+    ExceptionResponse handleAccessDeniedException(ForbiddenException exception) {
         return ExceptionResponse.builder()
             .timestamp(LocalDateTime.now())
-            .message("No permission.")
+            .message(exception.getMessage())
             .build();
     }
 }

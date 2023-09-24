@@ -20,6 +20,9 @@ public class JwtProvider {
     private final JwtValues jwtValues;
     private final JwtEncoder jwtEncoder;
 
+    private static final String ISSUER = "self";
+    private static final String CLAIM_NAME = "roles";
+
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
         long expiresIn = jwtValues.getExpiration();
@@ -29,11 +32,11 @@ public class JwtProvider {
             .collect(Collectors.joining(" "));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-            .issuer("self")
+            .issuer(ISSUER)
             .issuedAt(now)
             .expiresAt(now.plus(expiresIn, ChronoUnit.HOURS))
             .subject(authentication.getName())
-            .claim("roles", authorities)
+            .claim(CLAIM_NAME, authorities)
             .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

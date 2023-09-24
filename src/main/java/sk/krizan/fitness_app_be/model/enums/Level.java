@@ -3,15 +3,17 @@ package sk.krizan.fitness_app_be.model.enums;
 import lombok.Getter;
 
 @Getter
-public enum Level {
+public enum Level implements BaseEnum {
 
-    BEGINNER("Beginner"),
-    INTERMEDIATE("Intermediate"),
-    ADVANCED("Advanced");
+    BEGINNER("BEGINNER", "Beginner"),
+    INTERMEDIATE("INTERMEDIATE", "Intermediate"),
+    ADVANCED("ADVANCED", "Advanced");
 
-    public final String value;
+    private final String key;
+    private final String value;
 
-    Level(String value) {
+    Level(String key, String value) {
+        this.key = key;
         this.value = value;
     }
 }

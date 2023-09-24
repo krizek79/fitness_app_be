@@ -1,6 +1,8 @@
 package sk.krizan.fitness_app_be.model.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,5 +39,6 @@ public class Workout {
     @OneToMany
     private List<Tag> tags = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     private Level level;
 }

@@ -20,6 +20,9 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
+    private static final String ERROR_NOT_FOUND = "Tag with id { %s } does not exist.";
+    private static final String ERROR_NOT_ALREADY_EXISTS = "Tag with name { %s } already exists.";
+
     @Override
     public Page<Tag> filterTags(Pageable pageable, String name) {
         Specification<Tag> specification = TagSpecification.filter(name);
@@ -29,14 +32,14 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getTagById(Long id) {
         return tagRepository.findById(id).orElseThrow(
-            () -> new NotFoundException("Tag with id { " + id + " } does not exist."));
+            () -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
     public Tag createTag(CreateTagRequest request) {
         if (tagRepository.existsByName(request.name().toLowerCase())) {
             throw new IllegalOperationException(
-                "Tag with name { " + request.name().toLowerCase() + " } already exists.");
+                ERROR_NOT_ALREADY_EXISTS.formatted(request.name().toLowerCase()));
         }
 
         return tagRepository.save(TagMapper.createRequestToTag(request));

@@ -1,9 +1,14 @@
 package sk.krizan.fitness_app_be.model.entity;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -29,5 +34,11 @@ public class Exercise {
 
     private String name;
 
+    @ElementCollection(targetClass = MuscleGroup.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+        name = "exercise_muscle_groups",
+        joinColumns = @JoinColumn(name = "exercise_id")
+    )
     private Set<MuscleGroup> muscleGroups = new HashSet<>();
 }

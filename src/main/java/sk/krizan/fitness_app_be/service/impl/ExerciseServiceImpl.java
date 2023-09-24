@@ -1,10 +1,16 @@
 package sk.krizan.fitness_app_be.service.impl;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.request.CreateExerciseRequest;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
+import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
+import sk.krizan.fitness_app_be.model.mapper.ExerciseMapper;
 import sk.krizan.fitness_app_be.repository.ExerciseRepository;
+import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.ExerciseService;
 
 @Service
@@ -12,11 +18,24 @@ import sk.krizan.fitness_app_be.service.api.ExerciseService;
 public class ExerciseServiceImpl implements ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
+    private final EnumService enumService;
+
+    private final static String ERROR_EXERCISE_NOT_FOUND =
+        "Exercise with id { %s } does not exist.";
 
     @Override
     public Exercise getExerciseById(Long id) {
         return exerciseRepository.findById(id).orElseThrow(
-            () -> new NotFoundException("Exercise with id { " + id + " } does not exist."));
+            () -> new NotFoundException(ERROR_EXERCISE_NOT_FOUND.formatted(id)));
+    }
+
+    @Override
+    public Exercise createExercise(CreateExerciseRequest request) {
+        Set<MuscleGroup> muscleGroups = request.muscleGroupKeys().stream()
+            .map(key -> (MuscleGroup) enumService.findEnumByKey(key))
+            .collect(Collectors.toSet());
+        Exercise exercise = ExerciseMapper.createExerciseRequestToExercise(request, muscleGroups);
+        return exerciseRepository.save(exercise);
     }
 
     @Override

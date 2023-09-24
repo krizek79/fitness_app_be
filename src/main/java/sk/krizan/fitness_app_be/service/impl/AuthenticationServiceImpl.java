@@ -33,6 +33,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtValues jwtValues;
     private final AuthenticationManager authenticationManager;
 
+    private final static String REGISTRATION_SUCCESSFULL = "Registration successful.";
+
     @Override
     public AuthenticationResponse signInLocal(LocalAuthenticationRequest request) {
         User user = userService.getUserByEmail(request.email());
@@ -71,6 +73,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userService.createUser(request, roles);
         profileService.createProfile(request.createProfileRequest(), user.getId());
 
-        return "Registration successful";
+        return REGISTRATION_SUCCESSFULL;
     }
 }

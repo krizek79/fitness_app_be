@@ -20,7 +20,7 @@ public class UserController {
     @GetMapping("{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public UserResponse getUserById(@PathVariable Long id) {
-        return UserMapper.userToResponse(userService.getUserById(id));
+        return UserMapper.entityToResponse(userService.getUserById(id));
     }
 }
 

@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-public record CreateWorkoutExerciseRequest(
+public record WorkoutExerciseCreateRequest(
     @NotEmpty(message = "WorkoutId is mandatory.")
     Long workoutId,
     @NotEmpty(message = "ExerciseId is mandatory.")

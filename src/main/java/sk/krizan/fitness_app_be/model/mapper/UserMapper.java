@@ -14,16 +14,16 @@ import sk.krizan.fitness_app_be.model.enums.Role;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
 
-    public static UserResponse userToResponse(User user) {
+    public static UserResponse entityToResponse(User user) {
         return UserResponse.builder()
             .id(user.getId())
             .email(user.getEmail())
             .roles(user.getRoles())
-            .profile(ProfileMapper.profileToResponse(user.getProfile()))
+            .profile(ProfileMapper.entityToResponse(user.getProfile()))
             .build();
     }
 
-    public static User signUpRequestToUser(
+    public static User signUpRequestToEntity(
         SignUpRequest request,
         Set<Role> roles,
         String encodedPassword

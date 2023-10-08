@@ -6,7 +6,7 @@ import lombok.Builder;
 public record ProfileResponse(
     Long id,
     Long userId,
-    String displayName,
+    String name,
     String profilePictureUrl
 ) {
 }

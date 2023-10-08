@@ -2,20 +2,17 @@ package sk.krizan.fitness_app_be.controller.endpoint;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sk.krizan.fitness_app_be.controller.request.CreateTagRequest;
+import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
+import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.TagResponse;
-import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.mapper.TagMapper;
 import sk.krizan.fitness_app_be.service.api.TagService;
 
@@ -26,15 +23,15 @@ public class TagController {
 
     private final TagService tagService;
 
-    @GetMapping
-    public Page<Tag> filterTags(Pageable pageable, @RequestParam(required = false) String name) {
-        return tagService.filterTags(pageable, name);
+    @PostMapping("filter")
+    public PageResponse<TagResponse> filterTags(@Valid TagFilterRequest request) {
+        return tagService.filterTags(request);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public TagResponse createTag(@Valid @RequestBody CreateTagRequest request) {
-        return TagMapper.tagToResponse(tagService.createTag(request));
+    public TagResponse createTag(@Valid @RequestBody TagCreateRequest request) {
+        return TagMapper.entityToResponse(tagService.createTag(request));
     }
 
     @DeleteMapping("{id}")

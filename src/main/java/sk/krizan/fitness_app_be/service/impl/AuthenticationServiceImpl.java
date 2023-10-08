@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return AuthenticationResponse.builder()
             .token(token)
             .expiresAt(Instant.now().plus(jwtValues.getExpiration(), ChronoUnit.HOURS))
-            .userResponse(UserMapper.userToResponse(user))
+            .userResponse(UserMapper.entityToResponse(user))
             .build();
     }
 
@@ -71,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         roles.add(Role.USER);
 
         User user = userService.createUser(request, roles);
-        profileService.createProfile(request.createProfileRequest(), user.getId());
+        profileService.createProfile(request.profileCreateRequest(), user.getId());
 
         return REGISTRATION_SUCCESSFULL;
     }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sk.krizan.fitness_app_be.controller.request.CreateProfileRequest;
+import sk.krizan.fitness_app_be.controller.request.ProfileCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
 import sk.krizan.fitness_app_be.model.mapper.ProfileMapper;
 import sk.krizan.fitness_app_be.service.api.ProfileService;
@@ -25,22 +25,22 @@ public class ProfileController {
     @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ProfileResponse getProfileById(@PathVariable Long id) {
-        return ProfileMapper.profileToResponse(profileService.getProfileById(id));
+        return ProfileMapper.entityToResponse(profileService.getProfileById(id));
     }
 
-    @GetMapping("displayName/{displayName}")
+    @GetMapping("name/{name}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ProfileResponse getProfileByDisplayName(@PathVariable String displayName) {
-        return ProfileMapper.profileToResponse(profileService.getProfileByDisplayName(displayName));
+    public ProfileResponse getProfileByName(@PathVariable String name) {
+        return ProfileMapper.entityToResponse(profileService.getProfileByName(name));
     }
 
     @PostMapping("{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ProfileResponse createProfile(
         @PathVariable Long userId,
-        @Valid @RequestBody CreateProfileRequest request
+        @Valid @RequestBody ProfileCreateRequest request
     ) {
-        return ProfileMapper.profileToResponse(profileService.createProfile(request, userId));
+        return ProfileMapper.entityToResponse(profileService.createProfile(request, userId));
     }
 
     @DeleteMapping("{id}")

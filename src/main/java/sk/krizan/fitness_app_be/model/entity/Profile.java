@@ -35,7 +35,7 @@ public class Profile {
     private User user;
 
     @Column(length = 64)
-    private String displayName;
+    private String name;
 
     private String profilePictureUrl;
 

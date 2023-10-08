@@ -1,15 +1,17 @@
 package sk.krizan.fitness_app_be.service.api;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import sk.krizan.fitness_app_be.controller.request.CreateTagRequest;
+import java.util.Optional;
+import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
+import sk.krizan.fitness_app_be.controller.response.PageResponse;
+import sk.krizan.fitness_app_be.controller.response.TagResponse;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 
 public interface TagService {
 
-    Page<Tag> filterTags(Pageable pageable, String name);
+    PageResponse<TagResponse> filterTags(TagFilterRequest request);
     Tag getTagById(Long id);
-    Tag createTag(CreateTagRequest request);
-
+    Optional<Tag> findTagByName(String name);
+    Tag createTag(TagCreateRequest request);
     Long deleteTag(Long id);
 }

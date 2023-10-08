@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.repository;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +11,7 @@ import sk.krizan.fitness_app_be.model.entity.Tag;
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
+    Optional<Tag> findTagByName(String name);
     Boolean existsByName(String name);
     Page<Tag> findAll(Specification<Tag> specification, Pageable pageable);
 }

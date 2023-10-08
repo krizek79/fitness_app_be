@@ -46,6 +46,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             .build();
     }
 
+    @ExceptionHandler(IllegalOperationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final ExceptionResponse handleIllegalOperationException(
+        IllegalOperationException exception
+    ) {
+        return ExceptionResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .message(exception.getMessage())
+            .build();
+    }
+
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     ExceptionResponse handleAccessDeniedException(ForbiddenException exception) {

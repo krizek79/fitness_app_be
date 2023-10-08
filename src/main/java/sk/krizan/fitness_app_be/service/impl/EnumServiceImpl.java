@@ -28,6 +28,7 @@ public class EnumServiceImpl implements EnumService {
 
     @Override
     public BaseEnum findEnumByKey(String key) {
+        //  Enum types must be declared here
         List<Class<? extends BaseEnum>> enumClasses = Arrays.asList(
             Level.class,
             MuscleGroup.class

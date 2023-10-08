@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.model.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.controller.request.CreateTagRequest;
+import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.TagResponse;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 
@@ -11,7 +11,7 @@ import sk.krizan.fitness_app_be.model.entity.Tag;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TagMapper {
 
-    public static TagResponse tagToResponse(Tag tag) {
+    public static TagResponse entityToResponse(Tag tag) {
         if (tag == null) {
             return null;
         }
@@ -21,7 +21,7 @@ public class TagMapper {
             .build();
     }
 
-    public static Tag createRequestToTag(CreateTagRequest request) {
+    public static Tag createRequestToEntity(TagCreateRequest request) {
         return Tag.builder()
             .name(request.name().toLowerCase())
             .build();

@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-public record CreateWorkoutRequest(
+public record WorkoutCreateRequest(
     @NotEmpty(message = "Name is mandatory.")
     @Size(
         min = 1,

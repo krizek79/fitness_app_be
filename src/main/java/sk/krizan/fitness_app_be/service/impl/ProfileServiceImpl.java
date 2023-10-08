@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
-import sk.krizan.fitness_app_be.controller.request.CreateProfileRequest;
+import sk.krizan.fitness_app_be.controller.request.ProfileCreateRequest;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
@@ -22,28 +22,33 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
 
+    private static final String ERROR_WITH_ID_NOT_FOUND = "Profile with id { %s } does not exist.";
+    private static final String ERROR_WITH_NAME_NOT_FOUND =
+        "Profile with name { %s } does not exist.";
+    private static final String ERROR_ALREADY_HAS_PROFILE =
+        "User { %s } already has an assigned profile.";
+
     @Override
     public Profile getProfileById(Long id) {
         return profileRepository.findById(id).orElseThrow(
-            () -> new NotFoundException("Profile with id { " + id + " } does not exist."));
+            () -> new NotFoundException(ERROR_WITH_ID_NOT_FOUND.formatted(id)));
     }
 
     @Override
-    public Profile getProfileByDisplayName(String displayName) {
-        return profileRepository.findByDisplayName(displayName).orElseThrow(
-            () -> new NotFoundException(
-                "Profile with displayName { " + displayName + " } does not exist."));
+    public Profile getProfileByName(String name) {
+        return profileRepository.findByName(name).orElseThrow(
+            () -> new NotFoundException(ERROR_WITH_NAME_NOT_FOUND.formatted(name)));
     }
 
     @Override
-    public Profile createProfile(CreateProfileRequest request, Long userId) {
+    public Profile createProfile(ProfileCreateRequest request, Long userId) {
         User user = userService.getUserById(userId);
         if (user.getProfile() != null) {
             throw new IllegalOperationException(
-                "User { " + user.getEmail() + " } already has an assigned profile.");
+                ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
         }
 
-        Profile profile = ProfileMapper.createProfileRequestToProfile(request, user);
+        Profile profile = ProfileMapper.createRequestToEntity(request, user);
         user.setProfile(profile);
 
         return profileRepository.save(profile);

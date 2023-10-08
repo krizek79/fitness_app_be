@@ -18,7 +18,7 @@ public class LoggingAspect {
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
     private static final String LOG_MESSAGE =
-        "Issued at: %s | URL: %s | HTTP method: %s | Method name: %s";
+        "URL: %s | HTTP method: %s | Method name: %s | Issued at: %s";
 
     @Before("execution(* sk.krizan.fitness_app_be.controller.endpoint..*(..))")
     public void logControllerMethodCall(JoinPoint joinPoint) {
@@ -30,6 +30,6 @@ public class LoggingAspect {
         String httpMethod = request.getMethod();
         String methodName = joinPoint.getSignature().toShortString();
 
-        logger.info(LOG_MESSAGE.formatted(now, url, httpMethod, methodName));
+        logger.info(LOG_MESSAGE.formatted(url, httpMethod, methodName, now));
     }
 }

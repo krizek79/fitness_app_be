@@ -20,6 +20,6 @@ public record SignUpRequest(
     @NotEmpty(message = "Matching password is mandatory.")
     String matchingPassword,
     @Valid
-    CreateProfileRequest createProfileRequest
+    ProfileCreateRequest profileCreateRequest
 ) {
 }

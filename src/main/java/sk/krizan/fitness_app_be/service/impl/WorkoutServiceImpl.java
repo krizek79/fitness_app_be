@@ -86,7 +86,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Workout updateTags(Long id, List<String> tagNames) {
+    public Workout updateWorkoutLevel(Long id, List<String> tagNames) {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
@@ -107,7 +107,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Workout updateLevel(Long id, String levelKey) {
+    public Workout updateWorkoutLevel(Long id, String levelKey) {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 

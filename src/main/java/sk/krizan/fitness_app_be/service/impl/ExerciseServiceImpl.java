@@ -21,7 +21,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     private final EnumService enumService;
 
     private final static String ERROR_EXERCISE_NOT_FOUND =
-        "Exercise with workoutId { %s } does not exist.";
+        "Exercise with id { %s } does not exist.";
 
     @Override
     public Exercise getExerciseById(Long id) {

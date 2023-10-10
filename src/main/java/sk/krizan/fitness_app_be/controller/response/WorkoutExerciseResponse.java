@@ -6,7 +6,7 @@ import lombok.Builder;
 public record WorkoutExerciseResponse(
     Long id,
     Long workoutId,
-    Long exerciseId,
+    String exerciseName,
     Integer sets,
     Integer repetitions
 ) {

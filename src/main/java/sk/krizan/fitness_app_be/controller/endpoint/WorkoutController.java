@@ -3,6 +3,7 @@ package sk.krizan.fitness_app_be.controller.endpoint;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,39 +28,43 @@ public class WorkoutController {
     private final WorkoutService workoutService;
 
     @PostMapping("filter")
-    public PageResponse<WorkoutResponse> filterWorkouts(
-        @Valid WorkoutFilterRequest request
-    ) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public PageResponse<WorkoutResponse> filterWorkouts(@Valid WorkoutFilterRequest request) {
         return workoutService.filterWorkouts(request);
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WorkoutResponse getWorkoutById(@PathVariable Long id) {
         return WorkoutMapper.entityToResponse(workoutService.getWorkoutById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WorkoutResponse createWorkout(@Valid @RequestBody WorkoutCreateRequest request) {
         return WorkoutMapper.entityToResponse(workoutService.createWorkout(request));
     }
 
     @PutMapping("{id}/tags")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WorkoutResponse updateWorkoutTags(
         @PathVariable Long id,
         @RequestBody List<String> tagNames
     ) {
-        return WorkoutMapper.entityToResponse(workoutService.updateTags(id, tagNames));
+        return WorkoutMapper.entityToResponse(workoutService.updateWorkoutLevel(id, tagNames));
     }
 
     @PatchMapping("{id}/level/{levelKey}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WorkoutResponse updateWorkoutLevel(
         @PathVariable Long id,
         @PathVariable String levelKey
     ) {
-        return WorkoutMapper.entityToResponse(workoutService.updateLevel(id, levelKey));
+        return WorkoutMapper.entityToResponse(workoutService.updateWorkoutLevel(id, levelKey));
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public Long deleteWorkout(@PathVariable Long id) {
         return workoutService.deleteWorkout(id);
     }

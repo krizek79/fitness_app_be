@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
-            () -> new NotFoundException("User with workoutId { " + id + " } does not exist."));
+            () -> new NotFoundException("User with id { " + id + " } does not exist."));
     }
 
     @Override

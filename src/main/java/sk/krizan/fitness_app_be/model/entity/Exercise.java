@@ -1,6 +1,7 @@
 package sk.krizan.fitness_app_be.model.entity;
 
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,5 +41,6 @@ public class Exercise {
         name = "exercise_muscle_groups",
         joinColumns = @JoinColumn(name = "exercise_id")
     )
+    @Column(name = "muscle_group")
     private Set<MuscleGroup> muscleGroups = new HashSet<>();
 }

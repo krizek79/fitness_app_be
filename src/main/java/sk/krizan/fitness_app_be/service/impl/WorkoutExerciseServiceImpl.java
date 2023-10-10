@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
@@ -28,7 +29,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     private final WorkoutExerciseRepository workoutExerciseRepository;
 
     private static final String ERROR_NOT_FOUND =
-        "WorkoutExercise with workoutId { %s } does not exist.";
+        "WorkoutExercise with id { %s } does not exist.";
 
     @Override
     public WorkoutExercise getWorkoutExerciseById(Long id) {
@@ -37,11 +38,18 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     }
 
     @Override
-    public WorkoutExercise createWorkoutExcercise(WorkoutExerciseCreateRequest request) {
+    public WorkoutExercise createWorkoutExercise(WorkoutExerciseCreateRequest request) {
         Workout workout = workoutService.getWorkoutById(request.workoutId());
         Exercise exercise = exerciseService.getExerciseById(request.exerciseId());
         return workoutExerciseRepository.save(
             WorkoutExerciseMapper.createRequestToEntity(request, workout, exercise));
+    }
+
+    @Override
+    public WorkoutExercise updateWorkoutExercise(Long id, WorkoutExerciseUpdateRequest request) {
+        WorkoutExercise workoutExercise = getWorkoutExerciseById(id);
+        return workoutExerciseRepository.save(
+            WorkoutExerciseMapper.updateRequestToEntity(workoutExercise, request));
     }
 
     @Override

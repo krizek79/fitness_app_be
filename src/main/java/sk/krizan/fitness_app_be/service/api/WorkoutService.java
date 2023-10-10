@@ -12,7 +12,7 @@ public interface WorkoutService {
     PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request);
     Workout getWorkoutById(Long id);
     Workout createWorkout(WorkoutCreateRequest request);
-    Workout updateTags(Long id, List<String> tagNames);
-    Workout updateLevel(Long id, String levelKey);
+    Workout updateWorkoutLevel(Long id, List<String> tagNames);
+    Workout updateWorkoutLevel(Long id, String levelKey);
     Long deleteWorkout(Long id);
 }

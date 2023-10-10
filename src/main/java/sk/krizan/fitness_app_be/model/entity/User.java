@@ -55,7 +55,11 @@ public class User {
 
     @ElementCollection(targetClass = Role.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "role")
     private Set<Role> roles = new HashSet<>();
 
     private Boolean active;

@@ -1,16 +1,12 @@
 package sk.krizan.fitness_app_be.controller.endpoint;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sk.krizan.fitness_app_be.controller.request.ProfileCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
 import sk.krizan.fitness_app_be.model.mapper.ProfileMapper;
 import sk.krizan.fitness_app_be.service.api.ProfileService;
@@ -32,15 +28,6 @@ public class ProfileController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ProfileResponse getProfileByName(@PathVariable String name) {
         return ProfileMapper.entityToResponse(profileService.getProfileByName(name));
-    }
-
-    @PostMapping("{userId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ProfileResponse createProfile(
-        @PathVariable Long userId,
-        @Valid @RequestBody ProfileCreateRequest request
-    ) {
-        return ProfileMapper.entityToResponse(profileService.createProfile(request, userId));
     }
 
     @DeleteMapping("{id}")

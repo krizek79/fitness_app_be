@@ -2,8 +2,10 @@ package sk.krizan.fitness_app_be.controller.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
-public record ProfileCreateRequest(
+@Builder
+public record ProfileUpdateRequest(
     @NotEmpty(message = "Name is mandatory.")
     @Size(
         min = 2,

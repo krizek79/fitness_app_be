@@ -1,11 +1,12 @@
 package sk.krizan.fitness_app_be.service.impl;
 
+import com.github.javafaker.Faker;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
-import sk.krizan.fitness_app_be.controller.request.ProfileCreateRequest;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
@@ -18,9 +19,12 @@ import sk.krizan.fitness_app_be.service.api.UserService;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
+
     private final UserService userService;
 
     private final ProfileRepository profileRepository;
+
+    private final Faker faker = new Faker(Locale.getDefault());
 
     private static final String ERROR_WITH_ID_NOT_FOUND = "Profile with id { %s } does not exist.";
     private static final String ERROR_WITH_NAME_NOT_FOUND =
@@ -41,14 +45,16 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile createProfile(ProfileCreateRequest request, Long userId) {
+    public Profile createProfile(Long userId) {
         User user = userService.getUserById(userId);
         if (user.getProfile() != null) {
             throw new IllegalOperationException(
                 ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
         }
 
-        Profile profile = ProfileMapper.createRequestToEntity(request, user);
+        String name = getRandomName();
+        String profilePictureUrl = getRandomProfilePictureUrl();
+        Profile profile = ProfileMapper.createInitialProfile(name, profilePictureUrl, user);
         user.setProfile(profile);
 
         return profileRepository.save(profile);
@@ -65,5 +71,18 @@ public class ProfileServiceImpl implements ProfileService {
 
         profileRepository.delete(profile);
         return profile.getId();
+    }
+
+    private String getRandomName() {
+        String name;
+        do {
+            name = faker.name().username();
+        } while (profileRepository.existsByName(name));
+
+        return name;
+    }
+
+    private String getRandomProfilePictureUrl() {
+        return "";
     }
 }

@@ -1,11 +1,12 @@
 package sk.krizan.fitness_app_be.controller.request;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import sk.krizan.fitness_app_be.validation.ValueMatching;
 
+@Builder
 @ValueMatching(
     value = "password",
     matchingValue = "matchingPassword"
@@ -18,8 +19,6 @@ public record SignUpRequest(
     @Size(min = 4, message = "Password should have at least 4 characters")
     String password,
     @NotEmpty(message = "Matching password is mandatory.")
-    String matchingPassword,
-    @Valid
-    ProfileCreateRequest profileCreateRequest
+    String matchingPassword
 ) {
 }

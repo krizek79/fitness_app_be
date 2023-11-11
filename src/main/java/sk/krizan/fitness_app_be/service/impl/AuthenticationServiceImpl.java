@@ -71,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         roles.add(Role.USER);
 
         User user = userService.createUser(request, roles);
-        profileService.createProfile(request.profileCreateRequest(), user.getId());
+        profileService.createProfile(user.getId());
 
         return REGISTRATION_SUCCESSFULL;
     }

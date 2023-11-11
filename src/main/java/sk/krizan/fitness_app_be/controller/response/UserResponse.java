@@ -9,6 +9,6 @@ public record UserResponse(
     Long id,
     String email,
     Set<Role> roles,
-    ProfileResponse profile
+    ProfileResponse profileResponse
 ) {
 }

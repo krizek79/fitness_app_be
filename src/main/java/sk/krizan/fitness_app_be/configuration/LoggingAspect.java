@@ -17,8 +17,7 @@ public class LoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
-    private static final String LOG_MESSAGE =
-        "URL: %s | HTTP method: %s | Method name: %s | Issued at: %s";
+    private static final String LOG_MESSAGE = "URL: %s | HTTP method: %s | Method name: %s | Issued at: %s";
 
     @Before("execution(* sk.krizan.fitness_app_be.controller.endpoint..*(..))")
     public void logControllerMethodCall(JoinPoint joinPoint) {

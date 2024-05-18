@@ -17,15 +17,20 @@ public class CustomCommandLineRunner implements CommandLineRunner {
     @Value("${springdoc.swagger-ui.path}")
     private String swaggerPath;
 
+    @Value("${inserter.allowed}")
+    private Boolean inserterAllowed;
+
     private static final String STARTED_REGISTERING_USERS = "%s - Started registering users";
     private static final String FINISHED_REGISTERING_USERS = "%s - Finished registering users";
-    private static final String OPENAPI_MESSAGE =
-        "Link to the OpenApi documentation: %s";
+    private static final String OPENAPI_MESSAGE = "Link to the OpenApi documentation: %s";
 
     @Override
     public void run(String... args) {
         printOpenApiUrl();
-        registerUsers();
+
+        if (inserterAllowed) {
+            registerUsers();
+        }
     }
 
     private void printOpenApiUrl() {

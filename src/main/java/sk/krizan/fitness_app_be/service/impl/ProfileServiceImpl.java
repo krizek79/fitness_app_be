@@ -27,10 +27,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final Faker faker = new Faker(Locale.getDefault());
 
     private static final String ERROR_WITH_ID_NOT_FOUND = "Profile with id { %s } does not exist.";
-    private static final String ERROR_WITH_NAME_NOT_FOUND =
-        "Profile with name { %s } does not exist.";
-    private static final String ERROR_ALREADY_HAS_PROFILE =
-        "User { %s } already has an assigned profile.";
+    private static final String ERROR_WITH_NAME_NOT_FOUND = "Profile with name { %s } does not exist.";
+    private static final String ERROR_ALREADY_HAS_PROFILE = "User { %s } already has an assigned profile.";
 
     @Override
     public Profile getProfileById(Long id) {
@@ -48,8 +46,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile createProfile(Long userId) {
         User user = userService.getUserById(userId);
         if (user.getProfile() != null) {
-            throw new IllegalOperationException(
-                ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
+            throw new IllegalOperationException(ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
         }
 
         String name = getRandomName();

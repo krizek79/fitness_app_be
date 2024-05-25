@@ -38,7 +38,7 @@ public class Exercise {
     @ElementCollection(targetClass = MuscleGroup.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(
-        name = "exercise_muscle_groups",
+        name = "exercise_muscle_group",
         joinColumns = @JoinColumn(name = "exercise_id")
     )
     @Column(name = "muscle_group")

@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -20,6 +21,7 @@ public class LoggingAspect {
     private static final String LOG_MESSAGE = "URL: %s | HTTP method: %s | Method name: %s | Issued at: %s";
 
     @Before("execution(* sk.krizan.fitness_app_be.controller.endpoint..*(..))")
+    @ConditionalOnProperty(name = "endpoint.logging.enabled", havingValue = "true")
     public void logControllerMethodCall(JoinPoint joinPoint) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
             .currentRequestAttributes()).getRequest();

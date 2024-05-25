@@ -18,7 +18,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping("sign-in/local")
+    @PostMapping("sign-in")
     public AuthenticationResponse signInLocal(@Valid @RequestBody LocalAuthenticationRequest request) {
         return authenticationService.signInLocal(request);
     }

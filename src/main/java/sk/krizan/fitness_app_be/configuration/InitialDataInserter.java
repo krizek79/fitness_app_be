@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CustomCommandLineRunner implements CommandLineRunner {
+public class InitialDataInserter implements CommandLineRunner {
 
     @Value("${server.port}")
     private String serverPort;
@@ -17,8 +17,8 @@ public class CustomCommandLineRunner implements CommandLineRunner {
     @Value("${springdoc.swagger-ui.path}")
     private String swaggerPath;
 
-    @Value("${inserter.allowed}")
-    private Boolean inserterAllowed;
+    @Value("${inserter.enabled}")
+    private Boolean inserterEnabled;
 
     private static final String STARTED_REGISTERING_USERS = "%s - Started registering users";
     private static final String FINISHED_REGISTERING_USERS = "%s - Finished registering users";
@@ -28,7 +28,7 @@ public class CustomCommandLineRunner implements CommandLineRunner {
     public void run(String... args) {
         printOpenApiUrl();
 
-        if (inserterAllowed) {
+        if (inserterEnabled) {
             registerUsers();
         }
     }

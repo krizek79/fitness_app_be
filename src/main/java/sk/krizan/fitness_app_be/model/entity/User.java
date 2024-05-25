@@ -31,7 +31,7 @@ import sk.krizan.fitness_app_be.model.enums.Role;
 @Getter
 @Setter
 @Entity
-@Table(name = "app_users")
+@Table(name = "app_user")
 public class User {
 
     @Id
@@ -56,7 +56,7 @@ public class User {
     @ElementCollection(targetClass = Role.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(
-        name = "user_roles",
+        name = "user_role",
         joinColumns = @JoinColumn(name = "user_id")
     )
     @Column(name = "role")

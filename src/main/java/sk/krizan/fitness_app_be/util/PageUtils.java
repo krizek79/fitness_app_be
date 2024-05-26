@@ -10,7 +10,7 @@ public class PageUtils {
 
     private static final String DIR_ASC = "ASC";
 
-    private static final String ERROR_UNSOPPORTED_SORT_FIELD = "Unsupported sort field { %s }.";
+    private static final String ERROR_UNSUPPORTED_SORT_FIELD = "Unsupported sort field { %s }.";
 
     public static Pageable createPageable(
         Integer pageNumber,
@@ -20,7 +20,7 @@ public class PageUtils {
         List<String> supportedSortFields
     ) {
         if (!supportedSortFields.contains(sortBy)) {
-            throw new IllegalOperationException(ERROR_UNSOPPORTED_SORT_FIELD.formatted(sortBy));
+            throw new IllegalOperationException(ERROR_UNSUPPORTED_SORT_FIELD.formatted(sortBy));
         }
 
         return PageRequest.of(

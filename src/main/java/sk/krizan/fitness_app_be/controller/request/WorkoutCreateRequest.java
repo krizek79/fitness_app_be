@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record WorkoutCreateRequest(
-    @NotEmpty(message = "Name is mandatory.")
+    @NotEmpty
     @Size(
         min = 1,
         max = 64,

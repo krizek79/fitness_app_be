@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,13 +29,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         @NonNull HttpStatusCode status,
         @NonNull WebRequest request
     ) {
-        List<String> errors = new ArrayList<>();
-        ex.getAllErrors().forEach(err -> errors.add(err.getDefaultMessage()));
+        Map<String, List<String>> errors = new HashMap<>();
 
-        Map<String, List<String>> result = new HashMap<>();
-        result.put("errors", errors);
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
 
-        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            // Add field name and error message to the map
+            errors.computeIfAbsent(fieldName, key -> new ArrayList<>()).add(errorMessage);
+        });
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)

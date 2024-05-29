@@ -25,7 +25,7 @@ public class TagController {
 
     @PostMapping("filter")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public PageResponse<TagResponse> filterTags(@Valid TagFilterRequest request) {
+    public PageResponse<TagResponse> filterTags(@Valid @RequestBody TagFilterRequest request) {
         return tagService.filterTags(request);
     }
 

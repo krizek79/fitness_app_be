@@ -6,8 +6,8 @@ import lombok.Builder;
 
 @Builder
 public record LocalAuthenticationRequest(
-    @NotEmpty(message = "Email is mandatory.")
-    @Email(message = "Email is not valid.")
+    @NotEmpty
+    @Email
     String email,
     String password
 ) {

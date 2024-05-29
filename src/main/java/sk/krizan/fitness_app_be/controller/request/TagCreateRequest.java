@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record TagCreateRequest(
-    @NotEmpty(message = "Name is mandatory.")
+    @NotEmpty
     String name
 ) {
 }

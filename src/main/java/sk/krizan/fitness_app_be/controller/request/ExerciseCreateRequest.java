@@ -8,14 +8,14 @@ import lombok.Builder;
 
 @Builder
 public record ExerciseCreateRequest(
-    @NotEmpty(message = "Name is mandatory.")
+    @NotEmpty
     @Size(
         min = 2,
         max = 64,
         message = "Name shouldn't be less than 2 or more than 64 characters long."
     )
     String name,
-    @NotNull(message = "MuscleGroupKeys array must not be null.")
+    @NotNull
     Set<String> muscleGroupKeys
 ) {
 }

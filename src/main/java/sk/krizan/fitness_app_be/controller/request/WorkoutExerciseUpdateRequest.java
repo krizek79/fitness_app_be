@@ -6,13 +6,13 @@ import lombok.Builder;
 
 @Builder
 public record WorkoutExerciseUpdateRequest(
-    @NotEmpty(message = "Number of sets is mandatory.")
+    @NotEmpty
     @Size(
         min = 1,
         message = "Number of sets cannot be less than 1."
     )
     Integer sets,
-    @NotEmpty(message = "Number of repetitions is mandatory.")
+    @NotEmpty
     @Size(
         min = 1,
         message = "Number of repetitions cannot be less than 1."

@@ -29,7 +29,7 @@ public class WorkoutController {
 
     @PostMapping("filter")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public PageResponse<WorkoutResponse> filterWorkouts(@Valid WorkoutFilterRequest request) {
+    public PageResponse<WorkoutResponse> filterWorkouts(@Valid @RequestBody WorkoutFilterRequest request) {
         return workoutService.filterWorkouts(request);
     }
 

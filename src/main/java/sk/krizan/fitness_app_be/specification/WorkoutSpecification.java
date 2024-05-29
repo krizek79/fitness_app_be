@@ -15,17 +15,21 @@ public class WorkoutSpecification {
         return (Root<Workout> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
-            Predicate namePredicate = PredicateUtils.sanitizedLike(
-                root,
-                criteriaBuilder,
-                Workout.Fields.name,
-                request.name());
-            predicate = criteriaBuilder.and(predicate, namePredicate);
+            if (request.name() != null) {
+                Predicate namePredicate = PredicateUtils.sanitizedLike(
+                        root,
+                        criteriaBuilder,
+                        Workout.Fields.name,
+                        request.name());
+                predicate = criteriaBuilder.and(predicate, namePredicate);
+            }
 
-            Predicate levelPredicate = criteriaBuilder.equal(
-                root.get(Workout.Fields.level),
-                request.levelKey());
-            predicate = criteriaBuilder.and(predicate, levelPredicate);
+            if (request.levelKey() != null) {
+                Predicate levelPredicate = criteriaBuilder.equal(
+                        root.get(Workout.Fields.level),
+                        request.levelKey());
+                predicate = criteriaBuilder.and(predicate, levelPredicate);
+            }
 
             // Filter by tags
 

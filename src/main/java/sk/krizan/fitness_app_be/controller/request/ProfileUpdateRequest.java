@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record ProfileUpdateRequest(
-    @NotEmpty(message = "Name is mandatory.")
+    @NotEmpty
     @Size(
         min = 2,
         max = 64,

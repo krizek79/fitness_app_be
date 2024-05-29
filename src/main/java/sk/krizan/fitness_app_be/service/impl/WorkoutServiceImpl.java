@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
@@ -43,14 +44,13 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     //  TODO: add author name and level
     private static final List<String> supportedSortFields = List.of(
-        "id",
-        "name"
+        Workout.Fields.id,
+        Workout.Fields.name
     );
 
     @Override
-    public PageResponse<WorkoutResponse> filterWorkouts(
-        WorkoutFilterRequest request
-    ) {
+    @Transactional
+    public PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request) {
         Specification<Workout> specification = WorkoutSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
             request.page(),
@@ -75,8 +75,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout getWorkoutById(Long id) {
-        return workoutRepository.findById(id).orElseThrow(
-            () -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return workoutRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -90,15 +89,13 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser
-            && !currentUser.getRoles().contains(Role.ADMIN)
-        ) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
         List<Tag> tags = tagNames.stream()
             .map(tagName -> tagService.findTagByName(tagName.toLowerCase())
-                .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
+                    .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
             .collect(Collectors.toList());
 
         workout.setTags(tags);
@@ -111,9 +108,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser
-            && !currentUser.getRoles().contains(Role.ADMIN)
-        ) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
@@ -129,9 +124,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser
-            && !currentUser.getRoles().contains(Role.ADMIN)
-        ) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 

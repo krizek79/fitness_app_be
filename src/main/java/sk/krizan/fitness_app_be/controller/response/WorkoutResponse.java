@@ -9,6 +9,7 @@ public record WorkoutResponse(
     String name,
     String authorName,
     List<TagResponse> tagResponseList,
-    String levelValue
+    String levelValue,
+    String description
 ) {
 }

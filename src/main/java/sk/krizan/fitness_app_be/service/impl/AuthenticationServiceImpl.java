@@ -1,9 +1,5 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +19,11 @@ import sk.krizan.fitness_app_be.service.api.AuthenticationService;
 import sk.krizan.fitness_app_be.service.api.ProfileService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -33,7 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtValues jwtValues;
     private final AuthenticationManager authenticationManager;
 
-    private final static String REGISTRATION_SUCCESSFULL = "Registration successful.";
+    private final static String REGISTRATION_SUCCESSFUL = "Registration successful.";
 
     @Override
     public AuthenticationResponse signInLocal(LocalAuthenticationRequest request) {
@@ -73,6 +74,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userService.createUser(request, roles);
         profileService.createProfile(user.getId());
 
-        return REGISTRATION_SUCCESSFULL;
+        return REGISTRATION_SUCCESSFUL;
     }
 }

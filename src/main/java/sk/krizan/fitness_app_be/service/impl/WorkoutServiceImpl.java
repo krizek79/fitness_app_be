@@ -1,7 +1,5 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +11,7 @@ import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
@@ -30,6 +29,11 @@ import sk.krizan.fitness_app_be.service.api.WorkoutService;
 import sk.krizan.fitness_app_be.specification.WorkoutSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
@@ -44,8 +48,9 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     //  TODO: add author name and level
     private static final List<String> supportedSortFields = List.of(
-        Workout.Fields.id,
-        Workout.Fields.name
+            Workout.Fields.id,
+            Workout.Fields.name,
+            Workout.Fields.author + "$" + Profile.Fields.name
     );
 
     @Override
@@ -53,24 +58,24 @@ public class WorkoutServiceImpl implements WorkoutService {
     public PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request) {
         Specification<Workout> specification = WorkoutSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
-            request.page(),
-            request.size(),
-            request.sortBy(),
-            request.sortDirection(),
-            supportedSortFields
+                request.page(),
+                request.size(),
+                request.sortBy(),
+                request.sortDirection(),
+                supportedSortFields
         );
         Page<Workout> page = workoutRepository.findAll(specification, pageable);
 
         List<WorkoutResponse> responseList = page.stream()
-            .map(WorkoutMapper::entityToResponse).toList();
+                .map(WorkoutMapper::entityToResponse).toList();
 
         return PageResponse.<WorkoutResponse>builder()
-            .pageNumber(page.getNumber())
-            .pageSize(page.getSize())
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .results(responseList)
-            .build();
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .results(responseList)
+                .build();
     }
 
     @Override
@@ -85,38 +90,25 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Workout updateWorkoutLevel(Long id, List<String> tagNames) {
+    @Transactional
+    public Workout updateWorkout(WorkoutUpdateRequest request) {
         User currentUser = userService.getCurrentUser();
-        Workout workout = getWorkoutById(id);
+        Workout workout = getWorkoutById(request.id());
 
         if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        List<Tag> tags = tagNames.stream()
-            .map(tagName -> tagService.findTagByName(tagName.toLowerCase())
-                    .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
-            .collect(Collectors.toList());
-
-        workout.setTags(tags);
-
-        return workoutRepository.save(workout);
-    }
-
-    @Override
-    public Workout updateWorkoutLevel(Long id, String levelKey) {
-        User currentUser = userService.getCurrentUser();
-        Workout workout = getWorkoutById(id);
-
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
-            throw new ForbiddenException();
+        Level level = (Level) enumService.findEnumByKey(request.levelKey());
+        Set<Tag> tags = new HashSet<>();
+        if (request.tagNames() != null) {
+            tags = request.tagNames().stream()
+                    .map(tagName -> tagService.findTagByName(tagName.toLowerCase())
+                            .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
+                    .collect(Collectors.toSet());
         }
 
-        Level level = (Level) enumService.findEnumByKey(levelKey);
-
-        workout.setLevel(level);
-
-        return workoutRepository.save(workout);
+        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, level, tags));
     }
 
     @Override

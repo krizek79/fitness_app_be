@@ -1,12 +1,10 @@
 package sk.krizan.fitness_app_be.controller.endpoint;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutMapper;
@@ -45,22 +44,10 @@ public class WorkoutController {
         return WorkoutMapper.entityToResponse(workoutService.createWorkout(request));
     }
 
-    @PutMapping("{id}/tags")
+    @PutMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutResponse updateWorkoutTags(
-        @PathVariable Long id,
-        @RequestBody List<String> tagNames
-    ) {
-        return WorkoutMapper.entityToResponse(workoutService.updateWorkoutLevel(id, tagNames));
-    }
-
-    @PatchMapping("{id}/level/{levelKey}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutResponse updateWorkoutLevel(
-        @PathVariable Long id,
-        @PathVariable String levelKey
-    ) {
-        return WorkoutMapper.entityToResponse(workoutService.updateWorkoutLevel(id, levelKey));
+    public WorkoutResponse updateWorkout(@Valid @RequestBody WorkoutUpdateRequest request) {
+        return WorkoutMapper.entityToResponse(workoutService.updateWorkout(request));
     }
 
     @DeleteMapping("{id}")

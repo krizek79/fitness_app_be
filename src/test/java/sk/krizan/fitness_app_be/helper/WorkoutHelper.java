@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.enums.Level;
 
@@ -41,7 +41,7 @@ public class WorkoutHelper {
                 .build();
     }
 
-    public static void assertWorkoutResponse(WorkoutResponse response) {
+    public static void assertWorkoutResponse(WorkoutSimpleResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
         Assertions.assertNotNull(response.name());

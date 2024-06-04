@@ -15,7 +15,8 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutDetailResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutMapper;
 import sk.krizan.fitness_app_be.service.api.WorkoutService;
 
@@ -28,26 +29,26 @@ public class WorkoutController {
 
     @PostMapping("filter")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public PageResponse<WorkoutResponse> filterWorkouts(@Valid @RequestBody WorkoutFilterRequest request) {
+    public PageResponse<WorkoutSimpleResponse> filterWorkouts(@Valid @RequestBody WorkoutFilterRequest request) {
         return workoutService.filterWorkouts(request);
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutResponse getWorkoutById(@PathVariable Long id) {
-        return WorkoutMapper.entityToResponse(workoutService.getWorkoutById(id));
+    public WorkoutDetailResponse getWorkoutById(@PathVariable Long id) {
+        return WorkoutMapper.entityToDetailResponse(workoutService.getWorkoutById(id));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutResponse createWorkout(@Valid @RequestBody WorkoutCreateRequest request) {
-        return WorkoutMapper.entityToResponse(workoutService.createWorkout(request));
+    public WorkoutDetailResponse createWorkout(@Valid @RequestBody WorkoutCreateRequest request) {
+        return WorkoutMapper.entityToDetailResponse(workoutService.createWorkout(request));
     }
 
     @PutMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutResponse updateWorkout(@Valid @RequestBody WorkoutUpdateRequest request) {
-        return WorkoutMapper.entityToResponse(workoutService.updateWorkout(request));
+    public WorkoutDetailResponse updateWorkout(@Valid @RequestBody WorkoutUpdateRequest request) {
+        return WorkoutMapper.entityToDetailResponse(workoutService.updateWorkout(request));
     }
 
     @DeleteMapping("{id}")

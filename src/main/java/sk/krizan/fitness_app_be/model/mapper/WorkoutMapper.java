@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutDetailResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
@@ -26,8 +27,8 @@ public class WorkoutMapper {
             .build();
     }
 
-    public static WorkoutResponse entityToResponse(Workout workout) {
-        return WorkoutResponse.builder()
+    public static WorkoutSimpleResponse entityToSimpleResponse(Workout workout) {
+        return WorkoutSimpleResponse.builder()
             .id(workout.getId())
             .name(workout.getName())
             .authorName(workout.getAuthor().getName())
@@ -35,8 +36,23 @@ public class WorkoutMapper {
                 workout.getTags().stream()
                     .map(TagMapper::entityToResponse).toList())
             .levelValue(workout.getLevel() == null ? null : workout.getLevel().getValue())
-            .description(workout.getDescription())
             .build();
+    }
+
+    public static WorkoutDetailResponse entityToDetailResponse(Workout workout) {
+        return WorkoutDetailResponse.builder()
+                .id(workout.getId())
+                .name(workout.getName())
+                .authorName(workout.getAuthor().getName())
+                .tagResponseList(
+                        workout.getTags().stream()
+                                .map(TagMapper::entityToResponse).toList())
+                .levelValue(workout.getLevel() == null ? null : workout.getLevel().getValue())
+                .description(workout.getDescription())
+                .workoutExerciseSimpleResponseList(
+                        workout.getWorkoutExerciseList().stream()
+                                .map(WorkoutExerciseMapper::entityToSimpleResponse).toList())
+                .build();
     }
 
     public static Workout updateRequestToEntity(

@@ -1,22 +1,21 @@
 package sk.krizan.fitness_app_be.controller.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record WorkoutExerciseUpdateRequest(
-    @NotEmpty
-    @Size(
-        min = 1,
-        message = "Number of sets cannot be less than 1."
-    )
+    @NotNull
+    @Min(1)
+    @Schema(example = "5")
     Integer sets,
-    @NotEmpty
-    @Size(
-        min = 1,
-        message = "Number of repetitions cannot be less than 1."
-    )
-    Integer repetitions
+    @NotNull
+    @Min(1)
+    @Schema(example = "8")
+    Integer repetitions,
+    @Schema(example = "PT1M30S")
+    String restDuration
 ) {
 }

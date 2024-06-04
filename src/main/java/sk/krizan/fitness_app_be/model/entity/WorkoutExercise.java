@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.model.entity;
 
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,6 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import sk.krizan.fitness_app_be.configuration.DurationConverter;
+
+import java.time.Duration;
 
 @Entity
 @AllArgsConstructor
@@ -34,4 +38,8 @@ public class WorkoutExercise {
     private Integer sets;
 
     private Integer repetitions;
+
+    //  stored as a String
+    @Convert(converter = DurationConverter.class)
+    private Duration restDuration;
 }

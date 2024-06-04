@@ -1,15 +1,15 @@
 package sk.krizan.fitness_app_be.controller.response;
 
-import java.util.List;
 import lombok.Builder;
 
+import java.util.List;
+
 @Builder
-public record WorkoutResponse(
+public record WorkoutSimpleResponse(
     Long id,
     String name,
     String authorName,
     List<TagResponse> tagResponseList,
-    String levelValue,
-    String description
+    String levelValue
 ) {
 }

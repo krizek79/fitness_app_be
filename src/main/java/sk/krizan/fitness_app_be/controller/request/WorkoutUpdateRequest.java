@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.controller.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -10,9 +11,9 @@ import java.util.Set;
 public record WorkoutUpdateRequest(
         @NotNull
         Long id,
-        @NotNull
+        @NotEmpty
         String name,
-        @NotNull
+        @NotEmpty
         String levelKey,
         @Size(max = 1000)
         String description,

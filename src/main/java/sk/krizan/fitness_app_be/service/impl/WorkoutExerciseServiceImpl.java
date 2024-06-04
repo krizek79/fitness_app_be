@@ -28,8 +28,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
 
     private final WorkoutExerciseRepository workoutExerciseRepository;
 
-    private static final String ERROR_NOT_FOUND =
-        "WorkoutExercise with id { %s } does not exist.";
+    private static final String ERROR_NOT_FOUND = "WorkoutExercise with id { %s } does not exist.";
 
     @Override
     public WorkoutExercise getWorkoutExerciseById(Long id) {

@@ -7,11 +7,7 @@ import lombok.Builder;
 @Builder
 public record WorkoutCreateRequest(
     @NotEmpty
-    @Size(
-        min = 1,
-        max = 64,
-        message = "Name shouldn't be less than 2 or more than 64 characters long."
-    )
+    @Size(min = 1, max = 64)
     String name
 ) {
 }

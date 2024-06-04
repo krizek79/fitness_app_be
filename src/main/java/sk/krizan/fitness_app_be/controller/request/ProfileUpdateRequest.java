@@ -7,14 +7,10 @@ import lombok.Builder;
 @Builder
 public record ProfileUpdateRequest(
     @NotEmpty
-    @Size(
-        min = 2,
-        max = 64,
-        message = "Name shouldn't be less than 2 or more than 64 characters long."
-    )
+    @Size(min = 2, max = 64)
     String name,
     String profilePictureUrl,
-    @Size(max = 128, message = "Bio shouldn't be more than 128 characters long.")
+    @Size(max = 128)
     String bio
 ) {
 }

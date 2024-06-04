@@ -13,7 +13,7 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.User;
@@ -49,13 +49,12 @@ public class WorkoutServiceImpl implements WorkoutService {
     //  TODO: add author name and level
     private static final List<String> supportedSortFields = List.of(
             Workout.Fields.id,
-            Workout.Fields.name,
-            Workout.Fields.author + "$" + Profile.Fields.name
+            Workout.Fields.name
     );
 
     @Override
     @Transactional
-    public PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request) {
+    public PageResponse<WorkoutSimpleResponse> filterWorkouts(WorkoutFilterRequest request) {
         Specification<Workout> specification = WorkoutSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -66,10 +65,10 @@ public class WorkoutServiceImpl implements WorkoutService {
         );
         Page<Workout> page = workoutRepository.findAll(specification, pageable);
 
-        List<WorkoutResponse> responseList = page.stream()
-                .map(WorkoutMapper::entityToResponse).toList();
+        List<WorkoutSimpleResponse> responseList = page.stream()
+                .map(WorkoutMapper::entityToSimpleResponse).toList();
 
-        return PageResponse.<WorkoutResponse>builder()
+        return PageResponse.<WorkoutSimpleResponse>builder()
                 .pageNumber(page.getNumber())
                 .pageSize(page.getSize())
                 .totalElements(page.getTotalElements())

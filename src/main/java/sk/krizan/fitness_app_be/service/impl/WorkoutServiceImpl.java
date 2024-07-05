@@ -90,9 +90,9 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     @Transactional
-    public Workout updateWorkout(WorkoutUpdateRequest request) {
+    public Workout updateWorkout(Long id, WorkoutUpdateRequest request) {
         User currentUser = userService.getCurrentUser();
-        Workout workout = getWorkoutById(request.id());
+        Workout workout = getWorkoutById(id);
 
         if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
             throw new ForbiddenException();

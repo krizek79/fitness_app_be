@@ -1,10 +1,6 @@
 package sk.krizan.fitness_app_be.controller.exception;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -19,6 +15,13 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
 @RestControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -34,8 +37,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-
-            // Add field name and error message to the map
             errors.computeIfAbsent(fieldName, key -> new ArrayList<>()).add(errorMessage);
         });
 
@@ -45,6 +46,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public final ExceptionResponse handleNotFoundException(NotFoundException exception) {
+        logException(exception);
         return ExceptionResponse.builder()
             .timestamp(LocalDateTime.now())
             .message(exception.getMessage())
@@ -53,9 +55,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalOperationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final ExceptionResponse handleIllegalOperationException(
-        IllegalOperationException exception
-    ) {
+    public final ExceptionResponse handleIllegalOperationException(IllegalOperationException exception) {
+        logException(exception);
         return ExceptionResponse.builder()
             .timestamp(LocalDateTime.now())
             .message(exception.getMessage())
@@ -65,9 +66,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     ExceptionResponse handleAccessDeniedException(ForbiddenException exception) {
+        logException(exception);
         return ExceptionResponse.builder()
             .timestamp(LocalDateTime.now())
             .message(exception.getMessage())
             .build();
+    }
+
+    private void logException(Exception exception) {
+        log.error("{}: {}", exception.getClass().getCanonicalName(), exception.getMessage(), exception);
     }
 }

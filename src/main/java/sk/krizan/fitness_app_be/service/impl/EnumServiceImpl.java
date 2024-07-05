@@ -1,8 +1,5 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.response.EnumResponse;
@@ -10,6 +7,10 @@ import sk.krizan.fitness_app_be.model.enums.BaseEnum;
 import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 import sk.krizan.fitness_app_be.service.api.EnumService;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EnumServiceImpl implements EnumService {
@@ -37,8 +38,7 @@ public class EnumServiceImpl implements EnumService {
         return enumClasses.stream()
             .flatMap(enumClass -> Arrays.stream(enumClass.getEnumConstants()))
             .filter(baseEnum -> baseEnum.getKey().equals(key))
-            .findFirst().orElseThrow(
-                () -> new NotFoundException(ERROR_ENUM_NOT_FOUND.formatted(key)));
+            .findFirst().orElseThrow(() -> new NotFoundException(ERROR_ENUM_NOT_FOUND.formatted(key)));
     }
 
     private List<EnumResponse> getEnumsOfType(Class<? extends BaseEnum> enumClass) {

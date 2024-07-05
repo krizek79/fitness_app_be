@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.response.WorkoutDetailResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.enums.Level;
@@ -33,7 +34,6 @@ public class WorkoutHelper {
 
     public static WorkoutUpdateRequest createUpdateRequest(Long id) {
         return WorkoutUpdateRequest.builder()
-                .id(id)
                 .name(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
                 .levelKey(Level.ADVANCED.getKey())
@@ -41,10 +41,16 @@ public class WorkoutHelper {
                 .build();
     }
 
-    public static void assertWorkoutResponse(WorkoutSimpleResponse response) {
+    public static void assertWorkoutSimpleResponse(WorkoutSimpleResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(DEFAULT_VALUE, response.name());
+    }
+
+    public static void assertWorkoutDetailResponse(WorkoutDetailResponse workout) {
+        Assertions.assertNotNull(workout);
+        Assertions.assertNotNull(workout.id());
+        Assertions.assertNotNull(workout.authorName());
     }
 }

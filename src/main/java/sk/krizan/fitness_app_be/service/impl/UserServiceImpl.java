@@ -1,6 +1,5 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +17,8 @@ import sk.krizan.fitness_app_be.model.mapper.UserMapper;
 import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -29,8 +30,7 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
             .map(CustomUserDetails::new)
-            .orElseThrow(() -> new NotFoundException(
-                "User with email { " + email + " } does not exist."));
+            .orElseThrow(() -> new NotFoundException("User with email { " + email + " } does not exist."));
     }
 
     @Override

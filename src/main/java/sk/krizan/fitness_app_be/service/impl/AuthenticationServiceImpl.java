@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.configuration.jwt.JwtProvider;
 import sk.krizan.fitness_app_be.configuration.jwt.JwtValues;
-import sk.krizan.fitness_app_be.controller.request.ClientAuthenticationRequest;
 import sk.krizan.fitness_app_be.controller.request.LocalAuthenticationRequest;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.controller.response.AuthenticationResponse;
@@ -54,16 +53,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .expiresAt(Instant.now().plus(jwtValues.getExpiration(), ChronoUnit.HOURS))
             .userResponse(UserMapper.entityToResponse(user))
             .build();
-    }
-
-    @Override
-    public AuthenticationResponse signInMeta(ClientAuthenticationRequest request) {
-        return null;
-    }
-
-    @Override
-    public AuthenticationResponse signInGoogle(ClientAuthenticationRequest request) {
-        return null;
     }
 
     @Override

@@ -12,6 +12,6 @@ public interface WorkoutService {
     PageResponse<WorkoutSimpleResponse> filterWorkouts(WorkoutFilterRequest request);
     Workout getWorkoutById(Long id);
     Workout createWorkout(WorkoutCreateRequest request);
-    Workout updateWorkout(WorkoutUpdateRequest request);
+    Workout updateWorkout(Long id, WorkoutUpdateRequest request);
     Long deleteWorkout(Long id);
 }

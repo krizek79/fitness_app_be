@@ -45,10 +45,13 @@ public class WorkoutController {
         return WorkoutMapper.entityToDetailResponse(workoutService.createWorkout(request));
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutDetailResponse updateWorkout(@Valid @RequestBody WorkoutUpdateRequest request) {
-        return WorkoutMapper.entityToDetailResponse(workoutService.updateWorkout(request));
+    public WorkoutDetailResponse updateWorkout(
+            @PathVariable Long id,
+            @Valid @RequestBody WorkoutUpdateRequest request
+    ) {
+        return WorkoutMapper.entityToDetailResponse(workoutService.updateWorkout(id, request));
     }
 
     @DeleteMapping("{id}")

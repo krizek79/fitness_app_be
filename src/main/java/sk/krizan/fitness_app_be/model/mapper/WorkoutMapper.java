@@ -12,6 +12,7 @@ import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.enums.Level;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class WorkoutMapper {
             .name(request.name())
             .author(profile)
             .tags(new HashSet<>())
+            .workoutExerciseList(new ArrayList<>())
             .build();
     }
 

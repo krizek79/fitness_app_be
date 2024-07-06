@@ -1,29 +1,78 @@
 package sk.krizan.fitness_app_be.helper;
 
 import org.junit.jupiter.api.Assertions;
-import org.springframework.data.domain.Sort;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.response.TagResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutDetailResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
+import sk.krizan.fitness_app_be.model.entity.Profile;
+import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
+import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.model.enums.Level;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_UPDATE_VALUE;
+import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
 public class WorkoutHelper {
 
-    private static final String DEFAULT_VALUE = "default";
-    private static final String DEFAULT_UPDATE_VALUE = "update";
-
-    public static WorkoutFilterRequest createFilterRequest() {
+    public static WorkoutFilterRequest createFilterRequest(Integer size, String sortBy, String sortDirection) {
         return WorkoutFilterRequest.builder()
                 .page(0)
-                .size(2)
-                .sortBy(Workout.Fields.id)
-                .sortDirection(Sort.Direction.DESC.name())
+                .size(size)
+                .sortBy(sortBy)
+                .sortDirection(sortDirection)
                 .build();
+    }
+
+    public static Workout createMockWorkout(
+            Long id,
+            Profile profile,
+            List<WorkoutExercise> workoutExerciseList,
+            Set<Tag> tagList
+    ) {
+        Workout workout = Workout.builder()
+                .id(1L)
+                .author(profile)
+                .name(DEFAULT_VALUE)
+                .tags(tagList)
+                .workoutExerciseList(workoutExerciseList)
+                .build();
+        profile.getAuthoredWorkouts().add(workout);
+        return workout;
+    }
+
+    /**
+     * Each main list represents one workout. For example, if we need 3 workouts,
+     * we should call this method with 3 Profile objects, 3 WorkoutExercise lists and 3 Tag lists.
+     */
+    public static List<Workout> createMockWorkoutList(
+            List<Profile> profileList,
+            List<List<WorkoutExercise>> workoutExerciseList,
+            List<Set<Tag>> tagList
+    ) throws Exception {
+        if (profileList.size() != workoutExerciseList.size() && workoutExerciseList.size() != tagList.size()) {
+            throw new Exception("Collections are not of the same size.");
+        }
+
+        List<Workout> result = new ArrayList<>();
+
+        for (int i = 0; i < profileList.size(); i++) {
+            Profile profile = profileList.get(i);
+            List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
+            Set<Tag> tags = tagList.get(i);
+            Workout mockWorkout = createMockWorkout((long) i, profile, workoutExercises, tags);
+            result.add(mockWorkout);
+        }
+
+        return result;
     }
 
     public static WorkoutCreateRequest createCreateRequest() {
@@ -46,11 +95,54 @@ public class WorkoutHelper {
         Assertions.assertNotNull(response.id());
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(DEFAULT_VALUE, response.name());
+        Assertions.assertTrue(response.tagResponseList().isEmpty());
     }
 
-    public static void assertWorkoutDetailResponse(WorkoutDetailResponse workout) {
-        Assertions.assertNotNull(workout);
-        Assertions.assertNotNull(workout.id());
-        Assertions.assertNotNull(workout.authorName());
+    public static void assertWorkoutDetailResponse_get() {
+
+    }
+
+    public static void assertWorkoutDetailResponse_create(
+            WorkoutCreateRequest request,
+            String authorName,
+            WorkoutDetailResponse response
+    ) {
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.id());
+        Assertions.assertNotNull(response.authorName());
+        Assertions.assertEquals(authorName, response.authorName());
+        Assertions.assertNotNull(response.name());
+        Assertions.assertEquals(request.name(), response.name());
+        Assertions.assertNull(response.levelValue());
+        Assertions.assertNull(response.description());
+        Assertions.assertTrue(response.tagResponseList().isEmpty());
+        Assertions.assertTrue(response.workoutExerciseSimpleResponseList().isEmpty());
+    }
+
+    public static void assertWorkoutDetailResponse_update(
+            WorkoutUpdateRequest request,
+            String authorName,
+            WorkoutDetailResponse response
+    ) {
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.id());
+        Assertions.assertNotNull(response.authorName());
+        Assertions.assertEquals(authorName, response.authorName());
+        Assertions.assertNotNull(response.name());
+        Assertions.assertEquals(request.name(), response.name());
+        Assertions.assertNotNull(response.levelValue());
+        Assertions.assertNotNull(response.description());
+
+        List<TagResponse> tagResponseList = response.tagResponseList();
+        Assertions.assertFalse(tagResponseList.isEmpty());
+        Set<String> tagResponseListNames = tagResponseList.stream()
+                .map(tagResponse -> tagResponse.name().toLowerCase())
+                .collect(Collectors.toSet());
+        Set<String> tagNames = request.tagNames().stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+        Assertions.assertEquals(tagNames, tagResponseListNames);
+
+        Assertions.assertTrue(response.workoutExerciseSimpleResponseList().isEmpty());
     }
 }

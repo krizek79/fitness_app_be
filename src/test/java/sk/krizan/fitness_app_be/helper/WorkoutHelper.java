@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_UPDATE_VALUE;
 import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
@@ -33,13 +35,11 @@ public class WorkoutHelper {
     }
 
     public static Workout createMockWorkout(
-            Long id,
             Profile profile,
             List<WorkoutExercise> workoutExerciseList,
             Set<Tag> tagList
     ) {
         Workout workout = Workout.builder()
-                .id(1L)
                 .author(profile)
                 .name(DEFAULT_VALUE)
                 .tags(tagList)
@@ -68,7 +68,7 @@ public class WorkoutHelper {
             Profile profile = profileList.get(i);
             List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
             Set<Tag> tags = tagList.get(i);
-            Workout mockWorkout = createMockWorkout((long) i, profile, workoutExercises, tags);
+            Workout mockWorkout = createMockWorkout(profile, workoutExercises, tags);
             result.add(mockWorkout);
         }
 
@@ -81,7 +81,7 @@ public class WorkoutHelper {
                 .build();
     }
 
-    public static WorkoutUpdateRequest createUpdateRequest(Long id) {
+    public static WorkoutUpdateRequest createUpdateRequest() {
         return WorkoutUpdateRequest.builder()
                 .name(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
@@ -144,5 +144,10 @@ public class WorkoutHelper {
         Assertions.assertEquals(tagNames, tagResponseListNames);
 
         Assertions.assertTrue(response.workoutExerciseSimpleResponseList().isEmpty());
+    }
+
+    public static void assertDelete(boolean exists, Workout savedMockWorkout, Long deletedWorkoutId) {
+        assertFalse(exists);
+        assertEquals(savedMockWorkout.getId(), deletedWorkoutId);
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
+import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.mapper.ExerciseMapper;
 import sk.krizan.fitness_app_be.service.api.ExerciseService;
 
@@ -22,9 +24,15 @@ public class ExerciseController {
 
     private final ExerciseService exerciseService;
 
+    @PostMapping("filter")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public PageResponse<ExerciseResponse> filterExercises(@Valid @RequestBody ExerciseFilterRequest request) {
+        return exerciseService.filterExercises(request);
+    }
+
     @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ExerciseResponse getExerciseByUd(@PathVariable Long id) {
+    public ExerciseResponse getExerciseById(@PathVariable Long id) {
         return ExerciseMapper.entityToResponse(exerciseService.getExerciseById(id));
     }
 

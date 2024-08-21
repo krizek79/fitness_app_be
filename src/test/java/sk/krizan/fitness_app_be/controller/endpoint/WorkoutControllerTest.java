@@ -25,7 +25,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.mockito.Mockito.when;
+import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
+@Transactional
 @SpringBootTest
 class WorkoutControllerTest {
 
@@ -59,7 +61,6 @@ class WorkoutControllerTest {
     }
 
     @Test
-    @Transactional
     void createWorkout() {
         WorkoutCreateRequest createRequest = WorkoutHelper.createCreateRequest();
         WorkoutDetailResponse response = workoutController.createWorkout(createRequest);
@@ -67,9 +68,8 @@ class WorkoutControllerTest {
     }
 
     @Test
-    @Transactional
     void updateWorkout() {
-        Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>());
+        Workout mockWorkout = WorkoutHelper.createMockWorkout(DEFAULT_VALUE, mockProfile, new ArrayList<>(), new HashSet<>());
         Workout savedMockWorkout = workoutRepository.save(mockWorkout);
         WorkoutUpdateRequest updateRequest = WorkoutHelper.createUpdateRequest();
 
@@ -79,9 +79,8 @@ class WorkoutControllerTest {
     }
 
     @Test
-    @Transactional
     void deleteWorkout() {
-        Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>());
+        Workout mockWorkout = WorkoutHelper.createMockWorkout(DEFAULT_VALUE, mockProfile, new ArrayList<>(), new HashSet<>());
         Workout savedMockWorkout = workoutRepository.save(mockWorkout);
 
         Long deletedWorkoutId = workoutController.deleteWorkout(savedMockWorkout.getId());

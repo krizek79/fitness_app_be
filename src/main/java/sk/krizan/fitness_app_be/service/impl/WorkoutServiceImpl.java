@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
 
+    private final TagService tagService;
     private final UserService userService;
     private final EnumService enumService;
-    private final TagService tagService;
 
     private final WorkoutRepository workoutRepository;
 
@@ -64,7 +64,6 @@ public class WorkoutServiceImpl implements WorkoutService {
                 supportedSortFields
         );
         Page<Workout> page = workoutRepository.findAll(specification, pageable);
-
         List<WorkoutSimpleResponse> responseList = page.stream()
                 .map(WorkoutMapper::entityToSimpleResponse).toList();
 

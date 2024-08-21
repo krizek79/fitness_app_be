@@ -35,13 +35,14 @@ public class WorkoutHelper {
     }
 
     public static Workout createMockWorkout(
+            String name,
             Profile profile,
             List<WorkoutExercise> workoutExerciseList,
             Set<Tag> tagList
     ) {
         Workout workout = Workout.builder()
                 .author(profile)
-                .name(DEFAULT_VALUE)
+                .name(name)
                 .tags(tagList)
                 .workoutExerciseList(workoutExerciseList)
                 .build();
@@ -68,7 +69,7 @@ public class WorkoutHelper {
             Profile profile = profileList.get(i);
             List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
             Set<Tag> tags = tagList.get(i);
-            Workout mockWorkout = createMockWorkout(profile, workoutExercises, tags);
+            Workout mockWorkout = createMockWorkout(DEFAULT_VALUE, profile, workoutExercises, tags);
             result.add(mockWorkout);
         }
 

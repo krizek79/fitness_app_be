@@ -7,7 +7,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record WorkoutFilterRequest(
+public record ExerciseFilterRequest(
         @NotNull
         Integer page,
         @NotNull
@@ -18,7 +18,6 @@ public record WorkoutFilterRequest(
         @Pattern(regexp = "ASC|DESC|asc|desc")
         String sortDirection,
         String name,
-        String levelKey,
-        List<String> tagNameList
+        List<String> muscleGroupKeyList
 ) {
 }

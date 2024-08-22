@@ -6,14 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
+import sk.krizan.fitness_app_be.helper.DefaultValues;
 import sk.krizan.fitness_app_be.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.helper.SecurityHelper;
 import sk.krizan.fitness_app_be.helper.UserHelper;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.User;
+import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.ExerciseRepository;
 
@@ -56,10 +59,18 @@ public class ExerciseControllerTest {
 
     @Test
     void getExerciseById() {
+        Exercise exercise = originalExerciseList.get(0);
+        ExerciseResponse response = exerciseController.getExerciseById(exercise.getId());
+        ExerciseHelper.assertExerciseResponse_get(exercise, response);
     }
 
     @Test
     void createExercise() {
+        ExerciseCreateRequest request = ExerciseHelper.createCreateRequest(
+                DefaultValues.DEFAULT_VALUE,
+                Set.of(MuscleGroup.FULL_BODY.name()));
+        ExerciseResponse response = exerciseController.createExercise(request);
+        ExerciseHelper.assertExerciseResponse_create(request, response);
     }
 
     @Test

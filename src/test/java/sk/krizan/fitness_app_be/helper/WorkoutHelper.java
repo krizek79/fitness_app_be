@@ -25,9 +25,9 @@ import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
 public class WorkoutHelper {
 
-    public static WorkoutFilterRequest createFilterRequest(Integer size, String sortBy, String sortDirection) {
+    public static WorkoutFilterRequest createFilterRequest(Integer page, Integer size, String sortBy, String sortDirection) {
         return WorkoutFilterRequest.builder()
-                .page(0)
+                .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)

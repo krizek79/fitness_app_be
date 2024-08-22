@@ -74,16 +74,41 @@ public class ExerciseHelper {
         assertEquals(savedExercise.getId(), deletedExerciseId);
     }
 
-    public static void assertFilter(List<Exercise> exerciseList, ExerciseFilterRequest request, PageResponse<ExerciseResponse> response) {
+    public static void assertFilter(
+            List<Exercise> exerciseList,
+            ExerciseFilterRequest request,
+            PageResponse<ExerciseResponse> response
+    ) {
         Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.pageNumber());
+        Assertions.assertNotNull(response.pageSize());
+        Assertions.assertNotNull(response.totalElements());
+        Assertions.assertNotNull(response.totalPages());
+        Assertions.assertNotNull(response.results());
+        Assertions.assertFalse(response.results().isEmpty());
+        Assertions.assertEquals(request.page(), response.pageNumber());
+        Assertions.assertEquals(request.size(), response.results().size());
     }
 
     public static List<Exercise> createOriginalExercises() {
         Exercise benchPress = ExerciseHelper.createMockExercise("Bench press", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         Exercise pushUps = ExerciseHelper.createMockExercise("Push ups", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         Exercise pullUps = ExerciseHelper.createMockExercise("Pull ups", Set.of(MuscleGroup.BACK, MuscleGroup.BICEPS));
+        Exercise bicepsCurls = ExerciseHelper.createMockExercise("Biceps curls", Set.of(MuscleGroup.BICEPS));
         Exercise squats = ExerciseHelper.createMockExercise("Squats", Set.of(MuscleGroup.LEGS));
 
-        return List.of(benchPress, pushUps, pullUps, squats);
+        return List.of(benchPress, pushUps, pullUps, bicepsCurls, squats);
+    }
+
+    public static void assertExerciseResponse_get(Exercise exercise, ExerciseResponse response) {
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.id());
+        Assertions.assertEquals(exercise.getId(), response.id());
+        Assertions.assertNotNull(response.name());
+        Assertions.assertEquals(exercise.getName(), response.name());
+        Assertions.assertNotNull(response.muscleGroupValues());
+        List<String> requestMuscleGroupValueList = exercise.getMuscleGroups().stream()
+                .map(MuscleGroup::getValue).toList();
+        Assertions.assertTrue(response.muscleGroupValues().containsAll(requestMuscleGroupValueList));
     }
 }

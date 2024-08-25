@@ -1,7 +1,11 @@
 package sk.krizan.fitness_app_be.controller.endpoint;
 
+import org.apache.logging.log4j.util.TriConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
@@ -22,6 +26,7 @@ import sk.krizan.fitness_app_be.repository.ExerciseRepository;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Transactional
 @SpringBootTest
@@ -44,17 +49,22 @@ public class ExerciseControllerTest {
         originalExerciseList = exerciseRepository.saveAll(originalExerciseList);
     }
 
-    @Test
-    void filterExercises() {
-        ExerciseFilterRequest request = ExerciseHelper.createFilterRequest(
-                0,
-                2,
-                Exercise.Fields.id,
-                Sort.Direction.DESC.name(),
-                null,
-                null);
+    static Stream<Arguments> filterExercisesMethodSource() {
+        return Stream.of(
+                Arguments.of(
+                        ExerciseHelper.createFilterRequest(0, 2, Exercise.Fields.id, Sort.Direction.DESC.name(), null, null),
+                        (TriConsumer<List<Exercise>, ExerciseFilterRequest, PageResponse<ExerciseResponse>>) ExerciseHelper::assertFilter)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("filterExercisesMethodSource")
+    void filterExercises(
+            ExerciseFilterRequest request,
+            TriConsumer<List<Exercise>, ExerciseFilterRequest, PageResponse<ExerciseResponse>> assertion
+    ) {
         PageResponse<ExerciseResponse> response = exerciseController.filterExercises(request);
-        ExerciseHelper.assertFilter(originalExerciseList, request, response);
+        assertion.accept(originalExerciseList, request, response);
     }
 
     @Test

@@ -52,7 +52,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         );
         Page<Exercise> page = exerciseRepository.findAll(specification, pageable);
         List<ExerciseResponse> responseList = page.stream()
-                .map(ExerciseMapper::entityToResponse).toList();
+                .map(ExerciseMapper::entityToResponse).collect(Collectors.toList());
 
         return PageResponse.<ExerciseResponse>builder()
                 .pageNumber(page.getNumber())

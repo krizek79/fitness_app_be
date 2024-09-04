@@ -11,8 +11,11 @@ import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,7 +35,7 @@ public class ExerciseHelper {
             @NotNull String sortBy,
             @NotNull String sortDirection,
             String name,
-            List<String> muscleGroupList
+            List<MuscleGroup> muscleGroupList
     ) {
         return ExerciseFilterRequest.builder()
                 .page(page)
@@ -40,7 +43,10 @@ public class ExerciseHelper {
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
                 .name(name)
-                .muscleGroupKeyList(muscleGroupList)
+                .muscleGroupKeyList(
+                        muscleGroupList != null
+                                ? muscleGroupList.stream().map(MuscleGroup::getKey).collect(Collectors.toList())
+                                : new ArrayList<>())
                 .build();
     }
 
@@ -88,8 +94,43 @@ public class ExerciseHelper {
         Assertions.assertFalse(response.results().isEmpty());
         Assertions.assertEquals(request.page(), response.pageNumber());
         Assertions.assertEquals(request.size(), response.results().size());
+
+        List<ExerciseResponse> results = response.results();
+        results.sort(Comparator.comparingLong(ExerciseResponse::id));
+        exerciseList.sort(Comparator.comparingLong(Exercise::getId));
+        for (int i = 0; i < results.size(); i++) {
+            ExerciseResponse exerciseResponse = results.get(i);
+            Exercise exercise = exerciseList.get(i);
+            assertExerciseResponse(exerciseResponse, exercise);
+        }
     }
 
+    private static void assertExerciseResponse(ExerciseResponse exerciseResponse, Exercise exercise) {
+        Assertions.assertNotNull(exerciseResponse);
+        Assertions.assertNotNull(exerciseResponse.id());
+        Assertions.assertEquals(exercise.getId(), exerciseResponse.id());
+        Assertions.assertNotNull(exerciseResponse.name());
+        Assertions.assertEquals(exercise.getName(), exerciseResponse.name());
+        Assertions.assertNotNull(exerciseResponse.muscleGroupValues());
+        Assertions.assertFalse(exerciseResponse.muscleGroupValues().isEmpty());
+        Assertions.assertEquals(exercise.getMuscleGroups().size(), exerciseResponse.muscleGroupValues().size());
+        boolean containsAllMuscleGroupValues = exerciseResponse.muscleGroupValues().containsAll(
+                exercise.getMuscleGroups().stream().map(MuscleGroup::getValue).toList());
+        Assertions.assertTrue(containsAllMuscleGroupValues);
+    }
+
+    /**
+     * Contains:
+     * <ul>
+     * <li>name: 'Bench press', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
+     * <li>name: 'Push ups', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
+     * <li>name: 'Pull ups', muscle groups: [BACK, BICEPS]</li>
+     * <li>name: 'Biceps curls', muscle groups: [BICEPS]</li>
+     * <li>name: 'Squats', muscle groups: [LEGS]</li>
+     * </ul>
+     * <br>
+     * @return List of sample exercises
+     */
     public static List<Exercise> createOriginalExercises() {
         Exercise benchPress = ExerciseHelper.createMockExercise("Bench press", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         Exercise pushUps = ExerciseHelper.createMockExercise("Push ups", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));

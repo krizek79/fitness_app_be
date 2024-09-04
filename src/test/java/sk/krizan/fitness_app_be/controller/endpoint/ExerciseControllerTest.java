@@ -26,6 +26,7 @@ import sk.krizan.fitness_app_be.repository.ExerciseRepository;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -38,21 +39,36 @@ public class ExerciseControllerTest {
     @Autowired
     private ExerciseRepository exerciseRepository;
 
-    private List<Exercise> originalExerciseList;
-
     @BeforeEach
     void setUp() {
         User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
         SecurityHelper.setAuthentication(mockUser);
-
-        originalExerciseList = ExerciseHelper.createOriginalExercises();
-        originalExerciseList = exerciseRepository.saveAll(originalExerciseList);
     }
 
     static Stream<Arguments> filterExercisesMethodSource() {
+        List<Exercise> originalExerciseList = ExerciseHelper.createOriginalExercises();
+
+        List<Exercise> exerciseListByName = originalExerciseList.stream()
+                .filter(exercise -> exercise.getName().equals("Bench press"))
+                .collect(Collectors.toList());
+
+        List<MuscleGroup> muscleGroupList = List.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS);
+        List<Exercise> exerciseListByMuscleGroupList = originalExerciseList.stream()
+                .filter(exercise -> exercise.getMuscleGroups().containsAll(muscleGroupList))
+                .collect(Collectors.toList());
+
         return Stream.of(
                 Arguments.of(
-                        ExerciseHelper.createFilterRequest(0, 2, Exercise.Fields.id, Sort.Direction.DESC.name(), null, null),
+                        originalExerciseList,
+                        ExerciseHelper.createFilterRequest(0, originalExerciseList.size(), Exercise.Fields.id, Sort.Direction.DESC.name(), null, null),
+                        (TriConsumer<List<Exercise>, ExerciseFilterRequest, PageResponse<ExerciseResponse>>) ExerciseHelper::assertFilter),
+                Arguments.of(
+                        exerciseListByName,
+                        ExerciseHelper.createFilterRequest(0, exerciseListByName.size(), Exercise.Fields.id, Sort.Direction.DESC.name(), "Bench press", null),
+                        (TriConsumer<List<Exercise>, ExerciseFilterRequest, PageResponse<ExerciseResponse>>) ExerciseHelper::assertFilter),
+                Arguments.of(
+                        exerciseListByMuscleGroupList,
+                        ExerciseHelper.createFilterRequest(0, exerciseListByMuscleGroupList.size(), Exercise.Fields.id, Sort.Direction.DESC.name(), null, muscleGroupList),
                         (TriConsumer<List<Exercise>, ExerciseFilterRequest, PageResponse<ExerciseResponse>>) ExerciseHelper::assertFilter)
         );
     }
@@ -60,17 +76,22 @@ public class ExerciseControllerTest {
     @ParameterizedTest
     @MethodSource("filterExercisesMethodSource")
     void filterExercises(
+            List<Exercise> expectedExerciseList,
             ExerciseFilterRequest request,
             TriConsumer<List<Exercise>, ExerciseFilterRequest, PageResponse<ExerciseResponse>> assertion
     ) {
+        List<Exercise> savedExpectedExerciseList = exerciseRepository.saveAll(expectedExerciseList);
         PageResponse<ExerciseResponse> response = exerciseController.filterExercises(request);
-        assertion.accept(originalExerciseList, request, response);
+        assertion.accept(savedExpectedExerciseList, request, response);
     }
 
     @Test
     void getExerciseById() {
-        Exercise exercise = originalExerciseList.get(0);
+        Exercise exercise = ExerciseHelper.createMockExercise("Bench press", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
+        exercise = exerciseRepository.save(exercise);
+
         ExerciseResponse response = exerciseController.getExerciseById(exercise.getId());
+
         ExerciseHelper.assertExerciseResponse_get(exercise, response);
     }
 
@@ -85,7 +106,8 @@ public class ExerciseControllerTest {
 
     @Test
     void deleteExercise() {
-        Exercise exercise = originalExerciseList.get(0);
+        Exercise exercise = ExerciseHelper.createMockExercise("Bench press", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
+        exercise = exerciseRepository.save(exercise);
 
         Long deletedExerciseId = exerciseController.deleteExercise(exercise.getId());
         boolean exists = exerciseRepository.existsById(deletedExerciseId);

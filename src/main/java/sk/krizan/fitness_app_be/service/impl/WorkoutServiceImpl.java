@@ -65,7 +65,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         );
         Page<Workout> page = workoutRepository.findAll(specification, pageable);
         List<WorkoutSimpleResponse> responseList = page.stream()
-                .map(WorkoutMapper::entityToSimpleResponse).toList();
+                .map(WorkoutMapper::entityToSimpleResponse).collect(Collectors.toList());
 
         return PageResponse.<WorkoutSimpleResponse>builder()
                 .pageNumber(page.getNumber())

@@ -1,7 +1,5 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +17,10 @@ import sk.krizan.fitness_app_be.repository.TagRepository;
 import sk.krizan.fitness_app_be.service.api.TagService;
 import sk.krizan.fitness_app_be.specification.TagSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +49,7 @@ public class TagServiceImpl implements TagService {
 
         Page<Tag> page = tagRepository.findAll(specification, pageable);
         List<TagResponse> responseList = page.stream()
-            .map(TagMapper::entityToResponse).toList();
+            .map(TagMapper::entityToResponse).collect(Collectors.toList());
 
         return PageResponse.<TagResponse>builder()
             .pageNumber(page.getNumber())

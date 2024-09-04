@@ -17,6 +17,8 @@ import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.enums.Role;
+import sk.krizan.fitness_app_be.repository.ProfileRepository;
+import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
@@ -37,6 +39,12 @@ class WorkoutControllerTest {
     @Autowired
     private WorkoutRepository workoutRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @MockBean
     private UserService userService;
 
@@ -45,7 +53,10 @@ class WorkoutControllerTest {
     @BeforeEach
     void setUp() {
         User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        mockUser = userRepository.save(mockUser);
+
         mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        mockProfile = profileRepository.save(mockProfile);
         mockUser.setProfile(mockProfile);
 
         SecurityHelper.setAuthentication(mockUser);

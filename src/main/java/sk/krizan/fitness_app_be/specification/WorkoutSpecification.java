@@ -1,11 +1,9 @@
 package sk.krizan.fitness_app_be.specification;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.util.PredicateUtils;
 
@@ -31,7 +29,11 @@ public class WorkoutSpecification {
                 predicate = criteriaBuilder.and(predicate, levelPredicate);
             }
 
-            // Filter by tags
+            if (request.tagNameList() != null && !request.tagNameList().isEmpty()) {
+                Join<Workout, Tag> tagJoin = root.join(Workout.Fields.tags);
+                Predicate tagPredicate = tagJoin.get(Tag.Fields.name).in(request.tagNameList());
+                predicate = criteriaBuilder.and(predicate, tagPredicate);
+            }
 
             return predicate;
         };

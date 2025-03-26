@@ -1,8 +1,10 @@
 package sk.krizan.fitness_app_be.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum MuscleGroup implements BaseEnum {
 
     LEGS("LEGS", "Legs"),
@@ -17,9 +19,4 @@ public enum MuscleGroup implements BaseEnum {
 
     private final String key;
     private final String value;
-
-    MuscleGroup(String key, String value) {
-        this.key = key;
-        this.value = value;
-    }
 }

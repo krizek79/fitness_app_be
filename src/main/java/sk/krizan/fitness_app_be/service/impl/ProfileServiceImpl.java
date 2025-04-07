@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
@@ -32,17 +33,18 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile getProfileById(Long id) {
-        return profileRepository.findById(id).orElseThrow(
+        return profileRepository.findByIdAndDeletedFalse(id).orElseThrow(
             () -> new NotFoundException(ERROR_WITH_ID_NOT_FOUND.formatted(id)));
     }
 
     @Override
     public Profile getProfileByName(String name) {
-        return profileRepository.findByName(name).orElseThrow(
+        return profileRepository.findByNameAndDeletedFalse(name).orElseThrow(
             () -> new NotFoundException(ERROR_WITH_NAME_NOT_FOUND.formatted(name)));
     }
 
     @Override
+    @Transactional
     public Profile createProfile(Long userId) {
         User user = userService.getUserById(userId);
         if (user.getProfile() != null) {
@@ -62,11 +64,12 @@ public class ProfileServiceImpl implements ProfileService {
         User currentUser = userService.getCurrentUser();
         Profile profile = getProfileById(id);
 
-        if (profile.getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
+        if (profile.getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        profileRepository.delete(profile);
+        profile.setDeleted(true);
+        profileRepository.save(profile);
         return profile.getId();
     }
 
@@ -74,7 +77,7 @@ public class ProfileServiceImpl implements ProfileService {
         String name;
         do {
             name = faker.name().username();
-        } while (profileRepository.existsByName(name));
+        } while (profileRepository.existsByNameAndDeletedFalse(name));
 
         return name;
     }

@@ -14,7 +14,7 @@ public class SecurityHelper {
                 new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
                         "",
-                        user.getRoles().stream()
+                        user.getRoleSet().stream()
                                 .map(role -> new SimpleGrantedAuthority(role.name()))
                                 .collect(Collectors.toSet())));
     }

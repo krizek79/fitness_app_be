@@ -11,7 +11,6 @@ CREATE TABLE app_user (
 );
 
 CREATE TABLE user_role (
-    user_id BIGINT NOT NULL,
-    role VARCHAR(255) NOT NULL,
-    CONSTRAINT fk_user_role FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE
+    user_id BIGINT NOT NULL REFERENCES app_user (id) ON DELETE CASCADE,
+    role VARCHAR(255) NOT NULL
 );

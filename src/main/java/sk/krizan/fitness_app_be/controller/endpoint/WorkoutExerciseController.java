@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
-import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseDetailResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutExerciseMapper;
 import sk.krizan.fitness_app_be.service.api.WorkoutExerciseService;
 
@@ -26,27 +26,27 @@ public class WorkoutExerciseController {
 
     @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutExerciseDetailResponse getWorkoutExerciseById(@PathVariable Long id) {
-        return WorkoutExerciseMapper.entityToDetailResponse(
+    public WorkoutExerciseResponse getWorkoutExerciseById(@PathVariable Long id) {
+        return WorkoutExerciseMapper.entityToResponse(
             workoutExerciseService.getWorkoutExerciseById(id));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutExerciseDetailResponse createWorkoutExercise(
+    public WorkoutExerciseResponse createWorkoutExercise(
         @Valid @RequestBody WorkoutExerciseCreateRequest request
     ) {
-        return WorkoutExerciseMapper.entityToDetailResponse(
+        return WorkoutExerciseMapper.entityToResponse(
             workoutExerciseService.createWorkoutExercise(request));
     }
 
     @PatchMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutExerciseDetailResponse updateWorkoutExercise(
+    public WorkoutExerciseResponse updateWorkoutExercise(
         @PathVariable Long id,
         @Valid @RequestBody WorkoutExerciseUpdateRequest request
     ) {
-        return WorkoutExerciseMapper.entityToDetailResponse(
+        return WorkoutExerciseMapper.entityToResponse(
             workoutExerciseService.updateWorkoutExercise(id, request));
     }
 

@@ -13,12 +13,12 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldNameConstants
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldNameConstants
 public class Tag {
 
     @Id

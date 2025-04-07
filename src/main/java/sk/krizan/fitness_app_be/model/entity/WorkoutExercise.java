@@ -12,17 +12,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.configuration.DurationConverter;
+import sk.krizan.fitness_app_be.configuration.attribute_converter.DurationConverter;
 
 import java.time.Duration;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldNameConstants
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldNameConstants
 public class WorkoutExercise {
 
     @Id

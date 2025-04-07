@@ -4,7 +4,6 @@ CREATE TABLE exercise (
 );
 
 CREATE TABLE exercise_muscle_group (
-    exercise_id BIGINT NOT NULL,
-    muscle_group VARCHAR(255) NOT NULL,
-    CONSTRAINT fk_exercise_muscle_group FOREIGN KEY (exercise_id) REFERENCES exercise (id) ON DELETE CASCADE
+    exercise_id BIGINT NOT NULL REFERENCES exercise (id) ON DELETE CASCADE,
+    muscle_group VARCHAR(255) NOT NULL
 );

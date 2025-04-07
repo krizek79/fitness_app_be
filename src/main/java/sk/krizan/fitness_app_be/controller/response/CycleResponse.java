@@ -11,6 +11,7 @@ public record CycleResponse(
         Long traineeId,
         String traineeName,
         Integer numberOfWeeks,
-        String description
+        String description,
+        String levelValue
 ) {
 }

@@ -21,6 +21,7 @@ import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Goal;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
+import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.GoalRepository;
@@ -71,13 +72,13 @@ class GoalControllerTest {
         SecurityHelper.setAuthentication(mockUser);
         when(userService.getCurrentUser()).thenReturn(mockUser);
 
-        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         mockCycle = cycleRepository.save(mockCycle);
     }
 
     @Test
     void filterGoals() {
-        Cycle mockCycle2 = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        Cycle mockCycle2 = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         mockCycle2 = cycleRepository.save(mockCycle2);
         List<Goal> originalList = GoalHelper.createMockGoalList(new ArrayList<>(List.of(mockCycle, mockCycle2)));
         List<Goal> savedGoalList = goalRepository.saveAll(originalList);

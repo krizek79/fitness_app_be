@@ -9,6 +9,7 @@ import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
+import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,12 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class CycleHelper {
 
-    public static Cycle createMockCycle(Profile author, Profile trainee) {
+    public static Cycle createMockCycle(Profile author, Profile trainee, Level level) {
         Cycle cycle = new Cycle();
         cycle.setAuthor(author);
         cycle.setTrainee(trainee);
         cycle.setName(UUID.randomUUID().toString());
         cycle.setDescription(DefaultValues.DEFAULT_VALUE);
+        cycle.setLevel(level);
         return cycle;
     }
 
@@ -36,10 +38,11 @@ public class CycleHelper {
                 .build();
     }
 
-    public static CycleUpdateRequest createUpdateRequest() {
+    public static CycleUpdateRequest createUpdateRequest(Level level) {
         return CycleUpdateRequest.builder()
                 .name(DefaultValues.DEFAULT_UPDATE_VALUE)
                 .description(DefaultValues.DEFAULT_UPDATE_VALUE)
+                .levelKey(level.getKey())
                 .build();
     }
 
@@ -52,6 +55,7 @@ public class CycleHelper {
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
         Assertions.assertEquals(cycle.getTrainee().getId(), response.traineeId());
         Assertions.assertEquals(cycle.getTrainee().getName(), response.traineeName());
+        Assertions.assertEquals(cycle.getLevel().getValue(), response.levelValue());
     }
 
     public static void assertCycleResponse_create(CycleCreateRequest request, Profile mockProfile, CycleResponse response) {
@@ -68,23 +72,19 @@ public class CycleHelper {
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNull(response.description());
+        Assertions.assertNull(response.levelValue());
     }
 
     public static void assertCycleResponse_update(CycleUpdateRequest request, Profile mockProfile, CycleResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertNotNull(response.authorId());
         Assertions.assertEquals(mockProfile.getId(), response.authorId());
-        Assertions.assertNotNull(response.authorName());
         Assertions.assertEquals(mockProfile.getName(), response.authorName());
-        Assertions.assertNotNull(response.traineeId());
         Assertions.assertEquals(mockProfile.getId(), response.traineeId());
-        Assertions.assertNotNull(response.traineeName());
         Assertions.assertEquals(mockProfile.getName(), response.traineeName());
-        Assertions.assertNotNull(response.name());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNotNull(response.description());
         Assertions.assertEquals(request.description(), response.description());
+        Assertions.assertEquals(Level.valueOf(request.levelKey()).getValue(), response.levelValue());
     }
 
     public static void assertDelete(boolean exists, Cycle cycle, Long deletedCycleId) {
@@ -103,10 +103,10 @@ public class CycleHelper {
      */
     public static List<Cycle> createMockCycleListForFilter(Profile profile1, Profile profile2) {
         return new ArrayList<>(List.of(
-                createMockCycle(profile1, profile1),
-                createMockCycle(profile1, profile2),
-                createMockCycle(profile2, profile1),
-                createMockCycle(profile2, profile2)
+                createMockCycle(profile1, profile1, Level.BEGINNER),
+                createMockCycle(profile1, profile2, Level.INTERMEDIATE),
+                createMockCycle(profile2, profile1, Level.INTERMEDIATE),
+                createMockCycle(profile2, profile2, Level.ADVANCED)
         ));
     }
 
@@ -117,7 +117,8 @@ public class CycleHelper {
             @NotNull String sortDirection,
             Long authorId,
             Long traineeId,
-            String name
+            String name,
+            String levelKey
     ) {
         return CycleFilterRequest.builder()
                 .page(page)
@@ -127,6 +128,7 @@ public class CycleHelper {
                 .authorId(authorId)
                 .traineeId(traineeId)
                 .name(name)
+                .levelKey(levelKey)
                 .build();
     }
 

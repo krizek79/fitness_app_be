@@ -25,6 +25,7 @@ import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Week;
 import sk.krizan.fitness_app_be.model.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.model.entity.Workout;
+import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
@@ -83,7 +84,7 @@ class WeekWorkoutControllerTest {
         SecurityHelper.setAuthentication(mockUser);
         when(userService.getCurrentUser()).thenReturn(mockUser);
 
-        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         mockCycle = cycleRepository.save(mockCycle);
     }
 

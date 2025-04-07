@@ -3,8 +3,6 @@ package sk.krizan.fitness_app_be.model.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +19,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,9 +54,6 @@ public class Workout {
 
     @OneToMany(mappedBy = "workout", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    private Level level;
 
     @Column(length = 1000)
     private String description;

@@ -18,11 +18,9 @@ import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
-import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutMapper;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
-import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.TagService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.service.api.WorkoutService;
@@ -40,18 +38,15 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private final TagService tagService;
     private final UserService userService;
-    private final EnumService enumService;
 
     private final WorkoutRepository workoutRepository;
 
     private static final String ERROR_NOT_FOUND = "Workout with id { %s } does not exist.";
 
-    //  TODO: test author name and level
     private static final List<String> supportedSortFields = List.of(
             Workout.Fields.id,
             Workout.Fields.name,
-            Workout.Fields.author + "." + Profile.Fields.name,
-            Workout.Fields.level
+            Workout.Fields.author + "." + Profile.Fields.name
     );
 
     @Override
@@ -100,7 +95,6 @@ public class WorkoutServiceImpl implements WorkoutService {
             throw new ForbiddenException();
         }
 
-        Level level = (Level) enumService.findEnumByKey(request.levelKey());
         Set<Tag> tags = new HashSet<>();
         if (request.tagNames() != null) {
             tags = request.tagNames().stream()
@@ -109,7 +103,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                     .collect(Collectors.toSet());
         }
 
-        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, level, tags));
+        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, tags));
     }
 
     @Override

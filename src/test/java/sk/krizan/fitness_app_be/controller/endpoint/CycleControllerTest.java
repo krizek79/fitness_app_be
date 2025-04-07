@@ -19,6 +19,7 @@ import sk.krizan.fitness_app_be.helper.CycleHelper;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
+import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
@@ -81,18 +82,19 @@ class CycleControllerTest {
         filterCycles_byAuthorId(originalList, profile1.getId());
         filterCycles_byTraineeId(originalList, profile2.getId());
         filterCycles_byName(originalList);
+        filterCycles_byLevelKey(originalList);
     }
 
     private void filterCycles_byAuthorId(List<Cycle> originalList, Long profileId) {
         List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(0), originalList.get(1)));
-        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), profileId, null, null);
+        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), profileId, null, null, null);
         PageResponse<CycleResponse> response = cycleController.filterCycles(request);
         CycleHelper.assertFilter(expectedList, request, response);
     }
 
     private void filterCycles_byTraineeId(List<Cycle> originalList, Long profileId) {
         List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(1), originalList.get(3)));
-        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, profileId, null);
+        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, profileId, null, null);
         PageResponse<CycleResponse> response = cycleController.filterCycles(request);
         CycleHelper.assertFilter(expectedList, request, response);
     }
@@ -100,14 +102,22 @@ class CycleControllerTest {
     private void filterCycles_byName(List<Cycle> originalList) {
         List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(2)));
         String name = expectedList.get(0).getName().substring(0, 3);
-        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, name);
+        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, name, null);
+        PageResponse<CycleResponse> response = cycleController.filterCycles(request);
+        CycleHelper.assertFilter(expectedList, request, response);
+    }
+
+    private void filterCycles_byLevelKey(List<Cycle> originalList) {
+        List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(3)));
+        String levelKey = expectedList.get(0).getLevel().getKey();
+        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, null, levelKey);
         PageResponse<CycleResponse> response = cycleController.filterCycles(request);
         CycleHelper.assertFilter(expectedList, request, response);
     }
 
     @Test
     void getCycleById() {
-        Cycle cycle = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        Cycle cycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         cycle = cycleRepository.save(cycle);
 
         CycleResponse response = cycleController.getCycleById(cycle.getId());
@@ -123,9 +133,9 @@ class CycleControllerTest {
 
     @Test
     void updateCycle() {
-        Cycle mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        Cycle mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.ADVANCED);
         Cycle savedMockCycle = cycleRepository.save(mockCycle);
-        CycleUpdateRequest updateRequest = CycleHelper.createUpdateRequest();
+        CycleUpdateRequest updateRequest = CycleHelper.createUpdateRequest(Level.INTERMEDIATE);
 
         CycleResponse response = cycleController.updateCycle(savedMockCycle.getId(), updateRequest);
 
@@ -134,7 +144,7 @@ class CycleControllerTest {
 
     @Test
     void deleteCycle() {
-        Cycle cycle = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        Cycle cycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.INTERMEDIATE);
         cycle = cycleRepository.save(cycle);
 
         Long deletedCycleId = cycleController.deleteCycle(cycle.getId());

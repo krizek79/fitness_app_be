@@ -9,7 +9,6 @@ import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
-import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.Set;
 
@@ -32,7 +31,6 @@ public class WorkoutMapper {
                 .tagResponseList(
                         workout.getTagSet().stream()
                                 .map(TagMapper::entityToResponse).toList())
-                .levelValue(workout.getLevel() == null ? null : workout.getLevel().getValue())
                 .description(workout.getDescription())
                 .build();
     }
@@ -40,12 +38,10 @@ public class WorkoutMapper {
     public static Workout updateRequestToEntity(
             WorkoutUpdateRequest request,
             Workout workout,
-            Level level,
             Set<Tag> tags
     ) {
         workout.setName(request.name());
         workout.setDescription(request.description());
-        workout.setLevel(level);
         workout.getTagSet().clear();
         workout.getTagSet().addAll(tags);
 

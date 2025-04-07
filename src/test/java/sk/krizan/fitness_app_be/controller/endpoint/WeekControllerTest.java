@@ -20,6 +20,7 @@ import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Week;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
+import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
@@ -69,13 +70,13 @@ class WeekControllerTest {
         SecurityHelper.setAuthentication(mockUser);
         when(userService.getCurrentUser()).thenReturn(mockUser);
 
-        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         mockCycle = cycleRepository.save(mockCycle);
     }
 
     @Test
     void filterWeeks() {
-        Cycle cycle1 = CycleHelper.createMockCycle(mockProfile, mockProfile);
+        Cycle cycle1 = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         cycle1 = cycleRepository.save(cycle1);
 
         Week week1 = WeekHelper.createMockWeek(mockCycle, 1);

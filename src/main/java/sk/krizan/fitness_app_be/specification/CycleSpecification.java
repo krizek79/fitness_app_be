@@ -6,9 +6,11 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
+import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
+import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.util.PredicateUtils;
 
 public class CycleSpecification {
@@ -36,6 +38,19 @@ public class CycleSpecification {
                         Cycle.Fields.name,
                         request.name());
                 predicate = criteriaBuilder.and(predicate, namePredicate);
+            }
+
+            if (request.levelKey() != null) {
+                Level level;
+                try {
+                    level = Level.valueOf(request.levelKey());
+                } catch (Exception e) {
+                    throw new IllegalOperationException("Invalid level key: " + request.levelKey());
+                }
+                Predicate levelPredicate = criteriaBuilder.equal(
+                        root.get(Cycle.Fields.level),
+                        level);
+                predicate = criteriaBuilder.and(predicate, levelPredicate);
             }
 
             return predicate;

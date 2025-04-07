@@ -16,10 +16,12 @@ import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
+import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.CycleMapper;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.service.api.CycleService;
+import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.specification.CycleSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class CycleServiceImpl implements CycleService {
 
     private final UserService userService;
+    private final EnumService enumService;
     private final CycleRepository cycleRepository;
 
     private final static String ERROR_CYCLE_NOT_FOUND = "Cycle with id { %s } does not exist.";
@@ -88,7 +91,9 @@ public class CycleServiceImpl implements CycleService {
             throw new ForbiddenException();
         }
 
-        return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle));
+        Level level = (Level) enumService.findEnumByKey(request.levelKey());
+
+        return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, level));
     }
 
     @Override

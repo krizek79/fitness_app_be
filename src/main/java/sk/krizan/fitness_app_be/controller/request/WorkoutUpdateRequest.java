@@ -10,8 +10,6 @@ import java.util.Set;
 public record WorkoutUpdateRequest(
         @NotEmpty
         String name,
-        @NotEmpty
-        String levelKey,
         @Size(max = 1000)
         String description,
         Set<String> tagNames

@@ -24,13 +24,6 @@ public class WorkoutSpecification {
                 predicate = criteriaBuilder.and(predicate, namePredicate);
             }
 
-            if (request.levelKey() != null) {
-                Predicate levelPredicate = criteriaBuilder.equal(
-                        root.get(Workout.Fields.level),
-                        request.levelKey());
-                predicate = criteriaBuilder.and(predicate, levelPredicate);
-            }
-
             // Filter by tags
 
             return predicate;

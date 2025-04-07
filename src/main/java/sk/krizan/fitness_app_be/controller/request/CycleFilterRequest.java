@@ -17,6 +17,7 @@ public record CycleFilterRequest(
         String sortDirection,
         Long authorId,
         Long traineeId,
-        String name
+        String name,
+        String levelKey
 ) {
 }

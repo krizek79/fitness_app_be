@@ -8,6 +8,7 @@ import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
+import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CycleMapper {
                 .name(cycle.getName())
                 .description(cycle.getDescription())
                 .numberOfWeeks(cycle.getWeekList() != null ? cycle.getWeekList().size() : 0)
+                .levelValue(cycle.getLevel() == null ? null : cycle.getLevel().getValue())
                 .build();
     }
 
@@ -37,9 +39,10 @@ public class CycleMapper {
         return cycle;
     }
 
-    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle) {
+    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle, Level level) {
         cycle.setName(request.name());
         cycle.setDescription(request.description());
+        cycle.setLevel(level);
         return cycle;
     }
 }

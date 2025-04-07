@@ -10,7 +10,6 @@ import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
-import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +82,6 @@ public class WorkoutHelper {
         return WorkoutUpdateRequest.builder()
                 .name(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
-                .levelKey(Level.ADVANCED.getKey())
                 .tagNames(Set.of(DEFAULT_UPDATE_VALUE))
                 .build();
     }
@@ -104,7 +102,6 @@ public class WorkoutHelper {
         Assertions.assertNotNull(response.id());
         Assertions.assertEquals(authorName, response.authorName());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNull(response.levelValue());
         Assertions.assertNull(response.description());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
     }
@@ -118,7 +115,6 @@ public class WorkoutHelper {
         Assertions.assertNotNull(response.id());
         Assertions.assertEquals(authorName, response.authorName());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNotNull(response.levelValue());
         Assertions.assertNotNull(response.description());
 
         List<TagResponse> tagResponseList = response.tagResponseList();

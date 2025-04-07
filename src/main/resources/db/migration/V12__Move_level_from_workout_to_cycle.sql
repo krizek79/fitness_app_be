@@ -1,0 +1,5 @@
+ALTER TABLE cycle
+ADD COLUMN level VARCHAR(255);
+
+ALTER TABLE workout
+DROP COLUMN level;

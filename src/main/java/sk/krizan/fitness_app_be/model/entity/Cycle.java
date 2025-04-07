@@ -2,6 +2,8 @@ package sk.krizan.fitness_app_be.model.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,9 @@ public class Cycle {
 
     @Size(max = 2000)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Level level;
 
     @OneToMany(mappedBy = Week.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Week> weekList = new ArrayList<>();

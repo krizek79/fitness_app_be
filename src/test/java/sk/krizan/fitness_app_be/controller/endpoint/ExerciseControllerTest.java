@@ -54,7 +54,7 @@ public class ExerciseControllerTest {
 
         List<MuscleGroup> muscleGroupList = List.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS);
         List<Exercise> exerciseListByMuscleGroupList = originalExerciseList.stream()
-                .filter(exercise -> exercise.getMuscleGroups().containsAll(muscleGroupList))
+                .filter(exercise -> exercise.getMuscleGroupSet().containsAll(muscleGroupList))
                 .collect(Collectors.toList());
 
         return Stream.of(

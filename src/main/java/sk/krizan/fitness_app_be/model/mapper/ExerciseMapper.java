@@ -19,7 +19,7 @@ public class ExerciseMapper {
             .id(exercise.getId())
             .name(exercise.getName())
             .muscleGroupValues(
-                exercise.getMuscleGroups().stream()
+                exercise.getMuscleGroupSet().stream()
                     .map(MuscleGroup::getValue)
                     .collect(Collectors.toList()))
             .build();
@@ -29,9 +29,9 @@ public class ExerciseMapper {
         ExerciseCreateRequest request,
         Set<MuscleGroup> muscleGroups
     ) {
-        return Exercise.builder()
-            .name(request.name())
-            .muscleGroups(muscleGroups)
-            .build();
+        Exercise exercise = new Exercise();
+        exercise.setName(request.name());
+        exercise.addToMuscleGroupSet(muscleGroups);
+        return exercise;
     }
 }

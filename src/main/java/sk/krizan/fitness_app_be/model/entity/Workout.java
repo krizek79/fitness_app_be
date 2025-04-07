@@ -14,6 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,12 +29,12 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldNameConstants
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldNameConstants
 public class Workout {
 
     @Id
@@ -42,6 +43,7 @@ public class Workout {
 
     private String name;
 
+    @NotNull
     @ManyToOne
     private Profile author;
 
@@ -51,14 +53,26 @@ public class Workout {
             joinColumns = @JoinColumn(name = "workout_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private Set<Tag> tags = new HashSet<>();
+    private final Set<Tag> tagSet = new HashSet<>();
 
     @OneToMany(mappedBy = "workout", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
+    private final List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Level level;
 
     @Column(length = 1000)
     private String description;
+
+    @NotNull
+    private Boolean deleted = false;
+
+    public void addToTagSet(Set<Tag> tagSet) {
+        this.getTagSet().addAll(tagSet);
+    }
+
+    public void addToWorkoutExerciseList(List<WorkoutExercise> workoutExerciseList) {
+        this.getWorkoutExerciseList().addAll(workoutExerciseList);
+        workoutExerciseList.forEach(workoutExercise -> workoutExercise.setWorkout(this));
+    }
 }

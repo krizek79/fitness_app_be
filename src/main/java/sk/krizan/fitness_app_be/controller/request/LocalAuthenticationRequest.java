@@ -9,6 +9,7 @@ public record LocalAuthenticationRequest(
     @NotEmpty
     @Email
     String email,
+    @NotEmpty
     String password
 ) {
 }

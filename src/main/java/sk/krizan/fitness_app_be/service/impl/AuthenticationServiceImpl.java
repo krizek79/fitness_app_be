@@ -57,10 +57,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String signUp(SignUpRequest request) {
-        Set<Role> roles = new HashSet<>();
-        roles.add(Role.USER);
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(Role.USER);
 
-        User user = userService.createUser(request, roles);
+        User user = userService.createUser(request, roleSet);
         profileService.createProfile(user.getId());
 
         return REGISTRATION_SUCCESSFUL;

@@ -21,12 +21,12 @@ import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldNameConstants
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldNameConstants
 public class Exercise {
 
     @Id
@@ -42,5 +42,9 @@ public class Exercise {
         joinColumns = @JoinColumn(name = "exercise_id")
     )
     @Column(name = "muscle_group")
-    private Set<MuscleGroup> muscleGroups = new HashSet<>();
+    private final Set<MuscleGroup> muscleGroupSet = new HashSet<>();
+
+    public void addToMuscleGroupSet(Set<MuscleGroup> muscleGroupSet) {
+        this.getMuscleGroupSet().addAll(muscleGroupSet);
+    }
 }

@@ -6,8 +6,8 @@ import lombok.Builder;
 
 @Builder
 public record WorkoutCreateRequest(
-    @NotEmpty
-    @Size(min = 1, max = 64)
-    String name
+        @NotEmpty
+        @Size(min = 1, max = 64)
+        String name
 ) {
 }

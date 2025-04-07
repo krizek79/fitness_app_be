@@ -13,7 +13,7 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.User;
@@ -46,15 +46,17 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private static final String ERROR_NOT_FOUND = "Workout with id { %s } does not exist.";
 
-    //  TODO: add author name and level
+    //  TODO: test author name and level
     private static final List<String> supportedSortFields = List.of(
             Workout.Fields.id,
-            Workout.Fields.name
+            Workout.Fields.name,
+            Workout.Fields.author + "." + Profile.Fields.name,
+            Workout.Fields.level
     );
 
     @Override
     @Transactional
-    public PageResponse<WorkoutSimpleResponse> filterWorkouts(WorkoutFilterRequest request) {
+    public PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request) {
         Specification<Workout> specification = WorkoutSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -64,10 +66,10 @@ public class WorkoutServiceImpl implements WorkoutService {
                 supportedSortFields
         );
         Page<Workout> page = workoutRepository.findAll(specification, pageable);
-        List<WorkoutSimpleResponse> responseList = page.stream()
-                .map(WorkoutMapper::entityToSimpleResponse).collect(Collectors.toList());
+        List<WorkoutResponse> responseList = page.stream()
+                .map(WorkoutMapper::entityToResponse).collect(Collectors.toList());
 
-        return PageResponse.<WorkoutSimpleResponse>builder()
+        return PageResponse.<WorkoutResponse>builder()
                 .pageNumber(page.getNumber())
                 .pageSize(page.getSize())
                 .totalElements(page.getTotalElements())
@@ -78,10 +80,11 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout getWorkoutById(Long id) {
-        return workoutRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return workoutRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
+    @Transactional
     public Workout createWorkout(WorkoutCreateRequest request) {
         Profile profile = userService.getCurrentUser().getProfile();
         return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile));
@@ -93,7 +96,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
@@ -114,11 +117,12 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        workoutRepository.delete(workout);
+        workout.setDeleted(true);
+        workoutRepository.save(workout);
         return workout.getId();
     }
 }

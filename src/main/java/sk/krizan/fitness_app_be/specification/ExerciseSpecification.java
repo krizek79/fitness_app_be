@@ -33,7 +33,7 @@ public class ExerciseSpecification {
                         .map(MuscleGroup::valueOf)
                         .toList();
 
-                SetJoin<Exercise, MuscleGroup> muscleGroupJoin = root.joinSet(Exercise.Fields.muscleGroups);
+                SetJoin<Exercise, MuscleGroup> muscleGroupJoin = root.joinSet(Exercise.Fields.muscleGroupSet);
 
                 query.groupBy(root.get(Exercise.Fields.id));
                 Predicate havingPredicate = criteriaBuilder.equal(

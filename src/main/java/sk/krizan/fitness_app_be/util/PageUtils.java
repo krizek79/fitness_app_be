@@ -23,11 +23,7 @@ public class PageUtils {
             throw new IllegalOperationException(ERROR_UNSUPPORTED_SORT_FIELD.formatted(sortBy));
         }
 
-        return PageRequest.of(
-            pageNumber,
-            pageSize,
-            Sort.by(
-                sortDirection.equalsIgnoreCase(DIR_ASC) ? Sort.Direction.ASC : Sort.Direction.DESC,
-                sortBy));
+        Sort sort = Sort.by(new Sort.Order(sortDirection.equalsIgnoreCase(DIR_ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy).with(Sort.NullHandling.NULLS_LAST));
+        return PageRequest.of(pageNumber, pageSize, sort);
     }
 }

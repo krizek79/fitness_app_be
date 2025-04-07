@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
@@ -62,7 +63,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(SignUpRequest request, Set<Role> roles) {
+    @Transactional
+    public User createUser(SignUpRequest request, Set<Role> roleSet) {
         Boolean existsByEmail = userRepository.existsByEmail(request.email());
         if (existsByEmail) {
             throw new IllegalOperationException(
@@ -70,7 +72,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(request.password());
-        User user = UserMapper.signUpRequestToEntity(request, roles, encodedPassword);
+        User user = UserMapper.signUpRequestToEntity(request, roleSet, encodedPassword);
         return userRepository.save(user);
     }
 }

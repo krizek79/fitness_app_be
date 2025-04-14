@@ -9,16 +9,15 @@ import java.util.Set;
 public class UserHelper {
 
     public static User createMockUser(String email, Set<Role> roles) {
-        return User.builder()
-                .id(1L)
-                .email(email)
-                .roles(roles)
-                .createdAt(Instant.now())
-                .active(true)
-                .credentialsNonExpired(true)
-                .enabled(true)
-                .locked(false)
-                .password("")
-                .build();
+        User user = new User();
+        user.setEmail(email);
+        user.addToRoleSet(roles);
+        user.setCreatedAt(Instant.now());
+        user.setActive(true);
+        user.setCredentialsNonExpired(true);
+        user.setEnabled(true);
+        user.setLocked(false);
+        user.setPassword("");
+        return user;
     }
 }

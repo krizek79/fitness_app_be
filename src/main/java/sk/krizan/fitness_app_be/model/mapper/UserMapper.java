@@ -18,26 +18,27 @@ public class UserMapper {
         return UserResponse.builder()
             .id(user.getId())
             .email(user.getEmail())
-            .roles(user.getRoles())
+            .roles(user.getRoleSet())
             .profileResponse(ProfileMapper.entityToResponse(user.getProfile()))
             .build();
     }
 
     public static User signUpRequestToEntity(
         SignUpRequest request,
-        Set<Role> roles,
+        Set<Role> roleSet,
         String encodedPassword
     ) {
-        return User.builder()
-            .email(request.email())
-            .password(encodedPassword)
-            .roles(roles)
-            .createdAt(Instant.now())
-            .updatedAt(Instant.now())
-            .active(true)
-            .enabled(true)
-            .locked(false)
-            .credentialsNonExpired(true)
-            .build();
+        User user = new User();
+        user.setEmail(request.email());
+        user.setPassword(encodedPassword);
+        user.addToRoleSet(roleSet);
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
+        user.setActive(true);
+        user.setEnabled(true);
+        user.setLocked(false);
+        user.setCredentialsNonExpired(true);
+
+        return user;
     }
 }

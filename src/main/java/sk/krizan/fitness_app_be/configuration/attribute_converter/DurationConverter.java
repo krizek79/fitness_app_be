@@ -1,11 +1,11 @@
-package sk.krizan.fitness_app_be.configuration;
+package sk.krizan.fitness_app_be.configuration.attribute_converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 import java.time.Duration;
 
-@Converter(autoApply = true)
+@Converter
 public class DurationConverter implements AttributeConverter<Duration, String> {
 
     @Override

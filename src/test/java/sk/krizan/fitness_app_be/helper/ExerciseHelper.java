@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class ExerciseHelper {
 
     public static Exercise createMockExercise(String name, Set<MuscleGroup> muscleGroups) {
-        return Exercise.builder()
-                .name(name)
-                .muscleGroups(muscleGroups)
-                .build();
+        Exercise exercise = new Exercise();
+        exercise.setName(name);
+        exercise.addToMuscleGroupSet(muscleGroups);
+        return exercise;
     }
 
     public static ExerciseFilterRequest createFilterRequest(
@@ -113,9 +113,9 @@ public class ExerciseHelper {
         Assertions.assertEquals(exercise.getName(), exerciseResponse.name());
         Assertions.assertNotNull(exerciseResponse.muscleGroupValues());
         Assertions.assertFalse(exerciseResponse.muscleGroupValues().isEmpty());
-        Assertions.assertEquals(exercise.getMuscleGroups().size(), exerciseResponse.muscleGroupValues().size());
+        Assertions.assertEquals(exercise.getMuscleGroupSet().size(), exerciseResponse.muscleGroupValues().size());
         boolean containsAllMuscleGroupValues = exerciseResponse.muscleGroupValues().containsAll(
-                exercise.getMuscleGroups().stream().map(MuscleGroup::getValue).toList());
+                exercise.getMuscleGroupSet().stream().map(MuscleGroup::getValue).toList());
         Assertions.assertTrue(containsAllMuscleGroupValues);
     }
 
@@ -148,7 +148,7 @@ public class ExerciseHelper {
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(exercise.getName(), response.name());
         Assertions.assertNotNull(response.muscleGroupValues());
-        List<String> requestMuscleGroupValueList = exercise.getMuscleGroups().stream()
+        List<String> requestMuscleGroupValueList = exercise.getMuscleGroupSet().stream()
                 .map(MuscleGroup::getValue).toList();
         Assertions.assertTrue(response.muscleGroupValues().containsAll(requestMuscleGroupValueList));
     }

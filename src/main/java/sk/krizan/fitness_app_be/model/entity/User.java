@@ -25,12 +25,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "app_user")
 public class User {
 
@@ -60,10 +60,14 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id")
     )
     @Column(name = "role")
-    private Set<Role> roles = new HashSet<>();
+    private final Set<Role> roleSet = new HashSet<>();
 
     private Boolean active;
     private Boolean locked;
     private Boolean enabled;
     private Boolean credentialsNonExpired;
+
+    public void addToRoleSet(Set<Role> roleSet) {
+        this.getRoleSet().addAll(roleSet);
+    }
 }

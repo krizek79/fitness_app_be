@@ -5,13 +5,11 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.TagResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutDetailResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
-import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,18 +33,16 @@ public class WorkoutHelper {
     }
 
     public static Workout createMockWorkout(
-            String name,
             Profile profile,
             List<WorkoutExercise> workoutExerciseList,
-            Set<Tag> tagList
+            Set<Tag> tagSet
     ) {
-        Workout workout = Workout.builder()
-                .author(profile)
-                .name(name)
-                .tags(tagList)
-                .workoutExerciseList(workoutExerciseList)
-                .build();
-        profile.getAuthoredWorkouts().add(workout);
+        Workout workout = new Workout();
+        workout.setName(DEFAULT_VALUE);
+        workout.addToTagSet(tagSet);
+        workout.addToWorkoutExerciseList(workoutExerciseList);
+
+        profile.addToAuthoredWorkoutList(List.of(workout));
         return workout;
     }
 
@@ -68,8 +64,8 @@ public class WorkoutHelper {
         for (int i = 0; i < profileList.size(); i++) {
             Profile profile = profileList.get(i);
             List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
-            Set<Tag> tags = tagList.get(i);
-            Workout mockWorkout = createMockWorkout(DEFAULT_VALUE, profile, workoutExercises, tags);
+            Set<Tag> tagSet = tagList.get(i);
+            Workout mockWorkout = createMockWorkout(profile, workoutExercises, tagSet);
             result.add(mockWorkout);
         }
 
@@ -86,52 +82,39 @@ public class WorkoutHelper {
         return WorkoutUpdateRequest.builder()
                 .name(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
-                .levelKey(Level.ADVANCED.getKey())
                 .tagNames(Set.of(DEFAULT_UPDATE_VALUE))
                 .build();
     }
 
-    public static void assertWorkoutSimpleResponse(WorkoutSimpleResponse response) {
+    public static void assertWorkoutResponse_get(Workout workout, WorkoutResponse response) {
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        Assertions.assertNotNull(response.name());
+        Assertions.assertEquals(workout.getId(), response.id());
         Assertions.assertEquals(DEFAULT_VALUE, response.name());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
     }
 
-    public static void assertWorkoutDetailResponse_get() {
-
-    }
-
-    public static void assertWorkoutDetailResponse_create(
+    public static void assertWorkoutResponse_create(
             WorkoutCreateRequest request,
             String authorName,
-            WorkoutDetailResponse response
+            WorkoutResponse response
     ) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertNotNull(response.authorName());
         Assertions.assertEquals(authorName, response.authorName());
-        Assertions.assertNotNull(response.name());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNull(response.levelValue());
         Assertions.assertNull(response.description());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
-        Assertions.assertTrue(response.workoutExerciseSimpleResponseList().isEmpty());
     }
 
-    public static void assertWorkoutDetailResponse_update(
+    public static void assertWorkoutResponse_update(
             WorkoutUpdateRequest request,
             String authorName,
-            WorkoutDetailResponse response
+            WorkoutResponse response
     ) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertNotNull(response.authorName());
         Assertions.assertEquals(authorName, response.authorName());
-        Assertions.assertNotNull(response.name());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNotNull(response.levelValue());
         Assertions.assertNotNull(response.description());
 
         List<TagResponse> tagResponseList = response.tagResponseList();
@@ -143,8 +126,6 @@ public class WorkoutHelper {
                 .map(String::toLowerCase)
                 .collect(Collectors.toSet());
         Assertions.assertEquals(tagNames, tagResponseListNames);
-
-        Assertions.assertTrue(response.workoutExerciseSimpleResponseList().isEmpty());
     }
 
     public static void assertDelete(boolean exists, Workout savedMockWorkout, Long deletedWorkoutId) {

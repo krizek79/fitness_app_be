@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record EnumResponse(
-    String key,
-    String value
+        String key,
+        String value
 ) {
 }

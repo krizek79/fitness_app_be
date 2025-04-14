@@ -13,16 +13,14 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutSimpleResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
-import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutMapper;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
-import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.TagService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.service.api.WorkoutService;
@@ -40,21 +38,20 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private final TagService tagService;
     private final UserService userService;
-    private final EnumService enumService;
 
     private final WorkoutRepository workoutRepository;
 
     private static final String ERROR_NOT_FOUND = "Workout with id { %s } does not exist.";
 
-    //  TODO: add author name and level
     private static final List<String> supportedSortFields = List.of(
             Workout.Fields.id,
-            Workout.Fields.name
+            Workout.Fields.name,
+            Workout.Fields.author + "." + Profile.Fields.name
     );
 
     @Override
     @Transactional
-    public PageResponse<WorkoutSimpleResponse> filterWorkouts(WorkoutFilterRequest request) {
+    public PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request) {
         Specification<Workout> specification = WorkoutSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -64,10 +61,10 @@ public class WorkoutServiceImpl implements WorkoutService {
                 supportedSortFields
         );
         Page<Workout> page = workoutRepository.findAll(specification, pageable);
-        List<WorkoutSimpleResponse> responseList = page.stream()
-                .map(WorkoutMapper::entityToSimpleResponse).collect(Collectors.toList());
+        List<WorkoutResponse> responseList = page.stream()
+                .map(WorkoutMapper::entityToResponse).collect(Collectors.toList());
 
-        return PageResponse.<WorkoutSimpleResponse>builder()
+        return PageResponse.<WorkoutResponse>builder()
                 .pageNumber(page.getNumber())
                 .pageSize(page.getSize())
                 .totalElements(page.getTotalElements())
@@ -78,10 +75,11 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout getWorkoutById(Long id) {
-        return workoutRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return workoutRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
+    @Transactional
     public Workout createWorkout(WorkoutCreateRequest request) {
         Profile profile = userService.getCurrentUser().getProfile();
         return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile));
@@ -93,11 +91,10 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        Level level = (Level) enumService.findEnumByKey(request.levelKey());
         Set<Tag> tags = new HashSet<>();
         if (request.tagNames() != null) {
             tags = request.tagNames().stream()
@@ -106,7 +103,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                     .collect(Collectors.toSet());
         }
 
-        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, level, tags));
+        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, tags));
     }
 
     @Override
@@ -114,11 +111,12 @@ public class WorkoutServiceImpl implements WorkoutService {
         User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
+        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        workoutRepository.delete(workout);
+        workout.setDeleted(true);
+        workoutRepository.save(workout);
         return workout.getId();
     }
 }

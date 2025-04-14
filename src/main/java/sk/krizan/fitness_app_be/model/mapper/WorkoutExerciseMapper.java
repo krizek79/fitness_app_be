@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
-import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseDetailResponse;
-import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseSimpleResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
@@ -31,22 +30,8 @@ public class WorkoutExerciseMapper {
                 .build();
     }
 
-    public static WorkoutExerciseDetailResponse entityToDetailResponse(WorkoutExercise workoutExercise) {
-        return WorkoutExerciseDetailResponse.builder()
-                .id(workoutExercise.getId())
-                .workoutId(workoutExercise.getWorkout().getId())
-                .exerciseName(workoutExercise.getExercise().getName())
-                .sets(workoutExercise.getSets())
-                .repetitions(workoutExercise.getRepetitions())
-                .restDuration(
-                        workoutExercise.getRestDuration() != null
-                                ? workoutExercise.getRestDuration().toString()
-                                : null)
-                .build();
-    }
-
-    public static WorkoutExerciseSimpleResponse entityToSimpleResponse(WorkoutExercise workoutExercise) {
-        return WorkoutExerciseSimpleResponse.builder()
+    public static WorkoutExerciseResponse entityToResponse(WorkoutExercise workoutExercise) {
+        return WorkoutExerciseResponse.builder()
                 .id(workoutExercise.getId())
                 .workoutId(workoutExercise.getWorkout().getId())
                 .exerciseName(workoutExercise.getExercise().getName())

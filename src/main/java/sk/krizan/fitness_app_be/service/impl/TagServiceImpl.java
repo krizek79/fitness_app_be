@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
@@ -32,11 +33,12 @@ public class TagServiceImpl implements TagService {
     private static final String ERROR_NOT_ALREADY_EXISTS = "Tag with name { %s } already exists.";
 
     private static final List<String> supportedSortFields = List.of(
-        "id",
-        "name"
+        Tag.Fields.id,
+        Tag.Fields.name
     );
 
     @Override
+    @Transactional
     public PageResponse<TagResponse> filterTags(TagFilterRequest request) {
         Specification<Tag> specification = TagSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
@@ -72,6 +74,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public Tag createTag(TagCreateRequest request) {
         if (tagRepository.existsByName(request.name().toLowerCase())) {
             throw new IllegalOperationException(

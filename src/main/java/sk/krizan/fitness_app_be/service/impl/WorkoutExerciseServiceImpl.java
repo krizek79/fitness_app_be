@@ -2,6 +2,7 @@ package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
@@ -32,11 +33,11 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
 
     @Override
     public WorkoutExercise getWorkoutExerciseById(Long id) {
-        return workoutExerciseRepository.findById(id).orElseThrow(
-            () -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return workoutExerciseRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
+    @Transactional
     public WorkoutExercise createWorkoutExercise(WorkoutExerciseCreateRequest request) {
         Workout workout = workoutService.getWorkoutById(request.workoutId());
         Exercise exercise = exerciseService.getExerciseById(request.exerciseId());
@@ -45,6 +46,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     }
 
     @Override
+    @Transactional
     public WorkoutExercise updateWorkoutExercise(Long id, WorkoutExerciseUpdateRequest request) {
         WorkoutExercise workoutExercise = getWorkoutExerciseById(id);
         return workoutExerciseRepository.save(
@@ -57,7 +59,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
         WorkoutExercise workoutExercise = getWorkoutExerciseById(id);
 
         if (workoutExercise.getWorkout().getAuthor().getUser() != currentUser
-            && !currentUser.getRoles().contains(Role.ADMIN)
+            && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
             throw new ForbiddenException();
         }

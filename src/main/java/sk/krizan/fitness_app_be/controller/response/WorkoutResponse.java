@@ -8,6 +8,7 @@ import java.util.List;
 public record WorkoutResponse(
         Long id,
         String name,
+        Long authorId,
         String authorName,
         List<TagResponse> tagResponseList,
         String description

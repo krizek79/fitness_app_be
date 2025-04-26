@@ -27,6 +27,7 @@ public class WorkoutMapper {
         return WorkoutResponse.builder()
                 .id(workout.getId())
                 .name(workout.getName())
+                .authorId(workout.getAuthor().getId())
                 .authorName(workout.getAuthor().getName())
                 .tagResponseList(
                         workout.getTagSet().stream()

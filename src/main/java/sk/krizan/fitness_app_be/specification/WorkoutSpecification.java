@@ -2,10 +2,12 @@ package sk.krizan.fitness_app_be.specification;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.util.PredicateUtils;
@@ -25,18 +27,16 @@ public class WorkoutSpecification {
                 predicate = criteriaBuilder.and(predicate, namePredicate);
             }
 
-            // Filter by tags
-            if (request.levelKey() != null) {
-                Predicate levelPredicate = criteriaBuilder.equal(
-                        root.get(Workout.Fields.level),
-                        request.levelKey());
-                predicate = criteriaBuilder.and(predicate, levelPredicate);
+            if (request.tagIdList() != null && !request.tagIdList().isEmpty()) {
+                Join<Workout, Tag> tagJoin = root.join(Workout.Fields.tagSet);
+                Predicate tagPredicate = tagJoin.get(Tag.Fields.id).in(request.tagIdList());
+                predicate = criteriaBuilder.and(predicate, tagPredicate);
             }
 
-            if (request.tagNameList() != null && !request.tagNameList().isEmpty()) {
-                Join<Workout, Tag> tagJoin = root.join(Workout.Fields.tags);
-                Predicate tagPredicate = tagJoin.get(Tag.Fields.name).in(request.tagNameList());
-                predicate = criteriaBuilder.and(predicate, tagPredicate);
+            if (request.authorId() != null) {
+                Join<Workout, Profile> profileJoin = root.join(Workout.Fields.author);
+                Predicate authorPredicate = criteriaBuilder.equal(profileJoin.get(Profile.Fields.id), request.authorId());
+                predicate = criteriaBuilder.and(predicate, authorPredicate);
             }
 
             return predicate;

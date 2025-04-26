@@ -18,6 +18,7 @@ public record WorkoutFilterRequest(
         @Pattern(regexp = "ASC|DESC|asc|desc")
         String sortDirection,
         String name,
-        List<String> tagNameList
+        List<Long> tagIdList,
+        Long authorId
 ) {
 }

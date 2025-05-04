@@ -7,6 +7,8 @@ import lombok.Builder;
 @Builder
 public record WeekUpdateRequest(
         @NotNull
+        Long id,
+        @NotNull
         @Min(1)
         Integer order
 ) {

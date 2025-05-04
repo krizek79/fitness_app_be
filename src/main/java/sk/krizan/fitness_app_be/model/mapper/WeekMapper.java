@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
+import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Week;
@@ -35,5 +36,11 @@ public class WeekMapper {
     public static Week updateRequestToEntity(WeekUpdateRequest request, Week week) {
         week.setOrder(request.order());
         return week;
+    }
+
+    public static SimpleListResponse<WeekResponse> entityListToSimpleListResponse(List<Week> weekList) {
+        return SimpleListResponse.<WeekResponse>builder()
+                .result(weekList.stream().map(WeekMapper::entityToResponse).toList())
+                .build();
     }
 }

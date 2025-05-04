@@ -101,7 +101,7 @@ class CycleControllerTest {
 
     private void filterCycles_byName(List<Cycle> originalList) {
         List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(2)));
-        String name = expectedList.get(0).getName().substring(0, 3);
+        String name = expectedList.get(0).getName().substring(0, 5);
         CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, name, null);
         PageResponse<CycleResponse> response = cycleController.filterCycles(request);
         CycleHelper.assertFilter(expectedList, request, response);

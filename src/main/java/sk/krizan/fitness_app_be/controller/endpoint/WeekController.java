@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sk.krizan.fitness_app_be.controller.request.WeekBatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
+import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekResponse;
 import sk.krizan.fitness_app_be.model.mapper.WeekMapper;
 import sk.krizan.fitness_app_be.service.api.WeekService;
@@ -44,13 +46,10 @@ public class WeekController {
         return WeekMapper.entityToResponse(weekService.createWeek(request));
     }
 
-    @PutMapping("{id}")
+    @PutMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekResponse updateWeek(
-            @PathVariable Long id,
-            @Valid @RequestBody WeekUpdateRequest request
-    ) {
-        return WeekMapper.entityToResponse(weekService.updateWeek(id, request));
+    public WeekResponse updateWeek(@Valid @RequestBody WeekUpdateRequest request) {
+        return WeekMapper.entityToResponse(weekService.updateWeek(request));
     }
 
     @DeleteMapping("{id}")
@@ -63,5 +62,11 @@ public class WeekController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WeekResponse triggerCompleted(@PathVariable Long id) {
         return WeekMapper.entityToResponse(weekService.triggerCompleted(id));
+    }
+
+    @PutMapping("batch-update")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public SimpleListResponse<WeekResponse> batchUpdateWeeks(@Valid @RequestBody WeekBatchUpdateRequest request) {
+        return WeekMapper.entityListToSimpleListResponse(weekService.batchUpdateWeeks(request));
     }
 }

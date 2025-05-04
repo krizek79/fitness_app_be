@@ -1,6 +1,7 @@
 package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,11 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.request.WeekBatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekResponse;
+import sk.krizan.fitness_app_be.event.EntityLifeCycleEventEnum;
+import sk.krizan.fitness_app_be.event.EntityReorderEvent;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Week;
@@ -35,11 +39,13 @@ public class WeekServiceImpl implements WeekService {
     private final UserService userService;
     private final CycleService cycleService;
     private final WeekRepository weekRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final static String ERROR_WEEK_NOT_FOUND = "Week with id { %s } does not exist.";
 
     private static final List<String> supportedSortFields = List.of(
-            Week.Fields.id
+            Week.Fields.id,
+            Week.Fields.order
     );
 
     @Override
@@ -75,20 +81,25 @@ public class WeekServiceImpl implements WeekService {
     @Transactional
     public Week createWeek(WeekCreateRequest request) {
         Cycle cycle = cycleService.getCycleById(request.cycleId());
-        Week week = WeekMapper.createRequestToEntity(request, cycle);
-        return weekRepository.save(week);
+        Week week = weekRepository.save(WeekMapper.createRequestToEntity(request, cycle));
+        applicationEventPublisher.publishEvent(new EntityReorderEvent(week, EntityLifeCycleEventEnum.CREATE));
+        return week;
     }
 
     @Override
     @Transactional
-    public Week updateWeek(Long id, WeekUpdateRequest request) {
-        Week week = getWeekById(id);
+    public Week updateWeek(WeekUpdateRequest request) {
+        Week week = getWeekById(request.id());
         User currentUser = userService.getCurrentUser();
+
         if (week.getCycle().getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        return weekRepository.save(WeekMapper.updateRequestToEntity(request, week));
+        int originalOrder = week.getOrder();
+        week = weekRepository.save(WeekMapper.updateRequestToEntity(request, week));
+        applicationEventPublisher.publishEvent(new EntityReorderEvent(week, EntityLifeCycleEventEnum.UPDATE, originalOrder));
+        return week;
     }
 
     @Override
@@ -105,6 +116,8 @@ public class WeekServiceImpl implements WeekService {
         }
 
         weekRepository.delete(week);
+        applicationEventPublisher.publishEvent(new EntityReorderEvent(week, EntityLifeCycleEventEnum.DELETE));
+
         return week.getId();
     }
 
@@ -123,5 +136,15 @@ public class WeekServiceImpl implements WeekService {
         }
         week.setCompleted(!week.getCompleted());
         return weekRepository.save(week);
+    }
+
+    @Override
+    @Transactional
+    public List<Week> batchUpdateWeeks(WeekBatchUpdateRequest batchRequest) {
+        List<Week> updatedWeeks = batchRequest.updateRequestList().stream()
+                .map(this::updateWeek)
+                .toList();
+
+        return weekRepository.saveAll(updatedWeeks);
     }
 }

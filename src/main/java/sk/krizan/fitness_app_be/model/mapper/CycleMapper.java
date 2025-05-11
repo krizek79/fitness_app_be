@@ -36,6 +36,7 @@ public class CycleMapper {
         cycle.setAuthor(currentProfile);
         cycle.setTrainee(currentProfile);
         currentProfile.addToAuthoredCycleList(List.of(cycle));
+        currentProfile.addToAssignedCycleList(List.of(cycle));
         return cycle;
     }
 

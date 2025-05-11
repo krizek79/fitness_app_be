@@ -24,6 +24,9 @@ public class WeekWorkoutHelper {
         weekWorkout.setWeek(week);
         weekWorkout.setWorkout(workout);
         weekWorkout.setDayOfTheWeek(dayOfTheWeek);
+
+        week.addToWeekWorkoutList(List.of(weekWorkout));
+
         return weekWorkout;
     }
 

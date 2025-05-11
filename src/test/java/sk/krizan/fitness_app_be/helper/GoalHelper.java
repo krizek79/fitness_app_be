@@ -24,6 +24,9 @@ public class GoalHelper {
         Goal goal = new Goal();
         goal.setCycle(cycle);
         goal.setText(UUID.randomUUID().toString());
+
+        cycle.addToGoalList(List.of(goal));
+
         return goal;
     }
 

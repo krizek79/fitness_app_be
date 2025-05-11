@@ -106,8 +106,11 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
         User currentUser = userService.getCurrentUser();
         WeekWorkout weekWorkout = getWeekWorkoutById(id);
 
-        if (weekWorkout.getWeek() != null
-                && weekWorkout.getWeek().getCycle() != null
+        if (weekWorkout.getWeek() == null) {
+            throw new RuntimeException("WeekWorkout is null.");
+        }
+
+        if (weekWorkout.getWeek().getCycle() != null
                 && weekWorkout.getWeek().getCycle().getAuthor() != null
                 && weekWorkout.getWeek().getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
@@ -115,7 +118,9 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
             throw new ForbiddenException();
         }
 
+        weekWorkout.getWeek().removeFromWeekWorkoutList(weekWorkout);
         weekWorkoutRepository.delete(weekWorkout);
+
         return weekWorkout.getId();
     }
 

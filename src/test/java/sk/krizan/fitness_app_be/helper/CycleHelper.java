@@ -73,6 +73,8 @@ public class CycleHelper {
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNull(response.description());
         Assertions.assertNull(response.levelValue());
+        Assertions.assertFalse(mockProfile.getAuthoredCycleList().isEmpty());
+        Assertions.assertFalse(mockProfile.getAssignedCycleList().isEmpty());
     }
 
     public static void assertCycleResponse_update(CycleUpdateRequest request, Profile mockProfile, CycleResponse response) {

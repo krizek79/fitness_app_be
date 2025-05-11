@@ -101,14 +101,18 @@ public class GoalServiceImpl implements GoalService {
         User currentUser = userService.getCurrentUser();
         Goal goal = getGoalById(id);
 
-        if (goal.getCycle() != null
-                && goal.getCycle().getAuthor() != null
+        if (goal.getCycle() == null) {
+            throw new RuntimeException("Cycle is null.");
+        }
+
+        if (goal.getCycle().getAuthor() != null
                 && goal.getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
             throw new ForbiddenException();
         }
 
+        goal.getCycle().removeFromGoalList(goal);
         goalRepository.delete(goal);
         return goal.getId();
     }

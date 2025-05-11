@@ -10,6 +10,7 @@ import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -20,6 +21,7 @@ public class WorkoutMapper {
         Workout workout = new Workout();
         workout.setAuthor(profile);
         workout.setName(request.name());
+        profile.addToAuthoredWorkoutList(List.of(workout));
         return workout;
     }
 

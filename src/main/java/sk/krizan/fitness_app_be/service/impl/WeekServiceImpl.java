@@ -107,14 +107,18 @@ public class WeekServiceImpl implements WeekService {
         User currentUser = userService.getCurrentUser();
         Week week = getWeekById(id);
 
-        if (week.getCycle() != null
-                && week.getCycle().getAuthor() != null
+        if (week.getCycle() == null) {
+            throw new RuntimeException("Cycle is null.");
+        }
+
+        if (week.getCycle().getAuthor() != null
                 && week.getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
             throw new ForbiddenException();
         }
 
+        week.getCycle().removeFromWeekList(week);
         weekRepository.delete(week);
         applicationEventPublisher.publishEvent(new EntityReorderEvent(week, EntityLifeCycleEventEnum.DELETE));
 

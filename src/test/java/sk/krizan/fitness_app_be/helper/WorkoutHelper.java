@@ -121,6 +121,7 @@ public class WorkoutHelper {
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNull(response.description());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
+        Assertions.assertFalse(author.getAuthoredWorkoutList().isEmpty());
     }
 
     public static void assertWorkoutResponse_update(

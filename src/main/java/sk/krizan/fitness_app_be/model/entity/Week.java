@@ -51,4 +51,11 @@ public class Week implements OrderableEntity {
         weekWorkoutList.forEach(weekWorkout -> weekWorkout.setWeek(this));
         this.getWeekWorkoutList().addAll(weekWorkoutList);
     }
+
+    public void removeFromWeekWorkoutList(WeekWorkout weekWorkout) {
+        if (weekWorkout == null) {
+            return;
+        }
+        this.weekWorkoutList.remove(weekWorkout);
+    }
 }

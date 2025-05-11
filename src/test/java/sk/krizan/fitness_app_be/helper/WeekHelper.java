@@ -23,6 +23,9 @@ public class WeekHelper {
         Week week = new Week();
         week.setCycle(cycle);
         week.setOrder(order);
+
+        cycle.addToWeekList(List.of(week));
+
         return week;
     }
 

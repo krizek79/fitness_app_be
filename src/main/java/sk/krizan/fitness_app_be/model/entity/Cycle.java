@@ -63,8 +63,22 @@ public class Cycle {
         this.getWeekList().addAll(weekList);
     }
 
+    public void removeFromWeekList(Week week) {
+        if (week == null) {
+            return;
+        }
+        this.weekList.remove(week);
+    }
+
     public void addToGoalList(List<Goal> goalList) {
         goalList.forEach(goal -> goal.setCycle(this));
         this.getGoalList().addAll(goalList);
+    }
+
+    public void removeFromGoalList(Goal goal) {
+        if (goal == null) {
+            return;
+        }
+        this.goalList.remove(goal);
     }
 }

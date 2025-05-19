@@ -69,4 +69,11 @@ public class Workout {
         this.getWorkoutExerciseList().addAll(workoutExerciseList);
         workoutExerciseList.forEach(workoutExercise -> workoutExercise.setWorkout(this));
     }
+
+    public void removeFromWorkoutExerciseList(WorkoutExercise workoutExercise) {
+        if (workoutExercise == null) {
+            return;
+        }
+        this.workoutExerciseList.remove(workoutExercise);
+    }
 }

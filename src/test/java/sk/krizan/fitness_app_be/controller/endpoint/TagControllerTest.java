@@ -62,7 +62,7 @@ class TagControllerTest {
         originalList = tagRepository.saveAll(originalList);
         List<Tag> expectedList = new ArrayList<>(List.of(originalList.get(2)));
 
-        String name = expectedList.get(0).getName().substring(0, 3);
+        String name = expectedList.get(0).getName().substring(0, 5);
         TagFilterRequest request = TagHelper.createFilterRequest(0, originalList.size(), Tag.Fields.id, Sort.Direction.DESC.name(), name);
         PageResponse<TagResponse> response = tagController.filterTags(request);
 

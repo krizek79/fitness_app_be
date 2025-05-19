@@ -93,14 +93,14 @@ class WeekWorkoutControllerTest {
     void filterWeekWorkouts() {
         Week week1 = WeekHelper.createMockWeek(mockCycle, 1);
         week1 = weekRepository.save(week1);
-        Workout workout1 = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout1 = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout1 = workoutRepository.save(workout1);
         WeekWorkout weekWorkout1 = WeekWorkoutHelper.createMockWeekWorkout(week1, workout1, 1);
         weekWorkout1 = weekWorkoutRepository.save(weekWorkout1);
 
         Week week2 = WeekHelper.createMockWeek(mockCycle, 2);
         week2 = weekRepository.save(week2);
-        Workout workout2 = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout2 = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout2 = workoutRepository.save(workout2);
         WeekWorkout weekWorkout2 = WeekWorkoutHelper.createMockWeekWorkout(week2, workout2, 2);
         weekWorkout2 = weekWorkoutRepository.save(weekWorkout2);
@@ -118,7 +118,7 @@ class WeekWorkoutControllerTest {
     void getWeekWorkoutById() {
         Week week = WeekHelper.createMockWeek(mockCycle, 1);
         week = weekRepository.save(week);
-        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
         WeekWorkout weekWorkout = WeekWorkoutHelper.createMockWeekWorkout(week, workout, 1);
         weekWorkout = weekWorkoutRepository.save(weekWorkout);
@@ -131,7 +131,7 @@ class WeekWorkoutControllerTest {
     void createWeekWorkout() {
         Week week = WeekHelper.createMockWeek(mockCycle, 1);
         week = weekRepository.save(week);
-        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
 
         WeekWorkoutCreateRequest request = WeekWorkoutHelper.createCreateRequest(week.getId(), workout.getId(), 3);
@@ -145,7 +145,7 @@ class WeekWorkoutControllerTest {
     void updateWeekWorkout() {
         Week week = WeekHelper.createMockWeek(mockCycle, 1);
         week = weekRepository.save(week);
-        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
         WeekWorkout weekWorkout = WeekWorkoutHelper.createMockWeekWorkout(week, workout, 1);
         weekWorkout = weekWorkoutRepository.save(weekWorkout);
@@ -160,7 +160,7 @@ class WeekWorkoutControllerTest {
     void deleteWeekWorkout() {
         Week week = WeekHelper.createMockWeek(mockCycle, 1);
         week = weekRepository.save(week);
-        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
         WeekWorkout weekWorkout = WeekWorkoutHelper.createMockWeekWorkout(week, workout, 1);
         weekWorkout = weekWorkoutRepository.save(weekWorkout);
@@ -174,7 +174,7 @@ class WeekWorkoutControllerTest {
     @Test
     void triggerCompleted() {
         Week week = weekRepository.save(WeekHelper.createMockWeek(mockCycle, 1));
-        Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE));
+        Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE));
         WeekWorkout WeekWorkout = WeekWorkoutHelper.createMockWeekWorkout(week, workout, 1);
         WeekWorkout = weekWorkoutRepository.save(WeekWorkout);
         Boolean originalState = WeekWorkout.getCompleted();

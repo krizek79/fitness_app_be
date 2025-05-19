@@ -7,15 +7,17 @@ import lombok.Builder;
 
 @Builder
 public record WorkoutExerciseUpdateRequest(
-    @NotNull
-    @Min(1)
-    @Schema(example = "5")
-    Integer sets,
-    @NotNull
-    @Min(1)
-    @Schema(example = "8")
-    Integer repetitions,
-    @Schema(example = "PT1M30S")
-    String restDuration
+        @NotNull
+        Long id,
+        @NotNull
+        @Min(1)
+        @Schema(example = "5")
+        Integer sets,
+        @NotNull
+        @Min(1)
+        @Schema(example = "8")
+        Integer repetitions,
+        @Schema(example = "PT1M30S")
+        String restDuration
 ) {
 }

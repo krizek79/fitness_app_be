@@ -47,16 +47,15 @@ public class WorkoutHelper {
 
     public static Workout createMockWorkout(
             Profile profile,
-            List<WorkoutExercise> workoutExerciseList,
             Set<Tag> tagSet,
             String name
     ) {
         Workout workout = new Workout();
         workout.setName(name);
         workout.addToTagSet(tagSet);
-        workout.addToWorkoutExerciseList(workoutExerciseList);
 
         profile.addToAuthoredWorkoutList(List.of(workout));
+
         return workout;
     }
 
@@ -80,7 +79,8 @@ public class WorkoutHelper {
             List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
             Set<Tag> tagSet = tagSetList.get(i);
             String name = UUID.randomUUID().toString();
-            Workout mockWorkout = createMockWorkout(profile, workoutExercises, tagSet, name);
+            Workout mockWorkout = createMockWorkout(profile, tagSet, name);
+            mockWorkout.addToWorkoutExerciseList(workoutExercises);
             result.add(mockWorkout);
         }
 

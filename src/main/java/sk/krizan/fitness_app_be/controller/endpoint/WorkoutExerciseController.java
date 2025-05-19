@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
+import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutExerciseMapper;
 import sk.krizan.fitness_app_be.service.api.WorkoutExerciseService;
@@ -24,30 +26,28 @@ public class WorkoutExerciseController {
 
     private final WorkoutExerciseService workoutExerciseService;
 
+    @PostMapping("filter")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public PageResponse<WorkoutExerciseResponse> filterWorkoutExercises(@Valid @RequestBody WorkoutExerciseFilterRequest request) {
+        return workoutExerciseService.filterWorkoutExercises(request);
+    }
+
     @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WorkoutExerciseResponse getWorkoutExerciseById(@PathVariable Long id) {
-        return WorkoutExerciseMapper.entityToResponse(
-            workoutExerciseService.getWorkoutExerciseById(id));
+        return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.getWorkoutExerciseById(id));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutExerciseResponse createWorkoutExercise(
-        @Valid @RequestBody WorkoutExerciseCreateRequest request
-    ) {
-        return WorkoutExerciseMapper.entityToResponse(
-            workoutExerciseService.createWorkoutExercise(request));
+    public WorkoutExerciseResponse createWorkoutExercise(@Valid @RequestBody WorkoutExerciseCreateRequest request) {
+        return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.createWorkoutExercise(request));
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WorkoutExerciseResponse updateWorkoutExercise(
-        @PathVariable Long id,
-        @Valid @RequestBody WorkoutExerciseUpdateRequest request
-    ) {
-        return WorkoutExerciseMapper.entityToResponse(
-            workoutExerciseService.updateWorkoutExercise(id, request));
+    public WorkoutExerciseResponse updateWorkoutExercise(@Valid @RequestBody WorkoutExerciseUpdateRequest request) {
+        return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.updateWorkoutExercise(request));
     }
 
     @DeleteMapping("{id}")

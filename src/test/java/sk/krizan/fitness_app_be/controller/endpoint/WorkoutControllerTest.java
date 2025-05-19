@@ -137,7 +137,7 @@ class WorkoutControllerTest {
 
     @Test
     void getWorkoutById() {
-        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
 
         WorkoutResponse response = workoutController.getWorkoutById(workout.getId());
@@ -153,7 +153,7 @@ class WorkoutControllerTest {
 
     @Test
     void updateWorkout() {
-        Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         Workout savedMockWorkout = workoutRepository.save(mockWorkout);
         WorkoutUpdateRequest updateRequest = WorkoutHelper.createUpdateRequest();
 
@@ -164,7 +164,7 @@ class WorkoutControllerTest {
 
     @Test
     void deleteWorkout() {
-        Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new ArrayList<>(), new HashSet<>(), DEFAULT_VALUE);
+        Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         Workout savedMockWorkout = workoutRepository.save(mockWorkout);
 
         Long deletedWorkoutId = workoutController.deleteWorkout(savedMockWorkout.getId());

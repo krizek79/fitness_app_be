@@ -22,6 +22,7 @@ public class WorkoutExerciseCloner extends AbstractCloner<WorkoutExercise> {
         clone.setSets(original.getSets());
         clone.setRepetitions(original.getRepetitions());
         clone.setRestDuration(original.getRestDuration());
+        clone.setOrder(original.getOrder());
 
         context.cacheClone(original, clone);
 

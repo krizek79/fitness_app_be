@@ -5,6 +5,7 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
+import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
@@ -19,12 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class WorkoutExerciseHelper {
 
-    public static WorkoutExercise createMockWorkoutExercise(Workout workout, Exercise exercise, int sets, int repetitions, Duration restDuration) {
+    public static WorkoutExercise createMockWorkoutExercise(Workout workout, Exercise exercise, int sets, int repetitions, Duration restDuration, Integer order) {
         WorkoutExercise workoutExercise = new WorkoutExercise();
         workoutExercise.setExercise(exercise);
         workoutExercise.setSets(sets);
         workoutExercise.setRepetitions(repetitions);
         workoutExercise.setRestDuration(restDuration);
+        workoutExercise.setOrder(order);
 
         workout.addToWorkoutExerciseList(List.of(workoutExercise));
 
@@ -41,22 +43,24 @@ public class WorkoutExerciseHelper {
                 .build();
     }
 
-    public static WorkoutExerciseUpdateRequest createUpdateRequest(Long id, Integer repetitions, Integer sets, String restDuration) {
+    public static WorkoutExerciseUpdateRequest createUpdateRequest(Long id, Integer repetitions, Integer sets, String restDuration, Integer order) {
         return WorkoutExerciseUpdateRequest.builder()
                 .id(id)
                 .repetitions(repetitions)
                 .sets(sets)
                 .restDuration(restDuration)
+                .order(order)
                 .build();
     }
 
-    public static WorkoutExerciseCreateRequest createCreateRequest(Long workoutId, Long exerciseId, Integer repetitions, Integer sets, String restDuration) {
+    public static WorkoutExerciseCreateRequest createCreateRequest(Long workoutId, Long exerciseId, Integer repetitions, Integer sets, String restDuration, Integer order) {
         return WorkoutExerciseCreateRequest.builder()
                 .workoutId(workoutId)
                 .exerciseId(exerciseId)
                 .repetitions(repetitions)
                 .sets(sets)
                 .restDuration(restDuration)
+                .order(order)
                 .build();
     }
 
@@ -75,16 +79,6 @@ public class WorkoutExerciseHelper {
         assertEquals(workoutExercise.getId(), deletedWorkoutExerciseId);
     }
 
-    public static void assertCreate(WorkoutExerciseCreateRequest request, String exerciseName, WorkoutExerciseResponse response) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(request.workoutId(), response.workoutId());
-        Assertions.assertEquals(exerciseName, response.exerciseName());
-        Assertions.assertEquals(request.restDuration(), response.restDuration());
-        Assertions.assertEquals(request.sets(), response.sets());
-        Assertions.assertEquals(request.repetitions(), response.repetitions());
-    }
-
     public static void assertFilter(PageResponse<WorkoutExerciseResponse> response, List<WorkoutExercise> expectedList) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.results());
@@ -98,11 +92,48 @@ public class WorkoutExerciseHelper {
         }
     }
 
-    public static void assertUpdate(WorkoutExerciseUpdateRequest request, WorkoutExerciseResponse response) {
+    public static void assertBatchUpdate(List<WorkoutExerciseUpdateRequest> requestList, SimpleListResponse<WorkoutExerciseResponse> listResponse) {
+        Assertions.assertNotNull(listResponse);
+        Assertions.assertNotNull(listResponse.result());
+        Assertions.assertEquals(requestList.size(), listResponse.result().size());
+        List<WorkoutExerciseUpdateRequest> sortedRequestList = requestList.stream().sorted(Comparator.comparingLong(WorkoutExerciseUpdateRequest::id)).toList();
+        List<WorkoutExerciseResponse> sortedResponseList = listResponse.result().stream().sorted(Comparator.comparingLong(WorkoutExerciseResponse::id)).toList();
+        for (int i = 0; i < sortedResponseList.size(); i++) {
+            WorkoutExerciseUpdateRequest request = sortedRequestList.get(i);
+            WorkoutExerciseResponse response = sortedResponseList.get(i);
+            Assertions.assertEquals(request.id(), response.id());
+            Assertions.assertEquals(request.order(), response.order());
+        }
+    }
+
+    public static void assertCreate(WorkoutExerciseCreateRequest request, WorkoutExerciseResponse response, Integer expectedInsertedOrder, List<WorkoutExercise> finalWorkoutExerciseList, List<Integer> expectedFinalOrder) {
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.id());
+        Assertions.assertEquals(request.workoutId(), response.workoutId());
+        Assertions.assertEquals(request.sets(), response.sets());
+        Assertions.assertEquals(request.repetitions(), response.repetitions());
+        Assertions.assertEquals(request.restDuration(), response.restDuration());
+        Assertions.assertEquals(expectedInsertedOrder, response.order());
+
+        Assertions.assertNotNull(finalWorkoutExerciseList);
+        Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());
+        List<Integer> finalWorkoutExerciseListOrderList = finalWorkoutExerciseList.stream().map(WorkoutExercise::getOrder).sorted().toList();
+        Assertions.assertEquals(expectedFinalOrder, finalWorkoutExerciseListOrderList);
+    }
+
+    public static void assertUpdate(WorkoutExerciseUpdateRequest request, WorkoutExerciseResponse response, List<Long> idsOfExpectedElementsInOrder, List<WorkoutExercise> finalWorkoutExerciseList) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(request.id(), response.id());
-        Assertions.assertEquals(request.restDuration(), response.restDuration());
-        Assertions.assertEquals(request.repetitions(), response.repetitions());
+        Assertions.assertNotNull(response.workoutId());
         Assertions.assertEquals(request.sets(), response.sets());
+        Assertions.assertEquals(request.repetitions(), response.repetitions());
+        Assertions.assertEquals(request.restDuration(), response.restDuration());
+        Assertions.assertNotNull(finalWorkoutExerciseList);
+        Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());
+        Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWorkoutExerciseList.size());
+        List<Long> actualIdsInOrder = finalWorkoutExerciseList.stream()
+                .map(WorkoutExercise::getId)
+                .toList();
+        Assertions.assertEquals(idsOfExpectedElementsInOrder, actualIdsInOrder);
     }
 }

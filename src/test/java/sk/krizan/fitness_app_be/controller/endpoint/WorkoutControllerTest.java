@@ -168,7 +168,7 @@ class WorkoutControllerTest {
         Workout savedMockWorkout = workoutRepository.save(mockWorkout);
 
         Long deletedWorkoutId = workoutController.deleteWorkout(savedMockWorkout.getId());
-        boolean exists = workoutRepository.findByIdAndDeletedFalse(deletedWorkoutId).isPresent();
+        boolean exists = workoutRepository.findById(deletedWorkoutId).isPresent();
 
         WorkoutHelper.assertDelete(exists, savedMockWorkout, deletedWorkoutId);
     }

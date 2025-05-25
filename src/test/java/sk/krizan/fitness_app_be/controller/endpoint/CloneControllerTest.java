@@ -98,7 +98,7 @@ class CloneControllerTest {
         Workout originalWorkout = WorkoutHelper.createMockWorkout(mockProfile, Set.of(originalTag), UUID.randomUUID().toString());
         Exercise originalExercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         originalExercise = exerciseRepository.save(originalExercise);
-        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1, 6, Duration.ofMinutes(2));
+        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1, 6, Duration.ofMinutes(2), 1);
         WeekWorkoutHelper.createMockWeekWorkout(originalWeek, originalWorkout, 1);
         originalCycle = cycleRepository.save(originalCycle);
 
@@ -106,7 +106,7 @@ class CloneControllerTest {
         CloneHelper.assertCycleResponse(originalCycle, response);
 
         Cycle clonedCycle = cycleRepository.findById(response.id()).orElseThrow(() -> new NotFoundException("Cloned cycle not found."));
-        CloneHelper.assertCycle(originalCycle, clonedCycle);
+        CloneHelper.assertCycle(originalCycle, clonedCycle, mockProfile);
     }
 
     @Test
@@ -116,7 +116,7 @@ class CloneControllerTest {
         Workout originalWorkout = WorkoutHelper.createMockWorkout(mockProfile, Set.of(originalTag), UUID.randomUUID().toString());
         Exercise originalExercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         originalExercise = exerciseRepository.save(originalExercise);
-        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1, 6, Duration.ofMinutes(2));
+        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1, 6, Duration.ofMinutes(2), 1);
         originalWorkout = workoutRepository.save(originalWorkout);
 
         Cycle originalCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
@@ -132,7 +132,7 @@ class CloneControllerTest {
         WeekWorkoutResponse response = cloneController.cloneWorkoutToWeekWorkout(request);
 
         CloneHelper.assertWorkoutResponse(request, response);
-        Workout clonedWorkout = workoutRepository.findByIdAndDeletedFalse(response.workoutId()).orElseThrow(() -> new NotFoundException("Cloned workout not found."));
+        Workout clonedWorkout = workoutRepository.findById(response.workoutId()).orElseThrow(() -> new NotFoundException("Cloned workout not found."));
         CloneHelper.assertWorkout(originalWorkout, clonedWorkout);
         originalCycle = cycleRepository.findById(originalCycle.getId()).orElseThrow(() -> new NotFoundException("Original cycle not found."));
         CloneHelper.assertCycleWorkoutRelation(originalCycle, clonedWorkout);

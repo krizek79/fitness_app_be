@@ -1,10 +1,10 @@
 CREATE TABLE workout (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    author_id BIGINT REFERENCES profile (id),
+    profile_id BIGINT NOT NULL REFERENCES profile (id),
     level VARCHAR(255),
     description VARCHAR(1000),
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
+    is_template BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE workout_tag (

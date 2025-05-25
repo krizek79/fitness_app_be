@@ -75,7 +75,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout getWorkoutById(Long id) {
-        return workoutRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return workoutRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -88,12 +88,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     @Transactional
     public Workout updateWorkout(Long id, WorkoutUpdateRequest request) {
-        User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ForbiddenException();
-        }
+        checkAuthorization(workout);
 
         Set<Tag> tags = new HashSet<>();
         if (request.tagNames() != null) {
@@ -108,15 +105,33 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Long deleteWorkout(Long id) {
-        User currentUser = userService.getCurrentUser();
         Workout workout = getWorkoutById(id);
 
-        if (workout.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
+        checkAuthorization(workout);
+
+        workoutRepository.delete(workout);
+        return workout.getId();
+    }
+
+    private void checkAuthorization(Workout workout) {
+        User currentUser = userService.getCurrentUser();
+
+        boolean isTemplate = workout.getIsTemplate();
+        User workoutAuthor = workout.getAuthor().getUser();
+        User workoutTrainee = workout.getTrainee().getUser();
+        boolean isAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
+
+        // Only trainee or admin can access non-template workouts
+        boolean unauthorizedNonTemplateAccess = !isTemplate && !workoutTrainee.equals(currentUser) && !isAdmin;
+
+        // Only author or admin can access template workouts
+        boolean unauthorizedTemplateAccess = isTemplate && !workoutAuthor.equals(currentUser) && !isAdmin;
+
+        // Non-template workout must have the same author and trainee
+        boolean invalidAuthorOwnerCombination = !isTemplate && !workoutAuthor.equals(workoutTrainee);
+
+        if (unauthorizedTemplateAccess || unauthorizedNonTemplateAccess || invalidAuthorOwnerCombination) {
             throw new ForbiddenException();
         }
-
-        workout.setDeleted(true);
-        workoutRepository.save(workout);
-        return workout.getId();
     }
 }

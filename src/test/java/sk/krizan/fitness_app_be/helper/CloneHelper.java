@@ -5,6 +5,7 @@ import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
+import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Week;
 import sk.krizan.fitness_app_be.model.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.model.entity.Workout;
@@ -28,13 +29,13 @@ public class CloneHelper {
         Assertions.assertEquals(cycle.getTrainee().getName(), response.traineeName());
     }
 
-    public static void assertCycle(Cycle originalCycle, Cycle clonedCycle) {
+    public static void assertCycle(Cycle originalCycle, Cycle clonedCycle, Profile profile) {
         Assertions.assertNotEquals(originalCycle.getId(), clonedCycle.getId());
         Assertions.assertEquals(originalCycle.getName(), clonedCycle.getName());
         Assertions.assertEquals(originalCycle.getDescription(), clonedCycle.getDescription());
         Assertions.assertEquals(originalCycle.getLevel(), clonedCycle.getLevel());
         Assertions.assertEquals(originalCycle.getAuthor(), clonedCycle.getAuthor());
-        Assertions.assertEquals(originalCycle.getTrainee(), clonedCycle.getTrainee());  //  Only because of the test implementation
+        Assertions.assertEquals(profile, clonedCycle.getTrainee());
         Assertions.assertNotNull(clonedCycle.getGoalList());
         Assertions.assertTrue(clonedCycle.getGoalList().isEmpty());
         Assertions.assertNotNull(clonedCycle.getWeekList());
@@ -85,7 +86,6 @@ public class CloneHelper {
         Assertions.assertEquals(originalWorkout.getName(), clonedWorkout.getName());
         Assertions.assertEquals(originalWorkout.getAuthor(), clonedWorkout.getAuthor());
         Assertions.assertEquals(originalWorkout.getTagSet(), clonedWorkout.getTagSet());
-        Assertions.assertFalse(clonedWorkout.getDeleted());
         Assertions.assertNotNull(clonedWorkout.getWorkoutExerciseList());
         Assertions.assertEquals(originalWorkout.getWorkoutExerciseList().size(), clonedWorkout.getWorkoutExerciseList().size());
         List<WorkoutExercise> originalWorkoutExerciseList = originalWorkout.getWorkoutExerciseList().stream().sorted(Comparator.comparing(WorkoutExercise::getId)).toList();

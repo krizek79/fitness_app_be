@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -32,12 +33,13 @@ public class WeekWorkout {
     private Long id;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_id", referencedColumnName = Workout.Fields.id, nullable = false)
     private Workout workout;
 
     @NotNull
     @ManyToOne
+    @JoinColumn(name = "week_id", referencedColumnName = Week.Fields.id, nullable = false)
     private Week week;
 
     @Min(1)

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sk.krizan.fitness_app_be.controller.request.WeekBatchUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
@@ -52,6 +52,12 @@ public class WeekController {
         return WeekMapper.entityToResponse(weekService.updateWeek(request));
     }
 
+    @PutMapping("batch-update")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public SimpleListResponse<WeekResponse> batchUpdateWeeks(@Valid @RequestBody BatchUpdateRequest<WeekUpdateRequest> request) {
+        return WeekMapper.entityListToSimpleListResponse(weekService.batchUpdateWeeks(request));
+    }
+
     @DeleteMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public Long deleteWeek(@PathVariable Long id) {
@@ -62,11 +68,5 @@ public class WeekController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WeekResponse triggerCompleted(@PathVariable Long id) {
         return WeekMapper.entityToResponse(weekService.triggerCompleted(id));
-    }
-
-    @PutMapping("batch-update")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public SimpleListResponse<WeekResponse> batchUpdateWeeks(@Valid @RequestBody WeekBatchUpdateRequest request) {
-        return WeekMapper.entityListToSimpleListResponse(weekService.batchUpdateWeeks(request));
     }
 }

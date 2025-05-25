@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.event;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 import sk.krizan.fitness_app_be.model.entity.OrderableEntity;
@@ -7,7 +8,9 @@ import sk.krizan.fitness_app_be.model.entity.OrderableEntity;
 @Getter
 public class EntityReorderEvent extends ApplicationEvent {
 
+    @NotNull
     private final OrderableEntity entity;
+    @NotNull
     private final EntityLifeCycleEventEnum entityLifeCycleEventEnum;
     private final Integer originalOrder;
 

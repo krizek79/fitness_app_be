@@ -16,7 +16,7 @@ public class WorkoutSpecification {
 
     public static Specification<Workout> filter(WorkoutFilterRequest request) {
         return (Root<Workout> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            Predicate predicate = criteriaBuilder.isFalse(root.get(Workout.Fields.deleted));
+            Predicate predicate = criteriaBuilder.conjunction();
 
             if (request.name() != null) {
                 Predicate namePredicate = PredicateUtils.sanitizedLike(

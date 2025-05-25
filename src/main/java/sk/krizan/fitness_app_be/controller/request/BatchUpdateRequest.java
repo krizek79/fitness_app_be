@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record WeekBatchUpdateRequest(
-        List<WeekUpdateRequest> updateRequestList
+public record BatchUpdateRequest<T>(
+        List<T> updateRequestList
 ) {
 }

@@ -20,7 +20,9 @@ public class WorkoutMapper {
     public static Workout createRequestToEntity(WorkoutCreateRequest request, Profile profile) {
         Workout workout = new Workout();
         workout.setAuthor(profile);
+        workout.setTrainee(profile);
         workout.setName(request.name());
+        workout.setIsTemplate(request.isTemplate());
         profile.addToAuthoredWorkoutList(List.of(workout));
         return workout;
     }
@@ -31,10 +33,13 @@ public class WorkoutMapper {
                 .name(workout.getName())
                 .authorId(workout.getAuthor().getId())
                 .authorName(workout.getAuthor().getName())
+                .traineeId(workout.getTrainee().getId())
+                .traineeName(workout.getTrainee().getName())
                 .tagResponseList(
                         workout.getTagSet().stream()
                                 .map(TagMapper::entityToResponse).toList())
                 .description(workout.getDescription())
+                .isTemplate(workout.getIsTemplate())
                 .build();
     }
 

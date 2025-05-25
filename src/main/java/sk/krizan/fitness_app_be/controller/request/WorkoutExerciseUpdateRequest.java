@@ -18,6 +18,9 @@ public record WorkoutExerciseUpdateRequest(
         @Schema(example = "8")
         Integer repetitions,
         @Schema(example = "PT1M30S")
-        String restDuration
+        String restDuration,
+        @Min(1)
+        @NotNull
+        Integer order
 ) {
 }

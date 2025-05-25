@@ -8,13 +8,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
+import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutExerciseMapper;
 import sk.krizan.fitness_app_be.service.api.WorkoutExerciseService;
@@ -48,6 +51,12 @@ public class WorkoutExerciseController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public WorkoutExerciseResponse updateWorkoutExercise(@Valid @RequestBody WorkoutExerciseUpdateRequest request) {
         return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.updateWorkoutExercise(request));
+    }
+
+    @PutMapping("batch-update")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public SimpleListResponse<WorkoutExerciseResponse> batchUpdateWorkoutExercises(@Valid @RequestBody BatchUpdateRequest<WorkoutExerciseUpdateRequest> request) {
+        return WorkoutExerciseMapper.entityListToSimpleListResponse(workoutExerciseService.batchUpdateWorkoutExercises(request));
     }
 
     @DeleteMapping("{id}")

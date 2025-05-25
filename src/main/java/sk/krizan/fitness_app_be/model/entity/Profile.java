@@ -52,6 +52,9 @@ public class Profile {
     @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Workout> authoredWorkoutList = new ArrayList<>();
 
+    @OneToMany(mappedBy = Workout.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private final List<Workout> assignedWorkoutList = new ArrayList<>();
+
     @OneToMany(mappedBy = Cycle.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Cycle> authoredCycleList = new ArrayList<>();
 
@@ -61,6 +64,11 @@ public class Profile {
     public void addToAuthoredWorkoutList(List<Workout> workoutList) {
         workoutList.forEach(workout -> workout.setAuthor(this));
         this.getAuthoredWorkoutList().addAll(workoutList);
+    }
+
+    public void addToAssignedWorkoutList(List<Workout> workoutList) {
+        workoutList.forEach(workout -> workout.setTrainee(this));
+        this.getAssignedWorkoutList().addAll(workoutList);
     }
 
     public void addToAuthoredCycleList(List<Cycle> cycleList) {

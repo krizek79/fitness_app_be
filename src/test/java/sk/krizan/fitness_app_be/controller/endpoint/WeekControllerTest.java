@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.request.WeekBatchUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
@@ -185,7 +185,7 @@ class WeekControllerTest {
             Long id = originalList.get(originalList.size() - i).getId();
             requestList.add(WeekHelper.createUpdateRequest(id, i));
         }
-        WeekBatchUpdateRequest batchRequest = WeekBatchUpdateRequest.builder()
+        BatchUpdateRequest<WeekUpdateRequest> batchRequest = BatchUpdateRequest.<WeekUpdateRequest>builder()
                 .updateRequestList(requestList)
                 .build();
 

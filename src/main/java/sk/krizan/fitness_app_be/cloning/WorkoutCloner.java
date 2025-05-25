@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class WorkoutCloner  extends AbstractCloner<Workout> {
+public class WorkoutCloner extends AbstractCloner<Workout> {
 
     private final WorkoutExerciseCloner workoutExerciseCloner;
 
@@ -28,6 +28,7 @@ public class WorkoutCloner  extends AbstractCloner<Workout> {
         clone.setName(original.getName());
         clone.setDescription(original.getDescription());
         clone.setAuthor(original.getAuthor());
+        clone.setTrainee(context.getTargetProfile());
         clone.addToTagSet(original.getTagSet());
         List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExerciseList().stream()
                 .map(workoutExercise -> workoutExerciseCloner.clone(workoutExercise, context))

@@ -44,6 +44,9 @@ public class Workout {
     @ManyToOne
     private Profile author;
 
+    @ManyToOne
+    private Profile trainee;
+
     @ManyToMany
     @JoinTable(
             name = "workout_tag",
@@ -59,7 +62,7 @@ public class Workout {
     private String description;
 
     @NotNull
-    private Boolean deleted = false;
+    private Boolean isTemplate = false;
 
     public void addToTagSet(Set<Tag> tagSet) {
         this.getTagSet().addAll(tagSet);

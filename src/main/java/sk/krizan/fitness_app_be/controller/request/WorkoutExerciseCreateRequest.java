@@ -13,6 +13,9 @@ public record WorkoutExerciseCreateRequest(
     Long exerciseId,
     @NotNull
     @Min(1)
+    Integer order,
+    @NotNull
+    @Min(1)
     @Schema(example = "5")
     Integer sets,
     @NotNull

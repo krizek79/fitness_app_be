@@ -55,6 +55,7 @@ public class WorkoutHelper {
         workout.addToTagSet(tagSet);
 
         profile.addToAuthoredWorkoutList(List.of(workout));
+        profile.addToAssignedWorkoutList(List.of(workout));
 
         return workout;
     }
@@ -90,6 +91,7 @@ public class WorkoutHelper {
     public static WorkoutCreateRequest createCreateRequest() {
         return WorkoutCreateRequest.builder()
                 .name(DEFAULT_VALUE)
+                .isTemplate(true)
                 .build();
     }
 
@@ -106,35 +108,43 @@ public class WorkoutHelper {
         Assertions.assertEquals(workout.getId(), response.id());
         Assertions.assertEquals(workout.getAuthor().getId(), response.authorId());
         Assertions.assertEquals(workout.getAuthor().getName(), response.authorName());
+        Assertions.assertEquals(workout.getTrainee().getId(), response.traineeId());
+        Assertions.assertEquals(workout.getTrainee().getName(), response.traineeName());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
     }
 
     public static void assertWorkoutResponse_create(
             WorkoutCreateRequest request,
-            Profile author,
+            Profile profile,
             WorkoutResponse response
     ) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(author.getId(), response.authorId());
-        Assertions.assertEquals(author.getName(), response.authorName());
+        Assertions.assertEquals(profile.getId(), response.authorId());
+        Assertions.assertEquals(profile.getName(), response.authorName());
+        Assertions.assertEquals(profile.getId(), response.traineeId());
+        Assertions.assertEquals(profile.getName(), response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNull(response.description());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
-        Assertions.assertFalse(author.getAuthoredWorkoutList().isEmpty());
+        Assertions.assertFalse(profile.getAuthoredWorkoutList().isEmpty());
+        Assertions.assertEquals(request.isTemplate(), response.isTemplate());
     }
 
     public static void assertWorkoutResponse_update(
             WorkoutUpdateRequest request,
-            Profile author,
+            Profile profile,
             WorkoutResponse response
     ) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(author.getId(), response.authorId());
-        Assertions.assertEquals(author.getName(), response.authorName());
+        Assertions.assertEquals(profile.getId(), response.authorId());
+        Assertions.assertEquals(profile.getName(), response.authorName());
+        Assertions.assertEquals(profile.getId(), response.traineeId());
+        Assertions.assertEquals(profile.getName(), response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNotNull(response.description());
+        Assertions.assertFalse(response.isTemplate());
 
         List<TagResponse> tagResponseList = response.tagResponseList();
         Assertions.assertFalse(tagResponseList.isEmpty());
@@ -163,6 +173,9 @@ public class WorkoutHelper {
         Assertions.assertEquals(expectedWorkout.getDescription(), workoutResponse.description());
         Assertions.assertEquals(expectedWorkout.getAuthor().getId(), workoutResponse.authorId());
         Assertions.assertEquals(expectedWorkout.getAuthor().getName(), workoutResponse.authorName());
+        Assertions.assertEquals(expectedWorkout.getTrainee().getId(), workoutResponse.traineeId());
+        Assertions.assertEquals(expectedWorkout.getTrainee().getName(), workoutResponse.traineeName());
+        Assertions.assertEquals(expectedWorkout.getIsTemplate(), workoutResponse.isTemplate());
         Assertions.assertEquals(expectedWorkout.getTagSet().stream().map(Tag::getId).toList(), workoutResponse.tagResponseList().stream().map(TagResponse::id).toList());
     }
 }

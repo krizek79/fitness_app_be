@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.service.impl;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +21,7 @@ public class WeekOrderService implements OrderableEntityOrderService {
 
     @Override
     @Transactional
-    public void reorder(EntityReorderEvent event) {
-        if (event == null) {
-            throw new IllegalOperationException("Event is null.");
-        }
-        if (event.getEntityLifeCycleEventEnum() == null) {
-            throw new IllegalOperationException("Lifecycle event is null.");
-        }
-        if (event.getEntity() == null) {
-            throw new IllegalOperationException("Entity is null.");
-        }
-
+    public void reorder(@NotNull EntityReorderEvent event) {
         Week modifiedWeek = (Week) event.getEntity();
         if (modifiedWeek.getCycle() == null) {
             throw new IllegalOperationException("Cycle is null.");

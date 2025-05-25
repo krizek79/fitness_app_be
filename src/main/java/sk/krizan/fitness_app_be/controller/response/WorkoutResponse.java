@@ -10,7 +10,10 @@ public record WorkoutResponse(
         String name,
         Long authorId,
         String authorName,
+        Long traineeId,
+        String traineeName,
         List<TagResponse> tagResponseList,
-        String description
+        String description,
+        Boolean isTemplate
 ) {
 }

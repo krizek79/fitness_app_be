@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
-import sk.krizan.fitness_app_be.controller.request.WeekBatchUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
@@ -103,6 +103,16 @@ public class WeekServiceImpl implements WeekService {
     }
 
     @Override
+    @Transactional
+    public List<Week> batchUpdateWeeks(BatchUpdateRequest<WeekUpdateRequest> request) {
+        List<Week> updatedWeeks = request.updateRequestList().stream()
+                .map(this::updateWeek)
+                .toList();
+
+        return weekRepository.saveAll(updatedWeeks);
+    }
+
+    @Override
     public Long deleteWeek(Long id) {
         User currentUser = userService.getCurrentUser();
         Week week = getWeekById(id);
@@ -140,15 +150,5 @@ public class WeekServiceImpl implements WeekService {
         }
         week.setCompleted(!week.getCompleted());
         return weekRepository.save(week);
-    }
-
-    @Override
-    @Transactional
-    public List<Week> batchUpdateWeeks(WeekBatchUpdateRequest batchRequest) {
-        List<Week> updatedWeeks = batchRequest.updateRequestList().stream()
-                .map(this::updateWeek)
-                .toList();
-
-        return weekRepository.saveAll(updatedWeeks);
     }
 }

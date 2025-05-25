@@ -1,6 +1,6 @@
 package sk.krizan.fitness_app_be.service.api;
 
-import sk.krizan.fitness_app_be.controller.request.WeekBatchUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
@@ -16,7 +16,7 @@ public interface WeekService {
     Week getWeekById(Long id);
     Week createWeek(WeekCreateRequest request);
     Week updateWeek(WeekUpdateRequest request);
+    List<Week> batchUpdateWeeks(BatchUpdateRequest<WeekUpdateRequest> request);
     Long deleteWeek(Long id);
     Week triggerCompleted(Long id);
-    List<Week> batchUpdateWeeks(WeekBatchUpdateRequest request);
 }

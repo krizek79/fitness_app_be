@@ -30,9 +30,9 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
         clone.setAuthor(original.getAuthor());
         clone.setTrainee(context.getTargetProfile());
         clone.addToTagSet(original.getTagSet());
+        clone.setWeightUnit(original.getWeightUnit());
         List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExerciseList().stream()
                 .map(workoutExercise -> workoutExerciseCloner.clone(workoutExercise, context))
-                .peek(workoutExercise -> workoutExercise.setWorkout(clone))
                 .toList();
         clone.addToWorkoutExerciseList(clonedWorkoutExercises);
 

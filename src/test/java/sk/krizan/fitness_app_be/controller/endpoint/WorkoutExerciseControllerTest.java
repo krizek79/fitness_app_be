@@ -2,7 +2,6 @@ package sk.krizan.fitness_app_be.controller.endpoint;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -10,10 +9,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
+import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.helper.ExerciseHelper;
@@ -36,7 +38,6 @@ import sk.krizan.fitness_app_be.repository.WorkoutExerciseRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -89,9 +90,23 @@ class WorkoutExerciseControllerTest {
     }
 
     @Test
-    @Disabled
     void filterWorkoutExercises() {
-        //  TODO
+        Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS)));
+
+        Workout workout1 = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE));
+        WorkoutExercise workoutExercise1 = workoutExerciseRepository.save(WorkoutExerciseHelper.createMockWorkoutExercise(workout1, exercise, 1));
+
+        Workout workout2 = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE));
+        WorkoutExercise workoutExercise2 = workoutExerciseRepository.save(WorkoutExerciseHelper.createMockWorkoutExercise(workout2, exercise, 1));
+
+        List<WorkoutExercise> originalList = List.of(workoutExercise1, workoutExercise2);
+
+        WorkoutExerciseFilterRequest request = WorkoutExerciseHelper.createFilterRequest(0, originalList.size(), WorkoutExercise.Fields.id, Sort.Direction.DESC.name(), workout2.getId());
+
+        PageResponse<WorkoutExerciseResponse> response = workoutExerciseController.filterWorkoutExercises(request);
+
+        List<WorkoutExercise> expectedList = new ArrayList<>(List.of(originalList.get(1)));
+        WorkoutExerciseHelper.assertFilter(response, expectedList);
     }
 
     @Test
@@ -100,7 +115,7 @@ class WorkoutExerciseControllerTest {
         workout = workoutRepository.save(workout);
         Exercise exercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS));
         exercise = exerciseRepository.save(exercise);
-        WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 2, 6, Duration.ofMinutes(3), 1);
+        WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1);
         workoutExercise = workoutExerciseRepository.save(workoutExercise);
 
         WorkoutExerciseResponse response = workoutExerciseController.getWorkoutExerciseById(workoutExercise.getId());
@@ -122,13 +137,13 @@ class WorkoutExerciseControllerTest {
         Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), UUID.randomUUID().toString()));
         Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of()));
         List<WorkoutExercise> originalList = List.of(
-                WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 2, 7, Duration.ofMinutes(2), 1),
-                WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1, 8, Duration.ofMinutes(1), 2),
-                WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 2, 6, Duration.ofMinutes(5), 3)
+                WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1),
+                WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 2),
+                WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 3)
         );
         workoutExerciseRepository.saveAll(originalList);
 
-        WorkoutExerciseCreateRequest request = WorkoutExerciseHelper.createCreateRequest(workout.getId(), exercise.getId(), 12, 2, "PT3M", requestedOrder);
+        WorkoutExerciseCreateRequest request = WorkoutExerciseHelper.createCreateRequest(workout.getId(), exercise.getId(), requestedOrder);
         WorkoutExerciseResponse response = workoutExerciseController.createWorkoutExercise(request);
 
         List<WorkoutExercise> finalWorkoutExerciseList = workoutExerciseRepository.findAllByWorkoutIdOrderByOrder(workout.getId());
@@ -158,7 +173,7 @@ class WorkoutExerciseControllerTest {
 
         List<WorkoutExercise> originalList = new ArrayList<>();
         for (Integer order : originalOrders) {
-            WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1, 1, Duration.ofMinutes(1), order);
+            WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, order);
             originalList.add(workoutExerciseRepository.save(workoutExercise));
         }
         Assertions.assertEquals(originalList.size(), listIdsOfExpectedElementsInOrder.size());
@@ -167,7 +182,7 @@ class WorkoutExerciseControllerTest {
                 .collect(Collectors.toList());
 
         WorkoutExercise workoutExerciseToUpdate = originalList.get(idOfElementToUpdate);
-        WorkoutExerciseUpdateRequest request = WorkoutExerciseHelper.createUpdateRequest(workoutExerciseToUpdate.getId(), 3, 5, "PT5M", newRequestedOrder);
+        WorkoutExerciseUpdateRequest request = WorkoutExerciseHelper.createUpdateRequest(workoutExerciseToUpdate.getId(), newRequestedOrder);
         WorkoutExerciseResponse response = workoutExerciseController.updateWorkoutExercise(request);
 
         List<WorkoutExercise> finalWorkoutExerciseList = workoutExerciseRepository.findAllByWorkoutIdOrderByOrder(workout.getId());
@@ -180,7 +195,7 @@ class WorkoutExerciseControllerTest {
         workout = workoutRepository.save(workout);
         Exercise exercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS));
         exercise = exerciseRepository.save(exercise);
-        WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 2, 6, Duration.ofMinutes(3), 1);
+        WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1);
         workoutExercise = workoutExerciseRepository.save(workoutExercise);
 
         Long deletedWorkoutExerciseId = workoutExerciseController.deleteWorkoutExercise(workoutExercise.getId());
@@ -199,14 +214,14 @@ class WorkoutExerciseControllerTest {
 
         List<WorkoutExercise> originalList = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
-            WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 5, 6, Duration.ofMinutes(2), i);
+            WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, i);
             originalList.add(workoutExerciseRepository.save(workoutExercise));
         }
 
         List<WorkoutExerciseUpdateRequest> requestList = new ArrayList<>();
         for (int i = originalList.size(); i > 0; i--) {
             Long id = originalList.get(originalList.size() - i).getId();
-            requestList.add(WorkoutExerciseHelper.createUpdateRequest(id, 3, 3, "PT3M", i));
+            requestList.add(WorkoutExerciseHelper.createUpdateRequest(id, i));
         }
         BatchUpdateRequest<WorkoutExerciseUpdateRequest> batchRequest = BatchUpdateRequest.<WorkoutExerciseUpdateRequest>builder()
                 .updateRequestList(requestList)

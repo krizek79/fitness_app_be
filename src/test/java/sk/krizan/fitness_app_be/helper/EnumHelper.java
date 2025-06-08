@@ -1,11 +1,14 @@
 package sk.krizan.fitness_app_be.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.model.enums.BaseEnum;
 
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EnumHelper {
 
     public static <E extends Enum<E> & BaseEnum> void assertEnumResponsesMatch(Class<E> enumClass, List<EnumResponse> responseList) {
@@ -19,5 +22,10 @@ public class EnumHelper {
             );
             Assertions.assertTrue(found, "Missing or incorrect enum response: " + enumConstant.name());
         }
+    }
+
+    public static void assertEnumResponse(String key, EnumResponse enumResponse) {
+        Assertions.assertEquals(key, enumResponse.key());
+        Assertions.assertNotNull(enumResponse.value());
     }
 }

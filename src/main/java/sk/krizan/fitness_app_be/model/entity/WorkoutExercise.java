@@ -1,13 +1,17 @@
 package sk.krizan.fitness_app_be.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,9 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.configuration.attribute_converter.DurationConverter;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -48,11 +53,21 @@ public class WorkoutExercise implements OrderableEntity {
     @JoinColumn(nullable = false)
     private Exercise exercise;
 
-    private Integer sets;
+    @Enumerated(EnumType.STRING)
+    private WorkoutExerciseType workoutExerciseType;
 
-    private Integer repetitions;
+    @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<WorkoutExerciseSet> workoutExerciseSetList = new ArrayList<>();
 
-    //  stored as a String
-    @Convert(converter = DurationConverter.class)
-    private Duration restDuration;
+    public void addToWorkoutExerciseSetList(List<WorkoutExerciseSet> workoutExerciseSetList) {
+        this.getWorkoutExerciseSetList().addAll(workoutExerciseSetList);
+        workoutExerciseSetList.forEach(workoutExerciseSet -> workoutExerciseSet.setWorkoutExercise(this));
+    }
+
+    public void removeFromWorkoutExerciseSetList(WorkoutExerciseSet workoutExerciseSet) {
+        if (workoutExerciseSet == null) {
+            return;
+        }
+        this.workoutExerciseSetList.remove(workoutExerciseSet);
+    }
 }

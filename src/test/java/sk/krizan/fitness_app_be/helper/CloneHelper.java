@@ -1,5 +1,7 @@
 package sk.krizan.fitness_app_be.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
@@ -10,10 +12,12 @@ import sk.krizan.fitness_app_be.model.entity.Week;
 import sk.krizan.fitness_app_be.model.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
 
 import java.util.Comparator;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CloneHelper {
 
     public static void assertCycleResponse(Cycle cycle, CycleResponse response) {
@@ -22,7 +26,7 @@ public class CloneHelper {
         Assertions.assertNotEquals(cycle.getId(), response.id());
         Assertions.assertEquals(cycle.getName(), response.name());
         Assertions.assertEquals(cycle.getDescription(), response.description());
-        Assertions.assertEquals(cycle.getLevel().getValue(), response.levelValue());
+        EnumHelper.assertEnumResponse(cycle.getLevel().getKey(), response.levelResponse());
         Assertions.assertEquals(cycle.getAuthor().getId(), response.authorId());
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
         Assertions.assertEquals(cycle.getTrainee().getId(), response.traineeId());
@@ -100,11 +104,33 @@ public class CloneHelper {
     private static void assertWorkoutExercise(WorkoutExercise originalWorkoutExercise, WorkoutExercise clonedWorkoutExercise) {
         Assertions.assertNotNull(clonedWorkoutExercise.getId());
         Assertions.assertNotEquals(originalWorkoutExercise.getId(), clonedWorkoutExercise.getId());
-        Assertions.assertNotNull(clonedWorkoutExercise.getExercise());
         Assertions.assertEquals(originalWorkoutExercise.getExercise(), clonedWorkoutExercise.getExercise());
-        Assertions.assertEquals(originalWorkoutExercise.getSets(), clonedWorkoutExercise.getSets());
-        Assertions.assertEquals(originalWorkoutExercise.getRepetitions(), clonedWorkoutExercise.getRepetitions());
-        Assertions.assertEquals(originalWorkoutExercise.getRestDuration(), clonedWorkoutExercise.getRestDuration());
+        Assertions.assertEquals(originalWorkoutExercise.getWorkoutExerciseType(), clonedWorkoutExercise.getWorkoutExerciseType());
+        Assertions.assertNotNull(clonedWorkoutExercise.getWorkoutExerciseSetList());
+        Assertions.assertEquals(originalWorkoutExercise.getWorkoutExerciseSetList().size(), clonedWorkoutExercise.getWorkoutExerciseSetList().size());
+        List<WorkoutExerciseSet> originalWorkoutExerciseSetList = originalWorkoutExercise.getWorkoutExerciseSetList().stream().sorted(Comparator.comparing(WorkoutExerciseSet::getId)).toList();
+        List<WorkoutExerciseSet> clonedWorkoutExerciseSetList = clonedWorkoutExercise.getWorkoutExerciseSetList().stream().sorted(Comparator.comparing(WorkoutExerciseSet::getId)).toList();
+        for (int i = 0; i < clonedWorkoutExerciseSetList.size(); i++) {
+            WorkoutExerciseSet originalWorkoutExerciseSet = originalWorkoutExerciseSetList.get(i);
+            WorkoutExerciseSet clonedWorkoutExerciseSet = clonedWorkoutExerciseSetList.get(i);
+            assertWorkoutExerciseSet(originalWorkoutExerciseSet, clonedWorkoutExerciseSet);
+        }
+    }
+
+    private static void assertWorkoutExerciseSet(WorkoutExerciseSet originalWorkoutExerciseSet, WorkoutExerciseSet clonedWorkoutExerciseSet) {
+        Assertions.assertNotNull(clonedWorkoutExerciseSet.getId());
+        Assertions.assertNotEquals(originalWorkoutExerciseSet.getId(), clonedWorkoutExerciseSet.getId());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getWorkoutExerciseSetType(), clonedWorkoutExerciseSet.getWorkoutExerciseSetType());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getOrder(), clonedWorkoutExerciseSet.getOrder());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getNote(), clonedWorkoutExerciseSet.getNote());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getRestDuration(), clonedWorkoutExerciseSet.getRestDuration());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getGoalTime(), clonedWorkoutExerciseSet.getGoalTime());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getGoalWeight(), clonedWorkoutExerciseSet.getGoalWeight());
+        Assertions.assertEquals(originalWorkoutExerciseSet.getGoalRepetitions(), clonedWorkoutExerciseSet.getGoalRepetitions());
+        Assertions.assertNull(clonedWorkoutExerciseSet.getActualTime());
+        Assertions.assertNull(clonedWorkoutExerciseSet.getActualWeight());
+        Assertions.assertNull(clonedWorkoutExerciseSet.getActualRepetitions());
+        Assertions.assertFalse(clonedWorkoutExerciseSet.getCompleted());
     }
 
     public static void assertWorkoutResponse(WeekWorkoutCreateRequest request, WeekWorkoutResponse response) {

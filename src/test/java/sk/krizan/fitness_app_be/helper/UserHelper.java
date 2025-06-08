@@ -1,11 +1,14 @@
 package sk.krizan.fitness_app_be.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
 import java.time.Instant;
 import java.util.Set;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserHelper {
 
     public static User createMockUser(String email, Set<Role> roles) {

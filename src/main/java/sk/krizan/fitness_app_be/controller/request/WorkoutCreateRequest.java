@@ -11,6 +11,8 @@ public record WorkoutCreateRequest(
         @Size(min = 1, max = 64)
         String name,
         @NotNull
-        Boolean isTemplate
+        Boolean isTemplate,
+        @NotEmpty
+        String weightUnitKey
 ) {
 }

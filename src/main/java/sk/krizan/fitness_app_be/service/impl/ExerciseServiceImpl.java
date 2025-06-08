@@ -72,7 +72,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public Exercise createExercise(ExerciseCreateRequest request) {
         Set<MuscleGroup> muscleGroups = request.muscleGroupKeys().stream()
-            .map(key -> (MuscleGroup) enumService.findEnumByKey(key))
+            .map(key -> enumService.findEnumByKey(MuscleGroup.class, key))
             .collect(Collectors.toSet());
         Exercise exercise = ExerciseMapper.createRequestToEntity(request, muscleGroups);
         return exerciseRepository.save(exercise);

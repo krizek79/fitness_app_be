@@ -91,7 +91,7 @@ public class CycleServiceImpl implements CycleService {
             throw new ForbiddenException();
         }
 
-        Level level = (Level) enumService.findEnumByKey(request.levelKey());
+        Level level = enumService.findEnumByKey(Level.class, request.levelKey());
 
         return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, level));
     }

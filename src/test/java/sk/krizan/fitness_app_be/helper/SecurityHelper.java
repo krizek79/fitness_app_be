@@ -1,5 +1,7 @@
 package sk.krizan.fitness_app_be.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,6 +9,7 @@ import sk.krizan.fitness_app_be.model.entity.User;
 
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SecurityHelper {
 
     public static void setAuthentication(User user) {

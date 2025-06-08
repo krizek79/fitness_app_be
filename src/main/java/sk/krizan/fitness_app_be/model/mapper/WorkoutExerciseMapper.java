@@ -10,8 +10,8 @@ import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
-import java.time.Duration;
 import java.util.List;
 
 @Component
@@ -21,16 +21,15 @@ public class WorkoutExerciseMapper {
     public static WorkoutExercise createRequestToEntity(
             WorkoutExerciseCreateRequest request,
             Workout workout,
-            Exercise exercise
+            Exercise exercise,
+            WorkoutExerciseType workoutExerciseType
     ) {
-        return WorkoutExercise.builder()
-                .workout(workout)
-                .exercise(exercise)
-                .order(request.order())
-                .sets(request.sets())
-                .repetitions(request.repetitions())
-                .restDuration(request.restDuration() != null ? Duration.parse(request.restDuration()) : null)
-                .build();
+        WorkoutExercise workoutExercise = new WorkoutExercise();
+        workoutExercise.setWorkout(workout);
+        workoutExercise.setExercise(exercise);
+        workoutExercise.setOrder(request.order());
+        workoutExercise.setWorkoutExerciseType(workoutExerciseType);
+        return workoutExercise;
     }
 
     public static WorkoutExerciseResponse entityToResponse(WorkoutExercise workoutExercise) {
@@ -39,23 +38,17 @@ public class WorkoutExerciseMapper {
                 .workoutId(workoutExercise.getWorkout().getId())
                 .order(workoutExercise.getOrder())
                 .exerciseName(workoutExercise.getExercise().getName())
-                .sets(workoutExercise.getSets())
-                .repetitions(workoutExercise.getRepetitions())
-                .restDuration(
-                        workoutExercise.getRestDuration() != null
-                                ? workoutExercise.getRestDuration().toString()
-                                : null)
+                .workoutExerciseTypeResponse(EnumMapper.enumToResponse(workoutExercise.getWorkoutExerciseType()))
                 .build();
     }
 
     public static WorkoutExercise updateRequestToEntity(
             WorkoutExercise workoutExercise,
+            WorkoutExerciseType workoutExerciseType,
             WorkoutExerciseUpdateRequest request
     ) {
-        workoutExercise.setSets(request.sets());
         workoutExercise.setOrder(request.order());
-        workoutExercise.setRepetitions(request.repetitions());
-        workoutExercise.setRestDuration(request.restDuration() != null ? Duration.parse(request.restDuration()) : null);
+        workoutExercise.setWorkoutExerciseType(workoutExerciseType);
 
         return workoutExercise;
     }

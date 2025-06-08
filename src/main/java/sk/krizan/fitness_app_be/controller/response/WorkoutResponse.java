@@ -14,6 +14,7 @@ public record WorkoutResponse(
         String traineeName,
         List<TagResponse> tagResponseList,
         String description,
-        Boolean isTemplate
+        Boolean isTemplate,
+        EnumResponse weightUnitResponse
 ) {
 }

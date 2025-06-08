@@ -1,6 +1,5 @@
 package sk.krizan.fitness_app_be.controller.endpoint;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.service.api.EnumService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("enums")
@@ -26,5 +27,23 @@ public class EnumController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public List<EnumResponse> getMuscleGroups() {
         return enumService.getMuscleGroups();
+    }
+
+    @GetMapping("weight-units")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<EnumResponse> getWeightUnits() {
+        return enumService.getWeightUnits();
+    }
+
+    @GetMapping("workout-exercise-types")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<EnumResponse> getWorkoutExerciseTypes() {
+        return enumService.getWorkoutExerciseTypes();
+    }
+
+    @GetMapping("workout-exercise-set-types")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public List<EnumResponse> getWorkoutExerciseSetTypes() {
+        return enumService.getWorkoutExerciseSetTypes();
     }
 }

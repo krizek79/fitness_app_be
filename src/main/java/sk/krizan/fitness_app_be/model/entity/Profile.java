@@ -3,6 +3,8 @@ package sk.krizan.fitness_app_be.model.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,10 @@ public class Profile {
 
     @NotNull
     private Boolean deleted = false;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private WeightUnit preferredWeightUnit;
 
     @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Workout> authoredWorkoutList = new ArrayList<>();

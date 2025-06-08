@@ -90,11 +90,8 @@ public class WeekServiceImpl implements WeekService {
     @Transactional
     public Week updateWeek(WeekUpdateRequest request) {
         Week week = getWeekById(request.id());
-        User currentUser = userService.getCurrentUser();
 
-        if (week.getCycle().getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ForbiddenException();
-        }
+        checkAuthorization(week);
 
         int originalOrder = week.getOrder();
         week = weekRepository.save(WeekMapper.updateRequestToEntity(request, week));
@@ -114,19 +111,9 @@ public class WeekServiceImpl implements WeekService {
 
     @Override
     public Long deleteWeek(Long id) {
-        User currentUser = userService.getCurrentUser();
         Week week = getWeekById(id);
 
-        if (week.getCycle() == null) {
-            throw new RuntimeException("Cycle is null.");
-        }
-
-        if (week.getCycle().getAuthor() != null
-                && week.getCycle().getAuthor().getUser() != currentUser
-                && !currentUser.getRoleSet().contains(Role.ADMIN)
-        ) {
-            throw new ForbiddenException();
-        }
+        checkAuthorization(week);
 
         week.getCycle().removeFromWeekList(week);
         weekRepository.delete(week);
@@ -138,17 +125,19 @@ public class WeekServiceImpl implements WeekService {
     @Override
     @Transactional
     public Week triggerCompleted(Long id) {
-        User currentUser = userService.getCurrentUser();
+
         Week week = getWeekById(id);
 
-        if (week.getCycle() != null
-                && week.getCycle().getAuthor() != null
-                && week.getCycle().getAuthor().getUser() != currentUser
-                && !currentUser.getRoleSet().contains(Role.ADMIN)
-        ) {
-            throw new ForbiddenException();
-        }
+        checkAuthorization(week);
+
         week.setCompleted(!week.getCompleted());
         return weekRepository.save(week);
+    }
+
+    private void checkAuthorization(Week week) {
+        User currentUser = userService.getCurrentUser();
+        if (week.getCycle().getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
+            throw new ForbiddenException();
+        }
     }
 }

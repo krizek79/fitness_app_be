@@ -4,7 +4,8 @@ CREATE TABLE workout (
     profile_id BIGINT NOT NULL REFERENCES profile (id),
     level VARCHAR(255),
     description VARCHAR(1000),
-    is_template BOOLEAN NOT NULL DEFAULT FALSE
+    is_template BOOLEAN NOT NULL DEFAULT FALSE,
+    weight_unit VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE workout_tag (

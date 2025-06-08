@@ -9,6 +9,7 @@ import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.List;
 import java.util.Set;
@@ -17,12 +18,13 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkoutMapper {
 
-    public static Workout createRequestToEntity(WorkoutCreateRequest request, Profile profile) {
+    public static Workout createRequestToEntity(WorkoutCreateRequest request, Profile profile, WeightUnit weightUnit) {
         Workout workout = new Workout();
         workout.setAuthor(profile);
         workout.setTrainee(profile);
         workout.setName(request.name());
         workout.setIsTemplate(request.isTemplate());
+        workout.setWeightUnit(weightUnit);
         profile.addToAuthoredWorkoutList(List.of(workout));
         return workout;
     }
@@ -40,16 +42,19 @@ public class WorkoutMapper {
                                 .map(TagMapper::entityToResponse).toList())
                 .description(workout.getDescription())
                 .isTemplate(workout.getIsTemplate())
+                .weightUnitResponse(EnumMapper.enumToResponse(workout.getWeightUnit()))
                 .build();
     }
 
     public static Workout updateRequestToEntity(
             WorkoutUpdateRequest request,
             Workout workout,
+            WeightUnit weightUnit,
             Set<Tag> tags
     ) {
         workout.setName(request.name());
         workout.setDescription(request.description());
+        workout.setWeightUnit(weightUnit);
         workout.getTagSet().clear();
         workout.getTagSet().addAll(tags);
 

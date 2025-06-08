@@ -12,6 +12,7 @@ public record WorkoutUpdateRequest(
         String name,
         @Size(max = 1000)
         String description,
+        String weightUnitKey,
         Set<String> tagNames
 ) {
 }

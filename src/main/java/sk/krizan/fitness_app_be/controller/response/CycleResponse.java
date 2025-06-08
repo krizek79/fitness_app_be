@@ -12,6 +12,6 @@ public record CycleResponse(
         String traineeName,
         Integer numberOfWeeks,
         String description,
-        String levelValue
+        EnumResponse levelResponse
 ) {
 }

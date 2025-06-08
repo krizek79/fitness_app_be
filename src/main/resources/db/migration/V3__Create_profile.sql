@@ -4,5 +4,6 @@ CREATE TABLE profile (
     name VARCHAR(64),
     profile_picture_url VARCHAR(255),
     bio VARCHAR(128),
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    preferred_weight_unit VARCHAR(255) NOT NULL
 );

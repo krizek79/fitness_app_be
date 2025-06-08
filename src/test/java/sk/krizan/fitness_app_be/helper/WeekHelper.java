@@ -1,6 +1,8 @@
 package sk.krizan.fitness_app_be.helper;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
@@ -17,6 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WeekHelper {
 
     public static Week createMockWeek(Cycle cycle, Integer order) {

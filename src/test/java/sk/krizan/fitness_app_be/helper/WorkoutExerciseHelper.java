@@ -1,5 +1,7 @@
 package sk.krizan.fitness_app_be.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
@@ -10,23 +12,22 @@ import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
-import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkoutExerciseHelper {
 
-    public static WorkoutExercise createMockWorkoutExercise(Workout workout, Exercise exercise, int sets, int repetitions, Duration restDuration, Integer order) {
+    public static WorkoutExercise createMockWorkoutExercise(Workout workout, Exercise exercise, Integer order) {
         WorkoutExercise workoutExercise = new WorkoutExercise();
         workoutExercise.setExercise(exercise);
-        workoutExercise.setSets(sets);
-        workoutExercise.setRepetitions(repetitions);
-        workoutExercise.setRestDuration(restDuration);
         workoutExercise.setOrder(order);
+        workoutExercise.setWorkoutExerciseType(WorkoutExerciseType.TIME);
 
         workout.addToWorkoutExerciseList(List.of(workoutExercise));
 
@@ -43,24 +44,20 @@ public class WorkoutExerciseHelper {
                 .build();
     }
 
-    public static WorkoutExerciseUpdateRequest createUpdateRequest(Long id, Integer repetitions, Integer sets, String restDuration, Integer order) {
+    public static WorkoutExerciseUpdateRequest createUpdateRequest(Long id, Integer order) {
         return WorkoutExerciseUpdateRequest.builder()
                 .id(id)
-                .repetitions(repetitions)
-                .sets(sets)
-                .restDuration(restDuration)
                 .order(order)
+                .workoutExerciseTypeKey(WorkoutExerciseType.BODYWEIGHT.getKey())
                 .build();
     }
 
-    public static WorkoutExerciseCreateRequest createCreateRequest(Long workoutId, Long exerciseId, Integer repetitions, Integer sets, String restDuration, Integer order) {
+    public static WorkoutExerciseCreateRequest createCreateRequest(Long workoutId, Long exerciseId, Integer order) {
         return WorkoutExerciseCreateRequest.builder()
                 .workoutId(workoutId)
                 .exerciseId(exerciseId)
-                .repetitions(repetitions)
-                .sets(sets)
-                .restDuration(restDuration)
                 .order(order)
+                .workoutExerciseTypeKey(WorkoutExerciseType.WEIGHT.getKey())
                 .build();
     }
 
@@ -69,9 +66,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertEquals(workoutExercise.getId(), response.id());
         Assertions.assertEquals(workoutExercise.getWorkout().getId(), response.workoutId());
         Assertions.assertEquals(workoutExercise.getExercise().getName(), response.exerciseName());
-        Assertions.assertEquals(workoutExercise.getRepetitions(), response.repetitions());
-        Assertions.assertEquals(workoutExercise.getSets(), response.sets());
-        Assertions.assertEquals(workoutExercise.getRestDuration().toString(), response.restDuration());
+        EnumHelper.assertEnumResponse(workoutExercise.getWorkoutExerciseType().getKey(), response.workoutExerciseTypeResponse());
     }
 
     public static void assertDelete(boolean exists, WorkoutExercise workoutExercise, Long deletedWorkoutExerciseId) {
@@ -106,14 +101,18 @@ public class WorkoutExerciseHelper {
         }
     }
 
-    public static void assertCreate(WorkoutExerciseCreateRequest request, WorkoutExerciseResponse response, Integer expectedInsertedOrder, List<WorkoutExercise> finalWorkoutExerciseList, List<Integer> expectedFinalOrder) {
+    public static void assertCreate(
+            WorkoutExerciseCreateRequest request,
+            WorkoutExerciseResponse response,
+            Integer expectedInsertedOrder,
+            List<WorkoutExercise> finalWorkoutExerciseList,
+            List<Integer> expectedFinalOrder
+    ) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
         Assertions.assertEquals(request.workoutId(), response.workoutId());
-        Assertions.assertEquals(request.sets(), response.sets());
-        Assertions.assertEquals(request.repetitions(), response.repetitions());
-        Assertions.assertEquals(request.restDuration(), response.restDuration());
         Assertions.assertEquals(expectedInsertedOrder, response.order());
+        EnumHelper.assertEnumResponse(request.workoutExerciseTypeKey(), response.workoutExerciseTypeResponse());
 
         Assertions.assertNotNull(finalWorkoutExerciseList);
         Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());
@@ -121,13 +120,16 @@ public class WorkoutExerciseHelper {
         Assertions.assertEquals(expectedFinalOrder, finalWorkoutExerciseListOrderList);
     }
 
-    public static void assertUpdate(WorkoutExerciseUpdateRequest request, WorkoutExerciseResponse response, List<Long> idsOfExpectedElementsInOrder, List<WorkoutExercise> finalWorkoutExerciseList) {
+    public static void assertUpdate(
+            WorkoutExerciseUpdateRequest request,
+            WorkoutExerciseResponse response,
+            List<Long> idsOfExpectedElementsInOrder,
+            List<WorkoutExercise> finalWorkoutExerciseList
+    ) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(request.id(), response.id());
         Assertions.assertNotNull(response.workoutId());
-        Assertions.assertEquals(request.sets(), response.sets());
-        Assertions.assertEquals(request.repetitions(), response.repetitions());
-        Assertions.assertEquals(request.restDuration(), response.restDuration());
+        EnumHelper.assertEnumResponse(request.workoutExerciseTypeKey(), response.workoutExerciseTypeResponse());
         Assertions.assertNotNull(finalWorkoutExerciseList);
         Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());
         Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWorkoutExerciseList.size());

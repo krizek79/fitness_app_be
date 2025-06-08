@@ -1,6 +1,8 @@
 package sk.krizan.fitness_app_be.helper;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
@@ -19,6 +21,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CycleHelper {
 
     public static Cycle createMockCycle(Profile author, Profile trainee, Level level) {
@@ -55,7 +58,7 @@ public class CycleHelper {
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
         Assertions.assertEquals(cycle.getTrainee().getId(), response.traineeId());
         Assertions.assertEquals(cycle.getTrainee().getName(), response.traineeName());
-        Assertions.assertEquals(cycle.getLevel().getValue(), response.levelValue());
+        EnumHelper.assertEnumResponse(cycle.getLevel().getKey(), response.levelResponse());
     }
 
     public static void assertCycleResponse_create(CycleCreateRequest request, Profile mockProfile, CycleResponse response) {
@@ -72,7 +75,7 @@ public class CycleHelper {
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNull(response.description());
-        Assertions.assertNull(response.levelValue());
+        Assertions.assertNull(response.levelResponse());
         Assertions.assertFalse(mockProfile.getAuthoredCycleList().isEmpty());
         Assertions.assertFalse(mockProfile.getAssignedCycleList().isEmpty());
     }
@@ -86,7 +89,7 @@ public class CycleHelper {
         Assertions.assertEquals(mockProfile.getName(), response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertEquals(request.description(), response.description());
-        Assertions.assertEquals(Level.valueOf(request.levelKey()).getValue(), response.levelValue());
+        EnumHelper.assertEnumResponse(request.levelKey(), response.levelResponse());
     }
 
     public static void assertDelete(boolean exists, Cycle cycle, Long deletedCycleId) {

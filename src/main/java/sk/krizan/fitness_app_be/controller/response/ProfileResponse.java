@@ -7,6 +7,7 @@ public record ProfileResponse(
         Long id,
         Long userId,
         String name,
-        String profilePictureUrl
+        String profilePictureUrl,
+        EnumResponse preferredWeightUnitResponse
 ) {
 }

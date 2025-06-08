@@ -1,6 +1,8 @@
 package sk.krizan.fitness_app_be.helper;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
@@ -15,6 +17,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TagHelper {
 
     public static Tag createMockTag() {

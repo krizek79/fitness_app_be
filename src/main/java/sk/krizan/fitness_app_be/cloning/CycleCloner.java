@@ -32,7 +32,6 @@ public class CycleCloner extends AbstractCloner<Cycle> {
         clone.setLevel(original.getLevel());
         List<Week> clonedWeeks = original.getWeekList().stream()
                 .map(week -> weekCloner.clone(week, context))
-                .peek(week -> week.setCycle(clone))
                 .toList();
         clone.addToWeekList(clonedWeeks);
         Profile targetProfile = context.getTargetProfile();

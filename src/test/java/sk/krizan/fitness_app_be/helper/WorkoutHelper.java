@@ -36,8 +36,8 @@ public class WorkoutHelper {
             String sortDirection,
             Long authorId,
             List<Long> tagIdList,
-            String name
-    ) {
+            String name,
+            Boolean isTemplate) {
         return WorkoutFilterRequest.builder()
                 .page(page)
                 .size(size)
@@ -46,6 +46,7 @@ public class WorkoutHelper {
                 .authorId(authorId)
                 .tagIdList(tagIdList)
                 .name(name)
+                .isTemplate(isTemplate)
                 .build();
     }
 
@@ -86,6 +87,9 @@ public class WorkoutHelper {
             Set<Tag> tagSet = tagSetList.get(i);
             String name = UUID.randomUUID().toString();
             Workout mockWorkout = createMockWorkout(profile, tagSet, name);
+            if (i == profileList.size() - 1) {
+                mockWorkout.setIsTemplate(true);
+            }
             mockWorkout.addToWorkoutExerciseList(workoutExercises);
             result.add(mockWorkout);
         }
@@ -117,6 +121,8 @@ public class WorkoutHelper {
         Assertions.assertEquals(workout.getAuthor().getName(), response.authorName());
         Assertions.assertEquals(workout.getTrainee().getId(), response.traineeId());
         Assertions.assertEquals(workout.getTrainee().getName(), response.traineeName());
+        EnumHelper.assertEnumResponse(workout.getWeightUnit().getKey(), response.weightUnitResponse());
+        Assertions.assertEquals(workout.getIsTemplate(), response.isTemplate());
         Assertions.assertTrue(response.tagResponseList().isEmpty());
     }
 
@@ -136,6 +142,7 @@ public class WorkoutHelper {
         Assertions.assertTrue(response.tagResponseList().isEmpty());
         Assertions.assertFalse(profile.getAuthoredWorkoutList().isEmpty());
         Assertions.assertEquals(request.isTemplate(), response.isTemplate());
+        EnumHelper.assertEnumResponse(request.weightUnitKey(), response.weightUnitResponse());
     }
 
     public static void assertWorkoutResponse_update(
@@ -152,6 +159,7 @@ public class WorkoutHelper {
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNotNull(response.description());
         Assertions.assertFalse(response.isTemplate());
+        EnumHelper.assertEnumResponse(request.weightUnitKey(), response.weightUnitResponse());
 
         List<TagResponse> tagResponseList = response.tagResponseList();
         Assertions.assertFalse(tagResponseList.isEmpty());
@@ -183,6 +191,7 @@ public class WorkoutHelper {
         Assertions.assertEquals(expectedWorkout.getTrainee().getId(), workoutResponse.traineeId());
         Assertions.assertEquals(expectedWorkout.getTrainee().getName(), workoutResponse.traineeName());
         Assertions.assertEquals(expectedWorkout.getIsTemplate(), workoutResponse.isTemplate());
+        EnumHelper.assertEnumResponse(expectedWorkout.getWeightUnit().getKey(), workoutResponse.weightUnitResponse());
         Assertions.assertEquals(expectedWorkout.getTagSet().stream().map(Tag::getId).toList(), workoutResponse.tagResponseList().stream().map(TagResponse::id).toList());
     }
 }

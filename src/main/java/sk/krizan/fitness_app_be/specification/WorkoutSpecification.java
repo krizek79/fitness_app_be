@@ -33,6 +33,11 @@ public class WorkoutSpecification {
                 predicate = criteriaBuilder.and(predicate, tagPredicate);
             }
 
+            if (request.isTemplate() != null) {
+                Predicate isTemplatePredicate = criteriaBuilder.equal(root.get(Workout.Fields.isTemplate), request.isTemplate());
+                predicate = criteriaBuilder.and(predicate, isTemplatePredicate);
+            }
+
             if (request.authorId() != null) {
                 Join<Workout, Profile> profileJoin = root.join(Workout.Fields.author);
                 Predicate authorPredicate = criteriaBuilder.equal(profileJoin.get(Profile.Fields.id), request.authorId());

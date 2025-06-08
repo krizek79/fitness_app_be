@@ -19,6 +19,7 @@ public record WorkoutFilterRequest(
         String sortDirection,
         String name,
         List<Long> tagIdList,
-        Long authorId
+        Long authorId,
+        Boolean isTemplate
 ) {
 }

@@ -19,8 +19,10 @@ import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.enums.Role;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutMapper;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
+import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.TagService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.service.api.WorkoutService;
@@ -38,6 +40,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private final TagService tagService;
     private final UserService userService;
+    private final EnumService enumService;
 
     private final WorkoutRepository workoutRepository;
 
@@ -82,7 +85,8 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Transactional
     public Workout createWorkout(WorkoutCreateRequest request) {
         Profile profile = userService.getCurrentUser().getProfile();
-        return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile));
+        WeightUnit weightUnit = enumService.findEnumByKey(WeightUnit.class, request.weightUnitKey());
+        return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile, weightUnit));
     }
 
     @Override
@@ -92,6 +96,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
         checkAuthorization(workout);
 
+        WeightUnit weightUnit = enumService.findEnumByKey(WeightUnit.class, request.weightUnitKey());
         Set<Tag> tags = new HashSet<>();
         if (request.tagNames() != null) {
             tags = request.tagNames().stream()
@@ -100,7 +105,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                     .collect(Collectors.toSet());
         }
 
-        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, tags));
+        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, weightUnit, tags));
     }
 
     @Override

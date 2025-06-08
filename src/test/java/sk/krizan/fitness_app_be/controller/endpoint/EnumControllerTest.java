@@ -15,6 +15,9 @@ import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 import sk.krizan.fitness_app_be.model.enums.Role;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
 
@@ -47,13 +50,31 @@ class EnumControllerTest {
 
     @Test
     void getWorkoutLevels() {
-        List<EnumResponse> levels = enumController.getWorkoutLevels();
-        EnumHelper.assertEnumResponsesMatch(Level.class, levels);
+        List<EnumResponse> responseList = enumController.getWorkoutLevels();
+        EnumHelper.assertEnumResponsesMatch(Level.class, responseList);
     }
 
     @Test
     void getMuscleGroups() {
-        List<EnumResponse> muscleGroups = enumController.getMuscleGroups();
-        EnumHelper.assertEnumResponsesMatch(MuscleGroup.class, muscleGroups);
+        List<EnumResponse> responseList = enumController.getMuscleGroups();
+        EnumHelper.assertEnumResponsesMatch(MuscleGroup.class, responseList);
+    }
+
+    @Test
+    void getWeightUnits() {
+        List<EnumResponse> responseList = enumController.getWeightUnits();
+        EnumHelper.assertEnumResponsesMatch(WeightUnit.class, responseList);
+    }
+
+    @Test
+    void getWorkoutExerciseTypes() {
+        List<EnumResponse> responseList = enumController.getWorkoutExerciseTypes();
+        EnumHelper.assertEnumResponsesMatch(WorkoutExerciseType.class, responseList);
+    }
+
+    @Test
+    void getWorkoutExerciseSetTypes() {
+        List<EnumResponse> responseList = enumController.getWorkoutExerciseSetTypes();
+        EnumHelper.assertEnumResponsesMatch(WorkoutExerciseSetType.class, responseList);
     }
 }

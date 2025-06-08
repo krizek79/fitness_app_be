@@ -6,6 +6,10 @@ import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.model.enums.BaseEnum;
 import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
+import sk.krizan.fitness_app_be.model.mapper.EnumMapper;
 import sk.krizan.fitness_app_be.service.api.EnumService;
 
 import java.util.Arrays;
@@ -28,25 +32,35 @@ public class EnumServiceImpl implements EnumService {
     }
 
     @Override
-    public BaseEnum findEnumByKey(String key) {
-        //  Enum types must be declared here
-        List<Class<? extends BaseEnum>> enumClasses = Arrays.asList(
-            Level.class,
-            MuscleGroup.class
-        );
+    public List<EnumResponse> getWeightUnits() {
+        return getEnumsOfType(WeightUnit.class);
+    }
 
-        return enumClasses.stream()
-            .flatMap(enumClass -> Arrays.stream(enumClass.getEnumConstants()))
-            .filter(baseEnum -> baseEnum.getKey().equals(key))
-            .findFirst().orElseThrow(() -> new NotFoundException(ERROR_ENUM_NOT_FOUND.formatted(key)));
+    @Override
+    public List<EnumResponse> getWorkoutExerciseTypes() {
+        return getEnumsOfType(WorkoutExerciseType.class);
+    }
+
+    @Override
+    public List<EnumResponse> getWorkoutExerciseSetTypes() {
+        return getEnumsOfType(WorkoutExerciseSetType.class);
+    }
+
+    @Override
+    public <T extends Enum<T> & BaseEnum> T findEnumByKey(Class<T> enumClass, String key) {
+        if (!enumClass.isEnum()) {
+            throw new IllegalArgumentException("Provided class is not an enum: " + enumClass.getName());
+        }
+
+        return Arrays.stream(enumClass.getEnumConstants())
+                .filter(e -> e.getKey().equals(key))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(ERROR_ENUM_NOT_FOUND.formatted(key)));
     }
 
     private List<EnumResponse> getEnumsOfType(Class<? extends BaseEnum> enumClass) {
-        return Arrays.stream(enumClass.getEnumConstants()).map(
-            baseEnum -> EnumResponse.builder()
-                .key(baseEnum.getKey())
-                .value(baseEnum.getValue())
-                .build()
-        ).collect(Collectors.toList());
+        return Arrays.stream(enumClass.getEnumConstants())
+                .map(EnumMapper::enumToResponse)
+                .collect(Collectors.toList());
     }
 }

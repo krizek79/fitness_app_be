@@ -40,7 +40,6 @@ import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
-import java.time.Duration;
 import java.util.Set;
 import java.util.UUID;
 
@@ -98,7 +97,7 @@ class CloneControllerTest {
         Workout originalWorkout = WorkoutHelper.createMockWorkout(mockProfile, Set.of(originalTag), UUID.randomUUID().toString());
         Exercise originalExercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         originalExercise = exerciseRepository.save(originalExercise);
-        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1, 6, Duration.ofMinutes(2), 1);
+        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1);
         WeekWorkoutHelper.createMockWeekWorkout(originalWeek, originalWorkout, 1);
         originalCycle = cycleRepository.save(originalCycle);
 
@@ -116,7 +115,7 @@ class CloneControllerTest {
         Workout originalWorkout = WorkoutHelper.createMockWorkout(mockProfile, Set.of(originalTag), UUID.randomUUID().toString());
         Exercise originalExercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
         originalExercise = exerciseRepository.save(originalExercise);
-        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1, 6, Duration.ofMinutes(2), 1);
+        WorkoutExerciseHelper.createMockWorkoutExercise(originalWorkout, originalExercise, 1);
         originalWorkout = workoutRepository.save(originalWorkout);
 
         Cycle originalCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);

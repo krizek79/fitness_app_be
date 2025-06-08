@@ -3,9 +3,12 @@ package sk.krizan.fitness_app_be.helper;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
+import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExerciseHelper {
 
     public static Exercise createMockExercise(String name, Set<MuscleGroup> muscleGroups) {
@@ -65,14 +69,14 @@ public class ExerciseHelper {
         Assertions.assertNotNull(response.id());
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNotNull(response.muscleGroupValues());
-        Assertions.assertFalse(response.muscleGroupValues().isEmpty());
-        Assertions.assertEquals(request.muscleGroupKeys().size(), response.muscleGroupValues().size());
-        List<String> requestMuscleGroupValueList = request.muscleGroupKeys().stream()
-                .map(MuscleGroup::valueOf)
-                .map(MuscleGroup::getValue)
-                .toList();
-        Assertions.assertTrue(response.muscleGroupValues().containsAll(requestMuscleGroupValueList));
+        Assertions.assertNotNull(response.muscleGroupResponseList());
+        Assertions.assertFalse(response.muscleGroupResponseList().isEmpty());
+        Assertions.assertEquals(request.muscleGroupKeys().size(), response.muscleGroupResponseList().size());
+        Set<String> responseKeys = response.muscleGroupResponseList()
+                .stream()
+                .map(EnumResponse::key)
+                .collect(Collectors.toSet());
+        Assertions.assertEquals(request.muscleGroupKeys(), responseKeys);
     }
 
     public static void assertDelete(boolean exists, Exercise savedExercise, Long deletedExerciseId) {
@@ -105,18 +109,34 @@ public class ExerciseHelper {
         }
     }
 
-    private static void assertExerciseResponse(ExerciseResponse exerciseResponse, Exercise exercise) {
-        Assertions.assertNotNull(exerciseResponse);
-        Assertions.assertNotNull(exerciseResponse.id());
-        Assertions.assertEquals(exercise.getId(), exerciseResponse.id());
-        Assertions.assertNotNull(exerciseResponse.name());
-        Assertions.assertEquals(exercise.getName(), exerciseResponse.name());
-        Assertions.assertNotNull(exerciseResponse.muscleGroupValues());
-        Assertions.assertFalse(exerciseResponse.muscleGroupValues().isEmpty());
-        Assertions.assertEquals(exercise.getMuscleGroupSet().size(), exerciseResponse.muscleGroupValues().size());
-        boolean containsAllMuscleGroupValues = exerciseResponse.muscleGroupValues().containsAll(
-                exercise.getMuscleGroupSet().stream().map(MuscleGroup::getValue).toList());
-        Assertions.assertTrue(containsAllMuscleGroupValues);
+    private static void assertExerciseResponse(ExerciseResponse response, Exercise exercise) {
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.id());
+        Assertions.assertEquals(exercise.getId(), response.id());
+        Assertions.assertNotNull(response.name());
+        Assertions.assertEquals(exercise.getName(), response.name());
+        Assertions.assertNotNull(response.muscleGroupResponseList());
+        Assertions.assertFalse(response.muscleGroupResponseList().isEmpty());
+        Assertions.assertEquals(exercise.getMuscleGroupSet().size(), response.muscleGroupResponseList().size());
+        Set<String> expectedKeys = exercise.getMuscleGroupSet()
+                .stream()
+                .map(MuscleGroup::getKey)
+                .collect(Collectors.toSet());
+        Set<String> expectedValues = exercise.getMuscleGroupSet()
+                .stream()
+                .map(MuscleGroup::getValue)
+                .collect(Collectors.toSet());
+        Set<String> responseKeys = response.muscleGroupResponseList()
+                .stream()
+                .map(EnumResponse::key)
+                .collect(Collectors.toSet());
+        Set<String> responseValues = response.muscleGroupResponseList()
+                .stream()
+                .map(EnumResponse::value)
+                .collect(Collectors.toSet());
+
+        Assertions.assertEquals(expectedKeys, responseKeys);
+        Assertions.assertEquals(expectedValues, responseValues);
     }
 
     /**
@@ -147,9 +167,25 @@ public class ExerciseHelper {
         Assertions.assertEquals(exercise.getId(), response.id());
         Assertions.assertNotNull(response.name());
         Assertions.assertEquals(exercise.getName(), response.name());
-        Assertions.assertNotNull(response.muscleGroupValues());
-        List<String> requestMuscleGroupValueList = exercise.getMuscleGroupSet().stream()
-                .map(MuscleGroup::getValue).toList();
-        Assertions.assertTrue(response.muscleGroupValues().containsAll(requestMuscleGroupValueList));
+        Assertions.assertNotNull(response.muscleGroupResponseList());
+        Set<String> expectedKeys = exercise.getMuscleGroupSet()
+                .stream()
+                .map(MuscleGroup::getKey)
+                .collect(Collectors.toSet());
+        Set<String> expectedValues = exercise.getMuscleGroupSet()
+                .stream()
+                .map(MuscleGroup::getValue)
+                .collect(Collectors.toSet());
+        Set<String> responseKeys = response.muscleGroupResponseList()
+                .stream()
+                .map(EnumResponse::key)
+                .collect(Collectors.toSet());
+        Set<String> responseValues = response.muscleGroupResponseList()
+                .stream()
+                .map(EnumResponse::value)
+                .collect(Collectors.toSet());
+
+        Assertions.assertEquals(expectedKeys, responseKeys);
+        Assertions.assertEquals(expectedValues, responseValues);
     }
 }

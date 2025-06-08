@@ -29,7 +29,6 @@ public class WeekCloner extends AbstractCloner<Week> {
         clone.setCompleted(false);
         List<WeekWorkout> clonedWeekWorkouts = original.getWeekWorkoutList().stream()
                 .map(weekWorkout -> weekWorkoutCloner.clone(weekWorkout, context))
-                .peek(weekWorkout -> weekWorkout.setWeek(clone))
                 .toList();
         clone.addToWeekWorkoutList(clonedWeekWorkouts);
 

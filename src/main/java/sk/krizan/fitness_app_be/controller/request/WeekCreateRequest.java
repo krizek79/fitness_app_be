@@ -9,6 +9,7 @@ public record WeekCreateRequest(
         @NotNull
         Long cycleId,
         @Min(1)
+        @NotNull
         Integer order
 ) {
 }

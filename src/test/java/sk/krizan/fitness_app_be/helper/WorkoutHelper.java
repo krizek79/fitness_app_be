@@ -1,5 +1,7 @@
 package sk.krizan.fitness_app_be.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
@@ -11,6 +13,7 @@ import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_UPDATE_VALUE;
 import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkoutHelper {
 
     public static WorkoutFilterRequest createFilterRequest(
@@ -52,6 +56,7 @@ public class WorkoutHelper {
     ) {
         Workout workout = new Workout();
         workout.setName(name);
+        workout.setWeightUnit(WeightUnit.KG);
         workout.addToTagSet(tagSet);
 
         profile.addToAuthoredWorkoutList(List.of(workout));
@@ -92,6 +97,7 @@ public class WorkoutHelper {
         return WorkoutCreateRequest.builder()
                 .name(DEFAULT_VALUE)
                 .isTemplate(true)
+                .weightUnitKey(WeightUnit.KG.getKey())
                 .build();
     }
 
@@ -99,6 +105,7 @@ public class WorkoutHelper {
         return WorkoutUpdateRequest.builder()
                 .name(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
+                .weightUnitKey(WeightUnit.LB.getKey())
                 .tagNames(Set.of(DEFAULT_UPDATE_VALUE))
                 .build();
     }

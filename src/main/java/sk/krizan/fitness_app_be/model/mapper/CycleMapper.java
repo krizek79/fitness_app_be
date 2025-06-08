@@ -26,7 +26,7 @@ public class CycleMapper {
                 .name(cycle.getName())
                 .description(cycle.getDescription())
                 .numberOfWeeks(cycle.getWeekList() != null ? cycle.getWeekList().size() : 0)
-                .levelValue(cycle.getLevel() == null ? null : cycle.getLevel().getValue())
+                .levelResponse(cycle.getLevel() != null ? EnumMapper.enumToResponse(cycle.getLevel()) : null)
                 .build();
     }
 

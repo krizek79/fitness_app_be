@@ -81,7 +81,7 @@ class WorkoutControllerTest {
         List<Profile> profileList = new ArrayList<>();
         List<List<WorkoutExercise>> workoutExerciseList = new ArrayList<>();
         List<Set<Tag>> tagSetList = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             User user = UserHelper.createMockUser("user" + (i + 1) + "@test.com", Set.of(Role.USER));
             user = userRepository.save(user);
             Profile profile = ProfileHelper.createMockProfile("profile" + (i + 1), user);
@@ -106,12 +106,13 @@ class WorkoutControllerTest {
         filterWorkouts_ByName(originalWorkoutList);
         filterWorkouts_ByTagNameList(originalWorkoutList);
         filterWorkouts_ByAuthorId(originalWorkoutList);
+        filterWorkouts_ByIsTemplate(originalWorkoutList);
     }
 
     private void filterWorkouts_ByAuthorId(List<Workout> originalWorkoutList) {
         Workout expectedWorkout = originalWorkoutList.get(1);
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), expectedWorkout.getAuthor().getId(), null, null);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), expectedWorkout.getAuthor().getId(), null, null, false);
         PageResponse<WorkoutResponse> response = workoutController.filterWorkouts(request);
 
         WorkoutHelper.assertFilter(response, expectedWorkout);
@@ -120,7 +121,7 @@ class WorkoutControllerTest {
     private void filterWorkouts_ByTagNameList(List<Workout> originalWorkoutList) {
         Workout expectedWorkout = originalWorkoutList.get(2);
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, expectedWorkout.getTagSet().stream().map(Tag::getId).collect(Collectors.toList()), null);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, expectedWorkout.getTagSet().stream().map(Tag::getId).collect(Collectors.toList()), null, false);
         PageResponse<WorkoutResponse> response = workoutController.filterWorkouts(request);
 
         WorkoutHelper.assertFilter(response, expectedWorkout);
@@ -129,7 +130,16 @@ class WorkoutControllerTest {
     private void filterWorkouts_ByName(List<Workout> originalWorkoutList) {
         Workout expectedWorkout = originalWorkoutList.get(0);
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, expectedWorkout.getName().substring(0, 5));
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, expectedWorkout.getName().substring(0, 5), false);
+        PageResponse<WorkoutResponse> response = workoutController.filterWorkouts(request);
+
+        WorkoutHelper.assertFilter(response, expectedWorkout);
+    }
+
+    private void filterWorkouts_ByIsTemplate(List<Workout> originalWorkoutList) {
+        Workout expectedWorkout = originalWorkoutList.get(3);
+
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, null, true);
         PageResponse<WorkoutResponse> response = workoutController.filterWorkouts(request);
 
         WorkoutHelper.assertFilter(response, expectedWorkout);

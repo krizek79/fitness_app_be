@@ -22,6 +22,7 @@ public class WeekMapper {
                 .cycleId(week.getCycle() != null ? week.getCycle().getId() : null)
                 .order(week.getOrder())
                 .completed(week.getCompleted())
+                .note(week.getNote())
                 .build();
     }
 
@@ -29,12 +30,14 @@ public class WeekMapper {
         Week week = new Week();
         week.setCycle(cycle);
         week.setOrder(request.order());
+        week.setNote(request.note());
         cycle.addToWeekList(List.of(week));
         return week;
     }
 
     public static Week updateRequestToEntity(WeekUpdateRequest request, Week week) {
         week.setOrder(request.order());
+        week.setNote(request.note());
         return week;
     }
 

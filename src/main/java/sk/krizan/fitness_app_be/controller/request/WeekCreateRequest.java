@@ -3,6 +3,7 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import org.hibernate.validator.constraints.Length;
 
 @Builder
 public record WeekCreateRequest(
@@ -10,6 +11,8 @@ public record WeekCreateRequest(
         Long cycleId,
         @Min(1)
         @NotNull
-        Integer order
+        Integer order,
+        @Length(max = 1024)
+        String note
 ) {
 }

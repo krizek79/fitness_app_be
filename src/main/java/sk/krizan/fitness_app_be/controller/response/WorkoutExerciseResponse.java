@@ -8,6 +8,7 @@ public record WorkoutExerciseResponse(
         Long workoutId,
         Integer order,
         String exerciseName,
-        EnumResponse workoutExerciseTypeResponse
+        EnumResponse workoutExerciseTypeResponse,
+        String note
 ) {
 }

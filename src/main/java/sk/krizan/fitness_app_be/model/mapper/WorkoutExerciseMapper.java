@@ -29,6 +29,7 @@ public class WorkoutExerciseMapper {
         workoutExercise.setExercise(exercise);
         workoutExercise.setOrder(request.order());
         workoutExercise.setWorkoutExerciseType(workoutExerciseType);
+        workoutExercise.setNote(request.note());
         return workoutExercise;
     }
 
@@ -39,6 +40,7 @@ public class WorkoutExerciseMapper {
                 .order(workoutExercise.getOrder())
                 .exerciseName(workoutExercise.getExercise().getName())
                 .workoutExerciseTypeResponse(EnumMapper.enumToResponse(workoutExercise.getWorkoutExerciseType()))
+                .note(workoutExercise.getNote())
                 .build();
     }
 
@@ -49,6 +51,7 @@ public class WorkoutExerciseMapper {
     ) {
         workoutExercise.setOrder(request.order());
         workoutExercise.setWorkoutExerciseType(workoutExerciseType);
+        workoutExercise.setNote(request.note());
 
         return workoutExercise;
     }

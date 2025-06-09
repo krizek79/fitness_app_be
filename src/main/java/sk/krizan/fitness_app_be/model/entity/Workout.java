@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.ArrayList;
@@ -50,6 +51,19 @@ public class Workout {
     @ManyToOne
     private Profile trainee;
 
+    @Column(length = 1000)
+    private String description;
+
+    @NotNull
+    private Boolean isTemplate = false;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private WeightUnit weightUnit;
+
+    @Length(max = 1024)
+    private String note;
+
     @ManyToMany
     @JoinTable(
             name = "workout_tag",
@@ -60,16 +74,6 @@ public class Workout {
 
     @OneToMany(mappedBy = WorkoutExercise.Fields.workout, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
-
-    @Column(length = 1000)
-    private String description;
-
-    @NotNull
-    private Boolean isTemplate = false;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private WeightUnit weightUnit;
 
     public void addToTagSet(Set<Tag> tagSet) {
         this.getTagSet().addAll(tagSet);

@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
 import java.util.ArrayList;
@@ -55,6 +56,9 @@ public class WorkoutExercise implements OrderableEntity {
 
     @Enumerated(EnumType.STRING)
     private WorkoutExerciseType workoutExerciseType;
+
+    @Length(max = 1024)
+    private String note;
 
     @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<WorkoutExerciseSet> workoutExerciseSetList = new ArrayList<>();

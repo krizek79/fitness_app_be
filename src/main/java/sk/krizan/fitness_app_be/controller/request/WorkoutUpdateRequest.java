@@ -3,6 +3,7 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Set;
 
@@ -13,6 +14,8 @@ public record WorkoutUpdateRequest(
         @Size(max = 1000)
         String description,
         String weightUnitKey,
-        Set<String> tagNames
+        Set<String> tagNames,
+        @Length(max = 1024)
+        String note
 ) {
 }

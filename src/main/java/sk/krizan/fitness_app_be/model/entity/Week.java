@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,9 @@ public class Week implements OrderableEntity {
 
     @NotNull
     private Boolean completed = false;
+
+    @Length(max = 1024)
+    private String note;
 
     @OneToMany(mappedBy = WeekWorkout.Fields.week, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<WeekWorkout> weekWorkoutList = new ArrayList<>();

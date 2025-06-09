@@ -25,6 +25,7 @@ public class WorkoutMapper {
         workout.setName(request.name());
         workout.setIsTemplate(request.isTemplate());
         workout.setWeightUnit(weightUnit);
+        workout.setNote(request.note());
         profile.addToAuthoredWorkoutList(List.of(workout));
         return workout;
     }
@@ -43,6 +44,7 @@ public class WorkoutMapper {
                 .description(workout.getDescription())
                 .isTemplate(workout.getIsTemplate())
                 .weightUnitResponse(EnumMapper.enumToResponse(workout.getWeightUnit()))
+                .note(workout.getNote())
                 .build();
     }
 
@@ -56,7 +58,8 @@ public class WorkoutMapper {
         workout.setDescription(request.description());
         workout.setWeightUnit(weightUnit);
         workout.getTagSet().clear();
-        workout.getTagSet().addAll(tags);
+        workout.addToTagSet(tags);
+        workout.setNote(request.note());
 
         return workout;
     }

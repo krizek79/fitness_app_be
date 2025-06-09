@@ -15,6 +15,7 @@ import sk.krizan.fitness_app_be.model.entity.Week;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,6 +27,7 @@ public class WeekHelper {
         Week week = new Week();
         week.setCycle(cycle);
         week.setOrder(order);
+        week.setNote(UUID.randomUUID().toString());
 
         cycle.addToWeekList(List.of(week));
 
@@ -36,6 +38,7 @@ public class WeekHelper {
         return WeekCreateRequest.builder()
                 .cycleId(cycleId)
                 .order(order)
+                .note(UUID.randomUUID().toString())
                 .build();
     }
 
@@ -43,6 +46,7 @@ public class WeekHelper {
         return WeekUpdateRequest.builder()
                 .id(id)
                 .order(order)
+                .note(UUID.randomUUID().toString())
                 .build();
     }
 
@@ -52,6 +56,7 @@ public class WeekHelper {
         Assertions.assertEquals(week.getCycle().getId(), response.cycleId());
         Assertions.assertEquals(week.getOrder(), response.order());
         Assertions.assertFalse(response.completed());
+        Assertions.assertEquals(week.getNote(), response.note());
     }
 
     public static void assertDelete(boolean exists, Week savedMockWeek, Long deletedWeekId, Week weekToUpdate) {
@@ -118,6 +123,7 @@ public class WeekHelper {
         Assertions.assertEquals(request.cycleId(), response.cycleId());
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(expectedInsertedOrder, response.order());
+        Assertions.assertEquals(request.note(), response.note());
 
         Assertions.assertNotNull(finalWeekList);
         Assertions.assertFalse(finalWeekList.isEmpty());
@@ -135,6 +141,7 @@ public class WeekHelper {
         Assertions.assertEquals(request.id(), response.id());
         Assertions.assertNotNull(response.cycleId());
         Assertions.assertFalse(response.completed());
+        Assertions.assertEquals(request.note(), response.note());
         Assertions.assertNotNull(finalWeekList);
         Assertions.assertFalse(finalWeekList.isEmpty());
         Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWeekList.size());
@@ -155,6 +162,7 @@ public class WeekHelper {
             WeekResponse response = sortedResponseList.get(i);
             Assertions.assertEquals(request.id(), response.id());
             Assertions.assertEquals(request.order(), response.order());
+            Assertions.assertEquals(request.note(), response.note());
         }
     }
 }

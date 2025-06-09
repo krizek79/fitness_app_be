@@ -15,6 +15,7 @@ public record WorkoutResponse(
         List<TagResponse> tagResponseList,
         String description,
         Boolean isTemplate,
-        EnumResponse weightUnitResponse
+        EnumResponse weightUnitResponse,
+        String note
 ) {
 }

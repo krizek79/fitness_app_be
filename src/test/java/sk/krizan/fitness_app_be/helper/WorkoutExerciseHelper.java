@@ -16,6 +16,7 @@ import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,6 +28,7 @@ public class WorkoutExerciseHelper {
         WorkoutExercise workoutExercise = new WorkoutExercise();
         workoutExercise.setExercise(exercise);
         workoutExercise.setOrder(order);
+        workoutExercise.setNote(UUID.randomUUID().toString());
         workoutExercise.setWorkoutExerciseType(WorkoutExerciseType.TIME);
 
         workout.addToWorkoutExerciseList(List.of(workoutExercise));
@@ -48,6 +50,7 @@ public class WorkoutExerciseHelper {
         return WorkoutExerciseUpdateRequest.builder()
                 .id(id)
                 .order(order)
+                .note(UUID.randomUUID().toString())
                 .workoutExerciseTypeKey(WorkoutExerciseType.BODYWEIGHT.getKey())
                 .build();
     }
@@ -57,6 +60,7 @@ public class WorkoutExerciseHelper {
                 .workoutId(workoutId)
                 .exerciseId(exerciseId)
                 .order(order)
+                .note(UUID.randomUUID().toString())
                 .workoutExerciseTypeKey(WorkoutExerciseType.WEIGHT.getKey())
                 .build();
     }
@@ -66,6 +70,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertEquals(workoutExercise.getId(), response.id());
         Assertions.assertEquals(workoutExercise.getWorkout().getId(), response.workoutId());
         Assertions.assertEquals(workoutExercise.getExercise().getName(), response.exerciseName());
+        Assertions.assertEquals(workoutExercise.getNote(), response.note());
         EnumHelper.assertEnumResponse(workoutExercise.getWorkoutExerciseType().getKey(), response.workoutExerciseTypeResponse());
     }
 
@@ -98,6 +103,7 @@ public class WorkoutExerciseHelper {
             WorkoutExerciseResponse response = sortedResponseList.get(i);
             Assertions.assertEquals(request.id(), response.id());
             Assertions.assertEquals(request.order(), response.order());
+            Assertions.assertEquals(request.note(), response.note());
         }
     }
 
@@ -112,6 +118,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertNotNull(response.id());
         Assertions.assertEquals(request.workoutId(), response.workoutId());
         Assertions.assertEquals(expectedInsertedOrder, response.order());
+        Assertions.assertEquals(request.note(), response.note());
         EnumHelper.assertEnumResponse(request.workoutExerciseTypeKey(), response.workoutExerciseTypeResponse());
 
         Assertions.assertNotNull(finalWorkoutExerciseList);
@@ -131,6 +138,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertNotNull(response.workoutId());
         EnumHelper.assertEnumResponse(request.workoutExerciseTypeKey(), response.workoutExerciseTypeResponse());
         Assertions.assertNotNull(finalWorkoutExerciseList);
+        Assertions.assertEquals(request.note(), response.note());
         Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());
         Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWorkoutExerciseList.size());
         List<Long> actualIdsInOrder = finalWorkoutExerciseList.stream()

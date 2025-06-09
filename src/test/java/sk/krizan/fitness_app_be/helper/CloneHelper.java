@@ -59,6 +59,7 @@ public class CloneHelper {
         Assertions.assertNotEquals(originalWeek.getId(), clonedWeek.getId());
         Assertions.assertEquals(originalWeek.getOrder(), clonedWeek.getOrder());
         Assertions.assertFalse(clonedWeek.getCompleted());
+        Assertions.assertNull(clonedWeek.getNote());
         Assertions.assertNotNull(clonedWeek.getWeekWorkoutList());
         Assertions.assertFalse(clonedWeek.getWeekWorkoutList().isEmpty());
         Assertions.assertEquals(originalWeek.getWeekWorkoutList().size(), clonedWeek.getWeekWorkoutList().size());
@@ -89,6 +90,7 @@ public class CloneHelper {
         Assertions.assertEquals(originalWorkout.getDescription(), clonedWorkout.getDescription());
         Assertions.assertEquals(originalWorkout.getName(), clonedWorkout.getName());
         Assertions.assertEquals(originalWorkout.getAuthor(), clonedWorkout.getAuthor());
+        Assertions.assertNull(clonedWorkout.getNote());
         Assertions.assertEquals(originalWorkout.getTagSet(), clonedWorkout.getTagSet());
         Assertions.assertNotNull(clonedWorkout.getWorkoutExerciseList());
         Assertions.assertEquals(originalWorkout.getWorkoutExerciseList().size(), clonedWorkout.getWorkoutExerciseList().size());
@@ -104,6 +106,7 @@ public class CloneHelper {
     private static void assertWorkoutExercise(WorkoutExercise originalWorkoutExercise, WorkoutExercise clonedWorkoutExercise) {
         Assertions.assertNotNull(clonedWorkoutExercise.getId());
         Assertions.assertNotEquals(originalWorkoutExercise.getId(), clonedWorkoutExercise.getId());
+        Assertions.assertNull(clonedWorkoutExercise.getNote());
         Assertions.assertEquals(originalWorkoutExercise.getExercise(), clonedWorkoutExercise.getExercise());
         Assertions.assertEquals(originalWorkoutExercise.getWorkoutExerciseType(), clonedWorkoutExercise.getWorkoutExerciseType());
         Assertions.assertNotNull(clonedWorkoutExercise.getWorkoutExerciseSetList());
@@ -122,7 +125,7 @@ public class CloneHelper {
         Assertions.assertNotEquals(originalWorkoutExerciseSet.getId(), clonedWorkoutExerciseSet.getId());
         Assertions.assertEquals(originalWorkoutExerciseSet.getWorkoutExerciseSetType(), clonedWorkoutExerciseSet.getWorkoutExerciseSetType());
         Assertions.assertEquals(originalWorkoutExerciseSet.getOrder(), clonedWorkoutExerciseSet.getOrder());
-        Assertions.assertEquals(originalWorkoutExerciseSet.getNote(), clonedWorkoutExerciseSet.getNote());
+        Assertions.assertNull(clonedWorkoutExerciseSet.getNote());
         Assertions.assertEquals(originalWorkoutExerciseSet.getRestDuration(), clonedWorkoutExerciseSet.getRestDuration());
         Assertions.assertEquals(originalWorkoutExerciseSet.getGoalTime(), clonedWorkoutExerciseSet.getGoalTime());
         Assertions.assertEquals(originalWorkoutExerciseSet.getGoalWeight(), clonedWorkoutExerciseSet.getGoalWeight());

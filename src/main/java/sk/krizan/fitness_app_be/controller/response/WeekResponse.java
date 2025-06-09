@@ -7,6 +7,7 @@ public record WeekResponse(
         Long id,
         Long cycleId,
         Integer order,
-        Boolean completed
+        Boolean completed,
+        String note
 ) {
 }

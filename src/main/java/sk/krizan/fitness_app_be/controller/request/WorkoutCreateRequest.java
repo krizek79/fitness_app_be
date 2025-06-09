@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.hibernate.validator.constraints.Length;
 
 @Builder
 public record WorkoutCreateRequest(
@@ -13,6 +14,8 @@ public record WorkoutCreateRequest(
         @NotNull
         Boolean isTemplate,
         @NotEmpty
-        String weightUnitKey
+        String weightUnitKey,
+        @Length(max = 1024)
+        String note
 ) {
 }

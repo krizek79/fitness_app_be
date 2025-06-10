@@ -9,11 +9,14 @@ import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
+import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseSetResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -65,13 +68,21 @@ public class WorkoutExerciseHelper {
                 .build();
     }
 
-    public static void assertGet(WorkoutExercise workoutExercise, WorkoutExerciseResponse response) {
+    public static void assertGet(WorkoutExercise workoutExercise, WorkoutExerciseResponse response, List<WorkoutExerciseSet> expectedWorkoutExerciseSetList) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(workoutExercise.getId(), response.id());
         Assertions.assertEquals(workoutExercise.getWorkout().getId(), response.workoutId());
         Assertions.assertEquals(workoutExercise.getExercise().getName(), response.exerciseName());
         Assertions.assertEquals(workoutExercise.getNote(), response.note());
         EnumHelper.assertEnumResponse(workoutExercise.getWorkoutExerciseType().getKey(), response.workoutExerciseTypeResponse());
+        Assertions.assertNotNull(response.workoutExerciseSetResponseList());
+        Assertions.assertEquals(expectedWorkoutExerciseSetList.size(), response.workoutExerciseSetResponseList().size());
+        List<WorkoutExerciseSet> sortedExpectedWorkoutExerciseSetList = expectedWorkoutExerciseSetList.stream().sorted(Comparator.comparing(WorkoutExerciseSet::getOrder)).toList();
+        for (int i = 0; i < response.workoutExerciseSetResponseList().size(); i++) {
+            WorkoutExerciseSet expectedWorkoutExerciseSet = sortedExpectedWorkoutExerciseSetList.get(i);
+            WorkoutExerciseSetResponse workoutExerciseSetResponse = response.workoutExerciseSetResponseList().get(i);
+            WorkoutExerciseSetHelper.assertGet(expectedWorkoutExerciseSet, workoutExerciseSetResponse);
+        }
     }
 
     public static void assertDelete(boolean exists, WorkoutExercise workoutExercise, Long deletedWorkoutExerciseId) {
@@ -88,7 +99,7 @@ public class WorkoutExerciseHelper {
         for (int i = 0; i < sortedExpectedList.size(); i++) {
             WorkoutExercise expected = sortedExpectedList.get(i);
             WorkoutExerciseResponse workoutExerciseResponse = sortedResults.get(i);
-            assertGet(expected, workoutExerciseResponse);
+            assertGet(expected, workoutExerciseResponse, new ArrayList<>());
         }
     }
 

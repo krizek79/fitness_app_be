@@ -57,6 +57,7 @@ public class WeekHelper {
         Assertions.assertEquals(week.getOrder(), response.order());
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(week.getNote(), response.note());
+        Assertions.assertEquals(week.getWeekWorkoutList().size(), response.numberOfWorkouts());
     }
 
     public static void assertDelete(boolean exists, Week savedMockWeek, Long deletedWeekId, Week weekToUpdate) {
@@ -124,6 +125,7 @@ public class WeekHelper {
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(expectedInsertedOrder, response.order());
         Assertions.assertEquals(request.note(), response.note());
+        Assertions.assertEquals(0, response.numberOfWorkouts());
 
         Assertions.assertNotNull(finalWeekList);
         Assertions.assertFalse(finalWeekList.isEmpty());
@@ -142,6 +144,7 @@ public class WeekHelper {
         Assertions.assertNotNull(response.cycleId());
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(request.note(), response.note());
+        Assertions.assertEquals(0, response.numberOfWorkouts());
         Assertions.assertNotNull(finalWeekList);
         Assertions.assertFalse(finalWeekList.isEmpty());
         Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWeekList.size());

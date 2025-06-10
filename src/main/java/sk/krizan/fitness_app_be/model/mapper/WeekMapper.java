@@ -23,6 +23,7 @@ public class WeekMapper {
                 .order(week.getOrder())
                 .completed(week.getCompleted())
                 .note(week.getNote())
+                .numberOfWorkouts(week.getWeekWorkoutList().size())
                 .build();
     }
 

@@ -10,8 +10,10 @@ import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -41,6 +43,11 @@ public class WorkoutExerciseMapper {
                 .exerciseName(workoutExercise.getExercise().getName())
                 .workoutExerciseTypeResponse(EnumMapper.enumToResponse(workoutExercise.getWorkoutExerciseType()))
                 .note(workoutExercise.getNote())
+                .workoutExerciseSetResponseList(
+                        workoutExercise.getWorkoutExerciseSetList().stream()
+                                .sorted(Comparator.comparingInt(WorkoutExerciseSet::getOrder))
+                                .map(WorkoutExerciseSetMapper::entityToResponse)
+                                .toList())
                 .build();
     }
 

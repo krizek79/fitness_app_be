@@ -23,18 +23,21 @@ import sk.krizan.fitness_app_be.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.helper.SecurityHelper;
 import sk.krizan.fitness_app_be.helper.UserHelper;
 import sk.krizan.fitness_app_be.helper.WorkoutExerciseHelper;
+import sk.krizan.fitness_app_be.helper.WorkoutExerciseSetHelper;
 import sk.krizan.fitness_app_be.helper.WorkoutHelper;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.ExerciseRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutExerciseRepository;
+import sk.krizan.fitness_app_be.repository.WorkoutExerciseSetRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
@@ -52,6 +55,9 @@ import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 @Transactional
 @SpringBootTest
 class WorkoutExerciseControllerTest {
+
+    @Autowired
+    private WorkoutExerciseSetRepository workoutExerciseSetRepository;
 
     @Autowired
     private WorkoutExerciseController workoutExerciseController;
@@ -111,15 +117,14 @@ class WorkoutExerciseControllerTest {
 
     @Test
     void getWorkoutExerciseById() {
-        Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
-        workout = workoutRepository.save(workout);
-        Exercise exercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS));
-        exercise = exerciseRepository.save(exercise);
-        WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1);
-        workoutExercise = workoutExerciseRepository.save(workoutExercise);
+        Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE));
+        Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS)));
+        WorkoutExercise workoutExercise = workoutExerciseRepository.save(WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1));
+        WorkoutExerciseSet workoutExerciseSet = workoutExerciseSetRepository.save(WorkoutExerciseSetHelper.createMockWorkoutExerciseSet(workoutExercise, 1));
+        List<WorkoutExerciseSet> expectedWorkoutExerciseSetList = new ArrayList<>(List.of(workoutExerciseSet));
 
         WorkoutExerciseResponse response = workoutExerciseController.getWorkoutExerciseById(workoutExercise.getId());
-        WorkoutExerciseHelper.assertGet(workoutExercise, response);
+        WorkoutExerciseHelper.assertGet(workoutExercise, response, expectedWorkoutExerciseSetList);
     }
 
     private static Stream<Arguments> createWorkoutExerciseMethodSource() {

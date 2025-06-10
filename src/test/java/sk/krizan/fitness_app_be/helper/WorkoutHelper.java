@@ -104,6 +104,8 @@ public class WorkoutHelper {
                 .isTemplate(true)
                 .weightUnitKey(WeightUnit.KG.getKey())
                 .note(UUID.randomUUID().toString())
+                .description(UUID.randomUUID().toString())
+                .tagNames(Set.of(UUID.randomUUID().toString(), UUID.randomUUID().toString()))
                 .build();
     }
 
@@ -142,12 +144,20 @@ public class WorkoutHelper {
         Assertions.assertEquals(profile.getId(), response.traineeId());
         Assertions.assertEquals(profile.getName(), response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNull(response.description());
-        Assertions.assertTrue(response.tagResponseList().isEmpty());
+        Assertions.assertEquals(request.description(), response.description());
         Assertions.assertFalse(profile.getAuthoredWorkoutList().isEmpty());
         Assertions.assertEquals(request.isTemplate(), response.isTemplate());
         Assertions.assertEquals(request.note(), response.note());
         EnumHelper.assertEnumResponse(request.weightUnitKey(), response.weightUnitResponse());
+        List<TagResponse> tagResponseList = response.tagResponseList();
+        Assertions.assertFalse(tagResponseList.isEmpty());
+        Set<String> tagResponseListNames = tagResponseList.stream()
+                .map(tagResponse -> tagResponse.name().toLowerCase())
+                .collect(Collectors.toSet());
+        Set<String> tagNames = request.tagNames().stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+        Assertions.assertEquals(tagNames, tagResponseListNames);
     }
 
     public static void assertWorkoutResponse_update(

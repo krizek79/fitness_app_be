@@ -86,7 +86,15 @@ public class WorkoutServiceImpl implements WorkoutService {
     public Workout createWorkout(WorkoutCreateRequest request) {
         Profile profile = userService.getCurrentUser().getProfile();
         WeightUnit weightUnit = enumService.findEnumByKey(WeightUnit.class, request.weightUnitKey());
-        return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile, weightUnit));
+        Set<Tag> tagSet = new HashSet<>();
+        if (request.tagNames() != null) {
+            tagSet = request.tagNames().stream()
+                    .map(tagName -> tagService.findTagByName(tagName.toLowerCase())
+                            .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
+                    .collect(Collectors.toSet());
+        }
+
+        return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile, weightUnit, tagSet));
     }
 
     @Override
@@ -97,15 +105,15 @@ public class WorkoutServiceImpl implements WorkoutService {
         checkAuthorization(workout);
 
         WeightUnit weightUnit = enumService.findEnumByKey(WeightUnit.class, request.weightUnitKey());
-        Set<Tag> tags = new HashSet<>();
+        Set<Tag> tagSet = new HashSet<>();
         if (request.tagNames() != null) {
-            tags = request.tagNames().stream()
+            tagSet = request.tagNames().stream()
                     .map(tagName -> tagService.findTagByName(tagName.toLowerCase())
                             .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
                     .collect(Collectors.toSet());
         }
 
-        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, weightUnit, tags));
+        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, weightUnit, tagSet));
     }
 
     @Override

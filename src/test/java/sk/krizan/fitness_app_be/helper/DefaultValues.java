@@ -7,5 +7,4 @@ public class DefaultValues {
 
     public static final String DEFAULT_VALUE = "default";
     public static final String DEFAULT_UPDATE_VALUE = "update";
-    public static final String MOCK = "mock";
 }

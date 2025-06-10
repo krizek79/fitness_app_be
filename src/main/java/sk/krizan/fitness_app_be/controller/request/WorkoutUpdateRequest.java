@@ -10,12 +10,14 @@ import java.util.Set;
 @Builder
 public record WorkoutUpdateRequest(
         @NotEmpty
+        @Size(min = 1, max = 64)
         String name,
         @Size(max = 1000)
         String description,
+        @NotEmpty
         String weightUnitKey,
-        Set<String> tagNames,
         @Length(max = 1024)
-        String note
+        String note,
+        Set<String> tagNames
 ) {
 }

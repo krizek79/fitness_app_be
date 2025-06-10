@@ -18,7 +18,12 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkoutMapper {
 
-    public static Workout createRequestToEntity(WorkoutCreateRequest request, Profile profile, WeightUnit weightUnit) {
+    public static Workout createRequestToEntity(
+            WorkoutCreateRequest request,
+            Profile profile,
+            WeightUnit weightUnit,
+            Set<Tag> tagSet
+    ) {
         Workout workout = new Workout();
         workout.setAuthor(profile);
         workout.setTrainee(profile);
@@ -26,6 +31,8 @@ public class WorkoutMapper {
         workout.setIsTemplate(request.isTemplate());
         workout.setWeightUnit(weightUnit);
         workout.setNote(request.note());
+        workout.setDescription(request.description());
+        workout.addToTagSet(tagSet);
         profile.addToAuthoredWorkoutList(List.of(workout));
         return workout;
     }
@@ -52,13 +59,13 @@ public class WorkoutMapper {
             WorkoutUpdateRequest request,
             Workout workout,
             WeightUnit weightUnit,
-            Set<Tag> tags
+            Set<Tag> tagSet
     ) {
         workout.setName(request.name());
         workout.setDescription(request.description());
         workout.setWeightUnit(weightUnit);
         workout.getTagSet().clear();
-        workout.addToTagSet(tags);
+        workout.addToTagSet(tagSet);
         workout.setNote(request.note());
 
         return workout;

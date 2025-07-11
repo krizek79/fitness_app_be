@@ -10,9 +10,14 @@ import sk.krizan.fitness_app_be.model.entity.Goal;
 public interface GoalService {
 
     PageResponse<GoalResponse> filterGoals(GoalFilterRequest request);
+
     Goal getGoalById(Long id);
+
     Goal createGoal(GoalCreateRequest request);
+
     Goal updateGoal(Long id, GoalUpdateRequest request);
+
     Long deleteGoal(Long id);
+
     Goal triggerAchieved(Long id);
 }

@@ -109,8 +109,9 @@ public class WorkoutHelper {
                 .build();
     }
 
-    public static WorkoutUpdateRequest createUpdateRequest() {
+    public static WorkoutUpdateRequest createUpdateRequest(Long traineeId) {
         return WorkoutUpdateRequest.builder()
+                .traineeId(traineeId)
                 .name(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
                 .note(UUID.randomUUID().toString())
@@ -141,8 +142,8 @@ public class WorkoutHelper {
         Assertions.assertNotNull(response.id());
         Assertions.assertEquals(profile.getId(), response.authorId());
         Assertions.assertEquals(profile.getName(), response.authorName());
-        Assertions.assertEquals(profile.getId(), response.traineeId());
-        Assertions.assertEquals(profile.getName(), response.traineeName());
+        Assertions.assertNull(response.traineeId());
+        Assertions.assertNull(response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertEquals(request.description(), response.description());
         Assertions.assertFalse(profile.getAuthoredWorkoutList().isEmpty());

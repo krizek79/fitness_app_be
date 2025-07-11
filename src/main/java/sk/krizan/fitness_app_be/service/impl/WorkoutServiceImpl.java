@@ -22,6 +22,7 @@ import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutMapper;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
+import sk.krizan.fitness_app_be.service.api.CoachClientService;
 import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.TagService;
 import sk.krizan.fitness_app_be.service.api.UserService;
@@ -41,6 +42,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final TagService tagService;
     private final UserService userService;
     private final EnumService enumService;
+    private final CoachClientService coachClientService;
 
     private final WorkoutRepository workoutRepository;
 
@@ -84,7 +86,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     @Transactional
     public Workout createWorkout(WorkoutCreateRequest request) {
-        Profile profile = userService.getCurrentUser().getProfile();
+        Profile currentUserProfile = userService.getCurrentUser().getProfile();
+        Profile trainee = coachClientService.resolveTrainee(request.traineeId(), currentUserProfile, null);
+
         WeightUnit weightUnit = enumService.findEnumByKey(WeightUnit.class, request.weightUnitKey());
         Set<Tag> tagSet = new HashSet<>();
         if (request.tagNames() != null) {
@@ -94,7 +98,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                     .collect(Collectors.toSet());
         }
 
-        return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, profile, weightUnit, tagSet));
+        return workoutRepository.save(WorkoutMapper.createRequestToEntity(request, currentUserProfile, trainee, weightUnit, tagSet));
     }
 
     @Override
@@ -104,6 +108,9 @@ public class WorkoutServiceImpl implements WorkoutService {
 
         checkAuthorization(workout);
 
+        Profile trainee = workout.getTrainee();
+        trainee = coachClientService.resolveTrainee(request.traineeId(), workout.getAuthor(), trainee);
+
         WeightUnit weightUnit = enumService.findEnumByKey(WeightUnit.class, request.weightUnitKey());
         Set<Tag> tagSet = new HashSet<>();
         if (request.tagNames() != null) {
@@ -113,7 +120,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                     .collect(Collectors.toSet());
         }
 
-        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, weightUnit, tagSet));
+        return workoutRepository.save(WorkoutMapper.updateRequestToEntity(request, workout, trainee, weightUnit, tagSet));
     }
 
     @Override

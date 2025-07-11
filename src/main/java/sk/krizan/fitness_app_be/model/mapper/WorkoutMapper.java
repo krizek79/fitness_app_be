@@ -21,12 +21,13 @@ public class WorkoutMapper {
     public static Workout createRequestToEntity(
             WorkoutCreateRequest request,
             Profile profile,
+            Profile trainee,
             WeightUnit weightUnit,
             Set<Tag> tagSet
     ) {
         Workout workout = new Workout();
         workout.setAuthor(profile);
-        workout.setTrainee(profile);
+        workout.setTrainee(trainee);
         workout.setName(request.name());
         workout.setIsTemplate(request.isTemplate());
         workout.setWeightUnit(weightUnit);
@@ -43,8 +44,8 @@ public class WorkoutMapper {
                 .name(workout.getName())
                 .authorId(workout.getAuthor().getId())
                 .authorName(workout.getAuthor().getName())
-                .traineeId(workout.getTrainee().getId())
-                .traineeName(workout.getTrainee().getName())
+                .traineeId(workout.getTrainee() != null ? workout.getTrainee().getId() : null)
+                .traineeName(workout.getTrainee() != null ? workout.getTrainee().getName() : null)
                 .tagResponseList(
                         workout.getTagSet().stream()
                                 .map(TagMapper::entityToResponse).toList())
@@ -58,9 +59,11 @@ public class WorkoutMapper {
     public static Workout updateRequestToEntity(
             WorkoutUpdateRequest request,
             Workout workout,
+            Profile trainee,
             WeightUnit weightUnit,
             Set<Tag> tagSet
     ) {
+        workout.setTrainee(trainee);
         workout.setName(request.name());
         workout.setDescription(request.description());
         workout.setWeightUnit(weightUnit);

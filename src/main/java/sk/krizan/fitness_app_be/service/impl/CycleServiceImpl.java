@@ -20,6 +20,7 @@ import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.CycleMapper;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
+import sk.krizan.fitness_app_be.service.api.CoachClientService;
 import sk.krizan.fitness_app_be.service.api.CycleService;
 import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.UserService;
@@ -36,6 +37,7 @@ public class CycleServiceImpl implements CycleService {
     private final UserService userService;
     private final EnumService enumService;
     private final CycleRepository cycleRepository;
+    private final CoachClientService coachClientService;
 
     private final static String ERROR_CYCLE_NOT_FOUND = "Cycle with id { %s } does not exist.";
 
@@ -77,8 +79,10 @@ public class CycleServiceImpl implements CycleService {
     @Transactional
     public Cycle createCycle(CycleCreateRequest request) {
         User currentUser = userService.getCurrentUser();
-        Profile profile = currentUser.getProfile();
-        Cycle cycle = CycleMapper.createRequestToEntity(request, profile);
+        Profile author = currentUser.getProfile();
+        Profile trainee = coachClientService.resolveTrainee(request.traineeId(), author, null);
+
+        Cycle cycle = CycleMapper.createRequestToEntity(request, author, trainee);
         return cycleRepository.save(cycle);
     }
 
@@ -87,13 +91,18 @@ public class CycleServiceImpl implements CycleService {
     public Cycle updateCycle(Long id, CycleUpdateRequest request) {
         Cycle cycle = getCycleById(id);
         User currentUser = userService.getCurrentUser();
-        if (cycle.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
+        Profile author = cycle.getAuthor();
+        Profile trainee = cycle.getTrainee();
+
+        if (author.getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
         Level level = enumService.findEnumByKey(Level.class, request.levelKey());
 
-        return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, level));
+        trainee = coachClientService.resolveTrainee(request.traineeId(), author, trainee);
+
+        return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, trainee, level));
     }
 
     @Override

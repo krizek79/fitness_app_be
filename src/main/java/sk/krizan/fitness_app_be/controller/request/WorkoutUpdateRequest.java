@@ -18,6 +18,7 @@ public record WorkoutUpdateRequest(
         String weightUnitKey,
         @Length(max = 1024)
         String note,
-        Set<String> tagNames
+        Set<String> tagNames,
+        Long traineeId
 ) {
 }

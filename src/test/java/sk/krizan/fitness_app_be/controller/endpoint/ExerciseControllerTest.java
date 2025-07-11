@@ -41,7 +41,7 @@ public class ExerciseControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         SecurityHelper.setAuthentication(mockUser);
     }
 

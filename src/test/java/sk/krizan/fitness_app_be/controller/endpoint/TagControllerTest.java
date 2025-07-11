@@ -45,7 +45,7 @@ class TagControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
         SecurityHelper.setAuthentication(mockUser);

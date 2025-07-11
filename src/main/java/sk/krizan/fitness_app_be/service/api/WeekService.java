@@ -13,10 +13,16 @@ import java.util.List;
 public interface WeekService {
 
     PageResponse<WeekResponse> filterWeeks(WeekFilterRequest request);
+
     Week getWeekById(Long id);
+
     Week createWeek(WeekCreateRequest request);
+
     Week updateWeek(WeekUpdateRequest request);
+
     List<Week> batchUpdateWeeks(BatchUpdateRequest<WeekUpdateRequest> request);
+
     Long deleteWeek(Long id);
+
     Week triggerCompleted(Long id);
 }

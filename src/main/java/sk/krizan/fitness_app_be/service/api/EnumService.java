@@ -8,10 +8,14 @@ import java.util.List;
 public interface EnumService {
 
     List<EnumResponse> getWorkoutLevels();
-    List<EnumResponse> getMuscleGroups();
-    List<EnumResponse> getWeightUnits();
-    List<EnumResponse> getWorkoutExerciseTypes();
-    List<EnumResponse> getWorkoutExerciseSetTypes();
-    <T extends Enum<T> & BaseEnum> T findEnumByKey(Class<T> enumClass, String key);
 
+    List<EnumResponse> getMuscleGroups();
+
+    List<EnumResponse> getWeightUnits();
+
+    List<EnumResponse> getWorkoutExerciseTypes();
+
+    List<EnumResponse> getWorkoutExerciseSetTypes();
+
+    <T extends Enum<T> & BaseEnum> T findEnumByKey(Class<T> enumClass, String key);
 }

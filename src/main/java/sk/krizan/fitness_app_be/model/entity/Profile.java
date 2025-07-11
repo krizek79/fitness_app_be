@@ -22,7 +22,9 @@ import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -56,6 +58,12 @@ public class Profile {
     @Enumerated(EnumType.STRING)
     private WeightUnit preferredWeightUnit;
 
+    @OneToMany(mappedBy = CoachClient.Fields.coach, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CoachClient> coachingSet = new HashSet<>();
+
+    @OneToMany(mappedBy = CoachClient.Fields.client, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CoachClient> beingCoachedSet = new HashSet<>();
+
     @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Workout> authoredWorkoutList = new ArrayList<>();
 
@@ -67,6 +75,16 @@ public class Profile {
 
     @OneToMany(mappedBy = Cycle.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Cycle> assignedCycleList = new ArrayList<>();
+
+    public void addToCoachingSet(Set<CoachClient> coachClientSet) {
+        coachClientSet.forEach(coachClient -> coachClient.setCoach(this));
+        coachingSet.addAll(coachClientSet);
+    }
+
+    public void addToBeingCoachedSet(Set<CoachClient> coachClientSet) {
+        coachClientSet.forEach(coachClient -> coachClient.setClient(this));
+        beingCoachedSet.addAll(coachClientSet);
+    }
 
     public void addToAuthoredWorkoutList(List<Workout> workoutList) {
         workoutList.forEach(workout -> workout.setAuthor(this));

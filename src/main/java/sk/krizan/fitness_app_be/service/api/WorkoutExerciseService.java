@@ -14,9 +14,14 @@ import java.util.List;
 public interface WorkoutExerciseService {
 
     PageResponse<WorkoutExerciseResponse> filterWorkoutExercises(@Valid WorkoutExerciseFilterRequest request);
+
     WorkoutExercise getWorkoutExerciseById(Long id);
+
     WorkoutExercise createWorkoutExercise(WorkoutExerciseCreateRequest request);
+
     WorkoutExercise updateWorkoutExercise(WorkoutExerciseUpdateRequest request);
+
     List<WorkoutExercise> batchUpdateWorkoutExercises(BatchUpdateRequest<WorkoutExerciseUpdateRequest> request);
+
     Long deleteWorkoutExercise(Long id);
 }

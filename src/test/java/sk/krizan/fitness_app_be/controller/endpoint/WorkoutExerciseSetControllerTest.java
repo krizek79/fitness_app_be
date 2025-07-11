@@ -85,10 +85,10 @@ class WorkoutExerciseSetControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
-        mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        mockProfile = ProfileHelper.createMockProfile(mockUser);
         mockProfile = profileRepository.save(mockProfile);
         mockUser.setProfile(mockProfile);
 
@@ -195,7 +195,7 @@ class WorkoutExerciseSetControllerTest {
         WorkoutExerciseSetUpdateRequest request = WorkoutExerciseSetHelper.createUpdateRequest(workoutExerciseSetToUpdate.getId(), newRequestedOrder, WorkoutExerciseSetType.WARMUP.getKey());
         WorkoutExerciseSetResponse response = workoutExerciseSetController.updateWorkoutExerciseSet(request);
 
-        List<WorkoutExerciseSet> finalWorkoutExerciseSetList = workoutExerciseSetRepository.findAllByWorkoutExerciseIdOrderByOrder(workout.getId());
+        List<WorkoutExerciseSet> finalWorkoutExerciseSetList = workoutExerciseSetRepository.findAllByWorkoutExerciseIdOrderByOrder(workoutExercise.getId());
         WorkoutExerciseSetHelper.assertUpdate(request, response, idsOfExpectedElementsInOrder, finalWorkoutExerciseSetList);
     }
 

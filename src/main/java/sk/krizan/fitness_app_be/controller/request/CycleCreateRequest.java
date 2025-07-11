@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record CycleCreateRequest(
+        Long traineeId,
         @NotEmpty
         @Size(max = 255)
         String name

@@ -39,10 +39,10 @@ class EnumControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
-        Profile mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        Profile mockProfile = ProfileHelper.createMockProfile(mockUser);
         profileRepository.save(mockProfile);
 
         SecurityHelper.setAuthentication(mockUser);

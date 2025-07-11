@@ -12,6 +12,7 @@ public record CycleUpdateRequest(
         @Size(max = 2000)
         String description,
         @NotEmpty
-        String levelKey
+        String levelKey,
+        Long traineeId
 ) {
 }

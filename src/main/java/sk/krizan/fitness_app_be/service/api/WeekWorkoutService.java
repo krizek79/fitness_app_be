@@ -10,9 +10,14 @@ import sk.krizan.fitness_app_be.model.entity.WeekWorkout;
 public interface WeekWorkoutService {
 
     PageResponse<WeekWorkoutResponse> filterWeekWorkouts(WeekWorkoutFilterRequest request);
+
     WeekWorkout getWeekWorkoutById(Long id);
+
     WeekWorkout createWeekWorkout(WeekWorkoutCreateRequest request);
+
     WeekWorkout updateWeekWorkout(Long id, WeekWorkoutUpdateRequest request);
+
     Long deleteWeekWorkout(Long id);
+
     WeekWorkout triggerCompleted(Long id);
 }

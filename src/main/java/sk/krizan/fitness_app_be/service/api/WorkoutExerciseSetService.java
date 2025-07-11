@@ -13,10 +13,16 @@ import java.util.List;
 public interface WorkoutExerciseSetService {
 
     PageResponse<WorkoutExerciseSetResponse> filterWorkoutExerciseSets(WorkoutExerciseSetFilterRequest request);
+
     WorkoutExerciseSet getWorkoutExerciseSetById(Long id);
+
     WorkoutExerciseSet createWorkoutExerciseSet(WorkoutExerciseSetCreateRequest request);
+
     WorkoutExerciseSet updateWorkoutExerciseSet(WorkoutExerciseSetUpdateRequest request);
+
     List<WorkoutExerciseSet> batchUpdateWorkoutExerciseSets(BatchUpdateRequest<WorkoutExerciseSetUpdateRequest> request);
+
     Long deleteWorkoutExerciseSet(Long id);
+
     WorkoutExerciseSet triggerCompleted(Long id);
 }

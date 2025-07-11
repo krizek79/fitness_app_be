@@ -12,15 +12,17 @@ import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
+import sk.krizan.fitness_app_be.helper.CoachClientHelper;
+import sk.krizan.fitness_app_be.helper.CycleHelper;
 import sk.krizan.fitness_app_be.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.helper.SecurityHelper;
 import sk.krizan.fitness_app_be.helper.UserHelper;
-import sk.krizan.fitness_app_be.helper.CycleHelper;
+import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
-import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
+import sk.krizan.fitness_app_be.repository.CoachClientRepository;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
@@ -35,6 +37,9 @@ import static org.mockito.Mockito.when;
 @Transactional
 @SpringBootTest
 class CycleControllerTest {
+
+    @Autowired
+    private CoachClientRepository coachClientRepository;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -55,10 +60,10 @@ class CycleControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
-        mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        mockProfile = ProfileHelper.createMockProfile(mockUser);
         mockProfile = profileRepository.save(mockProfile);
 
         SecurityHelper.setAuthentication(mockUser);
@@ -67,13 +72,13 @@ class CycleControllerTest {
 
     @Test
     void filterCycles() {
-        User user1 = UserHelper.createMockUser("user1@test.com", Set.of(Role.USER));
+        User user1 = UserHelper.createMockUser(Set.of(Role.USER));
         user1 = userRepository.save(user1);
-        Profile profile1 = ProfileHelper.createMockProfile("profile1", user1);
+        Profile profile1 = ProfileHelper.createMockProfile(user1);
         profile1 = profileRepository.save(profile1);
-        User user2 = UserHelper.createMockUser("user2@test.com", Set.of(Role.USER));
+        User user2 = UserHelper.createMockUser(Set.of(Role.USER));
         user2 = userRepository.save(user2);
-        Profile profile2 = ProfileHelper.createMockProfile("profile2", user2);
+        Profile profile2 = ProfileHelper.createMockProfile(user2);
         profile2 = profileRepository.save(profile2);
 
         List<Cycle> originalList = CycleHelper.createMockCycleListForFilter(profile1, profile2);
@@ -135,11 +140,17 @@ class CycleControllerTest {
     void updateCycle() {
         Cycle mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.ADVANCED);
         Cycle savedMockCycle = cycleRepository.save(mockCycle);
-        CycleUpdateRequest updateRequest = CycleHelper.createUpdateRequest(Level.INTERMEDIATE);
+
+        User traineeUser = userRepository.save(UserHelper.createMockUser(Set.of(Role.USER)));
+        Profile traineeProfile = profileRepository.save(ProfileHelper.createMockProfile(traineeUser));
+
+        coachClientRepository.save(CoachClientHelper.createMockCoachClient(mockProfile, traineeProfile));
+
+        CycleUpdateRequest updateRequest = CycleHelper.createUpdateRequest(Level.INTERMEDIATE, traineeProfile.getId());
 
         CycleResponse response = cycleController.updateCycle(savedMockCycle.getId(), updateRequest);
 
-        CycleHelper.assertCycleResponse_update(updateRequest, mockProfile, response);
+        CycleHelper.assertCycleResponse_update(updateRequest, mockProfile, traineeProfile, response);
     }
 
     @Test

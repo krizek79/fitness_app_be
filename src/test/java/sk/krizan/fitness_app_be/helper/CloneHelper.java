@@ -7,7 +7,6 @@ import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
-import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Week;
 import sk.krizan.fitness_app_be.model.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.model.entity.Workout;
@@ -29,17 +28,17 @@ public class CloneHelper {
         EnumHelper.assertEnumResponse(cycle.getLevel().getKey(), response.levelResponse());
         Assertions.assertEquals(cycle.getAuthor().getId(), response.authorId());
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
-        Assertions.assertEquals(cycle.getTrainee().getId(), response.traineeId());
-        Assertions.assertEquals(cycle.getTrainee().getName(), response.traineeName());
+        Assertions.assertNull(response.traineeId());
+        Assertions.assertNull(response.traineeName());
     }
 
-    public static void assertCycle(Cycle originalCycle, Cycle clonedCycle, Profile profile) {
+    public static void assertCycle(Cycle originalCycle, Cycle clonedCycle) {
         Assertions.assertNotEquals(originalCycle.getId(), clonedCycle.getId());
         Assertions.assertEquals(originalCycle.getName(), clonedCycle.getName());
         Assertions.assertEquals(originalCycle.getDescription(), clonedCycle.getDescription());
         Assertions.assertEquals(originalCycle.getLevel(), clonedCycle.getLevel());
         Assertions.assertEquals(originalCycle.getAuthor(), clonedCycle.getAuthor());
-        Assertions.assertEquals(profile, clonedCycle.getTrainee());
+        Assertions.assertNull(clonedCycle.getTrainee());
         Assertions.assertNotNull(clonedCycle.getGoalList());
         Assertions.assertTrue(clonedCycle.getGoalList().isEmpty());
         Assertions.assertNotNull(clonedCycle.getWeekList());

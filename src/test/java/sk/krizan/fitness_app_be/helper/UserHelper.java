@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.helper;
 
+import com.github.javafaker.Faker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import sk.krizan.fitness_app_be.model.entity.User;
@@ -11,9 +12,11 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserHelper {
 
-    public static User createMockUser(String email, Set<Role> roles) {
+    private static final Faker faker = new Faker();
+
+    public static User createMockUser(Set<Role> roles) {
         User user = new User();
-        user.setEmail(email);
+        user.setEmail(faker.internet().emailAddress());
         user.addToRoleSet(roles);
         user.setCreatedAt(Instant.now());
         user.setActive(true);

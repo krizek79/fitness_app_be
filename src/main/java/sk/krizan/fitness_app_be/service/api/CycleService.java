@@ -10,8 +10,12 @@ import sk.krizan.fitness_app_be.model.entity.Cycle;
 public interface CycleService {
 
     PageResponse<CycleResponse> filterCycles(CycleFilterRequest request);
+
     Cycle getCycleById(Long id);
+
     Cycle createCycle(CycleCreateRequest request);
+
     Cycle updateCycle(Long id, CycleUpdateRequest request);
+
     Long deleteCycle(Long id);
 }

@@ -41,8 +41,9 @@ public class CycleHelper {
                 .build();
     }
 
-    public static CycleUpdateRequest createUpdateRequest(Level level) {
+    public static CycleUpdateRequest createUpdateRequest(Level level, Long traineeId) {
         return CycleUpdateRequest.builder()
+                .traineeId(traineeId)
                 .name(DefaultValues.DEFAULT_UPDATE_VALUE)
                 .description(DefaultValues.DEFAULT_UPDATE_VALUE)
                 .levelKey(level.getKey())
@@ -80,13 +81,13 @@ public class CycleHelper {
         Assertions.assertFalse(mockProfile.getAssignedCycleList().isEmpty());
     }
 
-    public static void assertCycleResponse_update(CycleUpdateRequest request, Profile mockProfile, CycleResponse response) {
+    public static void assertCycleResponse_update(CycleUpdateRequest request, Profile author, Profile trainee, CycleResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(mockProfile.getId(), response.authorId());
-        Assertions.assertEquals(mockProfile.getName(), response.authorName());
-        Assertions.assertEquals(mockProfile.getId(), response.traineeId());
-        Assertions.assertEquals(mockProfile.getName(), response.traineeName());
+        Assertions.assertEquals(author.getId(), response.authorId());
+        Assertions.assertEquals(author.getName(), response.authorName());
+        Assertions.assertEquals(trainee.getId(), response.traineeId());
+        Assertions.assertEquals(trainee.getName(), response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertEquals(request.description(), response.description());
         EnumHelper.assertEnumResponse(request.levelKey(), response.levelResponse());

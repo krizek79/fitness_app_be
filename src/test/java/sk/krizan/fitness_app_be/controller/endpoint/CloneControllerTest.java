@@ -77,10 +77,10 @@ class CloneControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
-        mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        mockProfile = ProfileHelper.createMockProfile(mockUser);
         mockProfile = profileRepository.save(mockProfile);
 
         SecurityHelper.setAuthentication(mockUser);
@@ -105,7 +105,7 @@ class CloneControllerTest {
         CloneHelper.assertCycleResponse(originalCycle, response);
 
         Cycle clonedCycle = cycleRepository.findById(response.id()).orElseThrow(() -> new NotFoundException("Cloned cycle not found."));
-        CloneHelper.assertCycle(originalCycle, clonedCycle, mockProfile);
+        CloneHelper.assertCycle(originalCycle, clonedCycle);
     }
 
     @Test

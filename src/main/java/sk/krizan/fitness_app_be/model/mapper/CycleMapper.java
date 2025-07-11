@@ -30,17 +30,18 @@ public class CycleMapper {
                 .build();
     }
 
-    public static Cycle createRequestToEntity(CycleCreateRequest request, Profile currentProfile) {
+    public static Cycle createRequestToEntity(CycleCreateRequest request, Profile currentProfile, Profile trainee) {
         Cycle cycle = new Cycle();
         cycle.setName(request.name());
         cycle.setAuthor(currentProfile);
-        cycle.setTrainee(currentProfile);
+        cycle.setTrainee(trainee);
         currentProfile.addToAuthoredCycleList(List.of(cycle));
         currentProfile.addToAssignedCycleList(List.of(cycle));
         return cycle;
     }
 
-    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle, Level level) {
+    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle, Profile trainee, Level level) {
+        cycle.setTrainee(trainee);
         cycle.setName(request.name());
         cycle.setDescription(request.description());
         cycle.setLevel(level);

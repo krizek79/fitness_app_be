@@ -27,14 +27,13 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
         Workout clone = new Workout();
         clone.setName(original.getName());
         clone.setDescription(original.getDescription());
-        clone.setAuthor(original.getAuthor());
-        clone.setTrainee(context.getTargetProfile());
         clone.addToTagSet(original.getTagSet());
         clone.setWeightUnit(original.getWeightUnit());
         List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExerciseList().stream()
                 .map(workoutExercise -> workoutExerciseCloner.clone(workoutExercise, context))
                 .toList();
         clone.addToWorkoutExerciseList(clonedWorkoutExercises);
+        original.getAuthor().addToAuthoredWorkoutList(List.of(clone));
 
         context.cacheClone(original, clone);
 

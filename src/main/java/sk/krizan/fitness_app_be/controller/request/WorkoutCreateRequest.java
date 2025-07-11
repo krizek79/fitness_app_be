@@ -21,6 +21,7 @@ public record WorkoutCreateRequest(
         String note,
         @NotNull
         Boolean isTemplate,
-        Set<String> tagNames
+        Set<String> tagNames,
+        Long traineeId
 ) {
 }

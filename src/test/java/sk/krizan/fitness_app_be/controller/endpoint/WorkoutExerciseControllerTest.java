@@ -84,10 +84,10 @@ class WorkoutExerciseControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
-        mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        mockProfile = ProfileHelper.createMockProfile(mockUser);
         mockProfile = profileRepository.save(mockProfile);
         mockUser.setProfile(mockProfile);
 

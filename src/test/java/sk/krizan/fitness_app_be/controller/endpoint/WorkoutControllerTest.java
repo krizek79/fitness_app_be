@@ -65,10 +65,10 @@ class WorkoutControllerTest {
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser("admin@test.com", Set.of(Role.ADMIN));
+        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
-        mockProfile = ProfileHelper.createMockProfile("admin", mockUser);
+        mockProfile = ProfileHelper.createMockProfile(mockUser);
         mockProfile = profileRepository.save(mockProfile);
         mockUser.setProfile(mockProfile);
 
@@ -82,9 +82,9 @@ class WorkoutControllerTest {
         List<List<WorkoutExercise>> workoutExerciseList = new ArrayList<>();
         List<Set<Tag>> tagSetList = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            User user = UserHelper.createMockUser("user" + (i + 1) + "@test.com", Set.of(Role.USER));
+            User user = UserHelper.createMockUser(Set.of(Role.USER));
             user = userRepository.save(user);
-            Profile profile = ProfileHelper.createMockProfile("profile" + (i + 1), user);
+            Profile profile = ProfileHelper.createMockProfile(user);
             profile = profileRepository.save(profile);
             user.setProfile(profile);
             profileList.add(profile);
@@ -165,7 +165,7 @@ class WorkoutControllerTest {
     void updateWorkout() {
         Workout mockWorkout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         Workout savedMockWorkout = workoutRepository.save(mockWorkout);
-        WorkoutUpdateRequest updateRequest = WorkoutHelper.createUpdateRequest();
+        WorkoutUpdateRequest updateRequest = WorkoutHelper.createUpdateRequest(mockProfile.getId());
 
         WorkoutResponse response = workoutController.updateWorkout(savedMockWorkout.getId(), updateRequest);
 

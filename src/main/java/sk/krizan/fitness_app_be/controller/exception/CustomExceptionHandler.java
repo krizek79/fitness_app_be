@@ -65,7 +65,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    ExceptionResponse handleAccessDeniedException(ForbiddenException exception) {
+    public ExceptionResponse handleAccessDeniedException(ForbiddenException exception) {
         logException(exception);
         return ExceptionResponse.builder()
             .timestamp(LocalDateTime.now())

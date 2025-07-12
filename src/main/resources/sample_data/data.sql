@@ -201,4 +201,15 @@ SELECT w.id, t.id FROM workout w JOIN tag t ON t.name='powerlifting'
 WHERE w.name IN ('Full Body Strength')
   AND NOT EXISTS (SELECT 1 FROM workout_tag wt WHERE wt.workout_id=w.id AND wt.tag_id=t.id);
 
+-- 12. Insert coach_clients
+INSERT INTO coach_client (coach_id, client_id, started_at, active)
+SELECT coach.id, client.id, NOW(), true
+FROM profile coach
+JOIN profile client ON client.name = 'Jane Smith'
+WHERE coach.name = 'John Doe'
+  AND NOT EXISTS (
+    SELECT 1 FROM coach_client cc
+    WHERE cc.coach_id = coach.id AND cc.client_id = client.id
+);
+
 COMMIT;

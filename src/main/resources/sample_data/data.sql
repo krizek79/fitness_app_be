@@ -1,215 +1,127 @@
 BEGIN;
 
--- 1. Insert exercises
-INSERT INTO exercise (name) SELECT 'Squat' WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE name='Squat');
-INSERT INTO exercise (name) SELECT 'Bench Press' WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE name='Bench Press');
-INSERT INTO exercise (name) SELECT 'Deadlift' WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE name='Deadlift');
-INSERT INTO exercise (name) SELECT 'Overhead Press' WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE name='Overhead Press');
-INSERT INTO exercise (name) SELECT 'Pull-Up' WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE name='Pull-Up');
-INSERT INTO exercise (name) SELECT 'Lunge' WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE name='Lunge');
+-- === USERS & PROFILES ===
+-- Insert users
+INSERT INTO app_user (id, email, password, created_at, updated_at, active, locked, enabled, credentials_non_expired)
+SELECT 1, 'coach@example.com', '', now(), now(), true, false, true, true
+WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 1);
 
--- 2. Insert muscle groups
-INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
-SELECT e.id, 'LEGS' FROM exercise e WHERE e.name='Squat'
-  AND NOT EXISTS (SELECT 1 FROM exercise_muscle_group WHERE exercise_id=e.id AND muscle_group='LEGS');
-INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
-SELECT e.id, 'CHEST' FROM exercise e WHERE e.name='Bench Press'
-  AND NOT EXISTS (SELECT 1 FROM exercise_muscle_group WHERE exercise_id=e.id AND muscle_group='CHEST');
-INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
-SELECT e.id, 'BACK' FROM exercise e WHERE e.name='Deadlift'
-  AND NOT EXISTS (SELECT 1 FROM exercise_muscle_group WHERE exercise_id=e.id AND muscle_group='BACK');
-INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
-SELECT e.id, 'SHOULDERS' FROM exercise e WHERE e.name='Overhead Press'
-  AND NOT EXISTS (SELECT 1 FROM exercise_muscle_group WHERE exercise_id=e.id AND muscle_group='SHOULDERS');
-INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
-SELECT e.id, 'BACK' FROM exercise e WHERE e.name='Pull-Up'
-  AND NOT EXISTS (SELECT 1 FROM exercise_muscle_group WHERE exercise_id=e.id AND muscle_group='BACK');
-INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
-SELECT e.id, 'LEGS' FROM exercise e WHERE e.name='Lunge'
-  AND NOT EXISTS (SELECT 1 FROM exercise_muscle_group WHERE exercise_id=e.id AND muscle_group='LEGS');
+INSERT INTO app_user (id, email, password, created_at, updated_at, active, locked, enabled, credentials_non_expired)
+SELECT 2, 'client@example.com', '', now(), now(), true, false, true, true
+WHERE NOT EXISTS (SELECT 1 FROM app_user WHERE id = 2);
 
--- 3. Insert tags
-INSERT INTO tag (name) SELECT 'strength' WHERE NOT EXISTS (SELECT 1 FROM tag WHERE name='strength');
-INSERT INTO tag (name) SELECT 'hypertrophy' WHERE NOT EXISTS (SELECT 1 FROM tag WHERE name='hypertrophy');
-INSERT INTO tag (name) SELECT 'mobility' WHERE NOT EXISTS (SELECT 1 FROM tag WHERE name='mobility');
-INSERT INTO tag (name) SELECT 'endurance' WHERE NOT EXISTS (SELECT 1 FROM tag WHERE name='endurance');
-INSERT INTO tag (name) SELECT 'powerlifting' WHERE NOT EXISTS (SELECT 1 FROM tag WHERE name='powerlifting');
+-- Insert profiles
+INSERT INTO profile (id, user_id, name, preferred_weight_unit, deleted)
+SELECT 1, 1, 'Coach Fox', 'KG', false
+WHERE NOT EXISTS (SELECT 1 FROM profile WHERE id = 1);
 
--- 4. Insert workouts
-INSERT INTO workout (name, profile_id, description, is_template, weight_unit, note, author_id, trainee_id)
-SELECT 'Full Body Strength', p1.id, 'Heavy compound lifts', false, 'KG', 'Use RPE 8-9', p1.id, p2.id
-FROM profile p1 JOIN profile p2 ON p2.name='Jane Smith'
-WHERE p1.name='John Doe'
-  AND NOT EXISTS (SELECT 1 FROM workout WHERE name='Full Body Strength');
+INSERT INTO profile (id, user_id, name, preferred_weight_unit, deleted)
+SELECT 2, 2, 'Client Doe', 'KG', false
+WHERE NOT EXISTS (SELECT 1 FROM profile WHERE id = 2);
 
-INSERT INTO workout (name, profile_id, description, is_template, weight_unit, note, author_id, trainee_id)
-SELECT 'Upper Body Hypertrophy', p.id, 'Focus on volume for upper body', true, 'LB', '', p.id, NULL
-FROM profile p WHERE p.name='Jane Smith'
-  AND NOT EXISTS (SELECT 1 FROM workout WHERE name='Upper Body Hypertrophy');
-
-INSERT INTO workout (name, profile_id, description, is_template, weight_unit, note, author_id, trainee_id)
-SELECT 'Push Day', p.id, 'Shoulders, Chest, Triceps focus', false, 'KG', 'Include OHP variations', p.id, p.id
-FROM profile p WHERE p.name='Jane Smith'
-  AND NOT EXISTS (SELECT 1 FROM workout WHERE name='Push Day');
-
--- 5. Insert workout exercises
-INSERT INTO workout_exercise (workout_id, exercise_id, order_number, sets, repetitions, rest_duration, note, workout_exercise_type)
-SELECT w.id, e.id, 1, 4, 5, 'PT2M', 'Pause squats', 'WEIGHT'
-FROM workout w JOIN exercise e ON e.name='Squat'
-WHERE w.name='Full Body Strength'
-  AND NOT EXISTS (SELECT 1 FROM workout_exercise WHERE workout_id=w.id AND order_number=1);
-
-INSERT INTO workout_exercise (workout_id, exercise_id, order_number, sets, repetitions, rest_duration, note, workout_exercise_type)
-SELECT w.id, e.id, 2, 3, 8, 'PT90S', 'Bodyweight focused', 'BODYWEIGHT'
-FROM workout w JOIN exercise e ON e.name='Pull-Up'
-WHERE w.name='Upper Body Hypertrophy'
-  AND NOT EXISTS (SELECT 1 FROM workout_exercise WHERE workout_id=w.id AND order_number=2);
-
-INSERT INTO workout_exercise (workout_id, exercise_id, order_number, sets, repetitions, rest_duration, note, workout_exercise_type)
-SELECT w.id, e.id, 1, 3, 6, 'PT90S', 'Standing strict press', 'WEIGHT'
-FROM workout w JOIN exercise e ON e.name='Overhead Press'
-WHERE w.name='Push Day'
-  AND NOT EXISTS (SELECT 1 FROM workout_exercise WHERE workout_id=w.id AND order_number=1);
-
--- Additional workout_exercises
-INSERT INTO workout_exercise (workout_id, exercise_id, order_number, sets, repetitions, rest_duration, note, workout_exercise_type)
-SELECT w.id, e.id, 1, 4, 10, 'PT90S', 'Focus on control', 'WEIGHT'
-FROM workout w JOIN exercise e ON e.name='Bench Press'
-WHERE w.name='Upper Body Hypertrophy'
-  AND NOT EXISTS (SELECT 1 FROM workout_exercise WHERE workout_id=w.id AND exercise_id=e.id);
-
-INSERT INTO workout_exercise (workout_id, exercise_id, order_number, sets, repetitions, rest_duration, note, workout_exercise_type)
-SELECT w.id, e.id, 2, 3, 8, 'PT2M', 'Walking lunges with dumbbells', 'WEIGHT'
-FROM workout w JOIN exercise e ON e.name='Lunge'
-WHERE w.name='Full Body Strength'
-  AND NOT EXISTS (SELECT 1 FROM workout_exercise WHERE workout_id=w.id AND exercise_id=e.id);
-
-INSERT INTO workout_exercise (workout_id, exercise_id, order_number, sets, repetitions, rest_duration, note, workout_exercise_type)
-SELECT w.id, e.id, 3, 3, 5, 'PT3M', 'Conventional deadlifts', 'WEIGHT'
-FROM workout w JOIN exercise e ON e.name='Deadlift'
-WHERE w.name='Full Body Strength'
-  AND NOT EXISTS (SELECT 1 FROM workout_exercise WHERE workout_id=w.id AND exercise_id=e.id);
-
--- 6. Insert workout exercise sets
-WITH wes1 AS (
-  SELECT we.id FROM workout_exercise we
-  JOIN workout w ON we.workout_id=w.id
-  WHERE w.name='Push Day' AND we.order_number=1
-)
-INSERT INTO workout_exercise_set (
-  actual_repetitions, actual_time, actual_weight, completed,
-  goal_repetitions, goal_time, goal_weight, note,
-  order_number, rest_duration, workout_exercise_set_type, workout_exercise_id
-)
-SELECT 6, NULL, 40.0, true, 6, NULL, 40.0, 'Solid overhead lockout', 1, 'PT90S', 'STRAIGHT_SET', wes1.id
-FROM wes1
-WHERE NOT EXISTS (SELECT 1 FROM workout_exercise_set WHERE workout_exercise_id = wes1.id AND order_number = 1);
-
--- Add Bench Press set
-WITH wes2 AS (
-  SELECT we.id FROM workout_exercise we
-  JOIN workout w ON we.workout_id = w.id
-  JOIN exercise e ON we.exercise_id = e.id
-  WHERE w.name = 'Upper Body Hypertrophy' AND e.name = 'Bench Press'
-)
-INSERT INTO workout_exercise_set (
-  actual_repetitions, actual_time, actual_weight, completed,
-  goal_repetitions, goal_time, goal_weight, note,
-  order_number, rest_duration, workout_exercise_set_type, workout_exercise_id
-)
-SELECT 10, NULL, 60.0, true, 10, NULL, 60.0, 'Controlled tempo', 1, 'PT90S', 'STRAIGHT_SET', wes2.id
-FROM wes2
-WHERE NOT EXISTS (SELECT 1 FROM workout_exercise_set WHERE workout_exercise_id = wes2.id AND order_number = 1);
-
--- Add Lunge set
-WITH wes3 AS (
-  SELECT we.id FROM workout_exercise we
-  JOIN workout w ON we.workout_id = w.id
-  JOIN exercise e ON we.exercise_id = e.id
-  WHERE w.name = 'Full Body Strength' AND e.name = 'Lunge'
-)
-INSERT INTO workout_exercise_set (
-  actual_repetitions, actual_time, actual_weight, completed,
-  goal_repetitions, goal_time, goal_weight, note,
-  order_number, rest_duration, workout_exercise_set_type, workout_exercise_id
-)
-SELECT 8, NULL, 20.0, true, 8, NULL, 20.0, 'Use dumbbells', 1, 'PT2M', 'STRAIGHT_SET', wes3.id
-FROM wes3
-WHERE NOT EXISTS (SELECT 1 FROM workout_exercise_set WHERE workout_exercise_id = wes3.id AND order_number = 1);
-
--- Add Deadlift set
-WITH wes4 AS (
-  SELECT we.id FROM workout_exercise we
-  JOIN workout w ON we.workout_id = w.id
-  JOIN exercise e ON we.exercise_id = e.id
-  WHERE w.name = 'Full Body Strength' AND e.name = 'Deadlift'
-)
-INSERT INTO workout_exercise_set (
-  actual_repetitions, actual_time, actual_weight, completed,
-  goal_repetitions, goal_time, goal_weight, note,
-  order_number, rest_duration, workout_exercise_set_type, workout_exercise_id
-)
-SELECT 5, NULL, 120.0, true, 5, NULL, 120.0, 'Flat back, slow down', 1, 'PT3M', 'STRAIGHT_SET', wes4.id
-FROM wes4
-WHERE NOT EXISTS (SELECT 1 FROM workout_exercise_set WHERE workout_exercise_id = wes4.id AND order_number = 1);
-
--- 7. Insert cycle
-INSERT INTO cycle (author_id, trainee_id, name, description, level)
-SELECT a.id, b.id, 'Strength Block 1', '4-week strength focused cycle', 'INTERMEDIATE'
-FROM profile a JOIN profile b ON b.name='Jane Smith'
-WHERE a.name='John Doe'
-  AND NOT EXISTS (SELECT 1 FROM cycle WHERE name='Strength Block 1');
-
--- 8. Insert goals
-INSERT INTO goal (cycle_id, achieved, text)
-SELECT c.id, false, 'Increase squat max by 10kg'
-FROM cycle c WHERE c.name='Strength Block 1'
-  AND NOT EXISTS (SELECT 1 FROM goal WHERE cycle_id=c.id AND text='Increase squat max by 10kg');
-
--- 9. Insert weeks
-INSERT INTO week (cycle_id, order_number, completed, note)
-SELECT c.id, 1, false, 'Start with lower volume'
-FROM cycle c WHERE c.name='Strength Block 1'
-  AND NOT EXISTS (SELECT 1 FROM week WHERE cycle_id=c.id AND order_number=1);
-
--- 10. Insert week_workouts
-INSERT INTO week_workout (day_of_the_week, completed, week_id, workout_id)
-SELECT 1, false, w.id, wo.id
-FROM week w JOIN workout wo ON wo.name='Full Body Strength'
-WHERE w.cycle_id=(SELECT id FROM cycle WHERE name='Strength Block 1') AND w.order_number=1
-  AND NOT EXISTS (SELECT 1 FROM week_workout ww WHERE ww.week_id=w.id AND ww.workout_id=wo.id);
-
-INSERT INTO week_workout (day_of_the_week, completed, week_id, workout_id)
-SELECT 3, false, w.id, wo.id
-FROM week w JOIN workout wo ON wo.name='Push Day'
-WHERE w.cycle_id=(SELECT id FROM cycle WHERE name='Strength Block 1') AND w.order_number=1
-  AND NOT EXISTS (SELECT 1 FROM week_workout ww WHERE ww.week_id=w.id AND ww.workout_id=wo.id);
-
--- 11. Insert workout_tag relationships
-INSERT INTO workout_tag (workout_id, tag_id)
-SELECT w.id, t.id FROM workout w JOIN tag t ON t.name='strength'
-WHERE w.name IN ('Full Body Strength', 'Push Day')
-  AND NOT EXISTS (SELECT 1 FROM workout_tag wt WHERE wt.workout_id=w.id AND wt.tag_id=t.id);
-
-INSERT INTO workout_tag (workout_id, tag_id)
-SELECT w.id, t.id FROM workout w JOIN tag t ON t.name='hypertrophy'
-WHERE w.name IN ('Upper Body Hypertrophy')
-  AND NOT EXISTS (SELECT 1 FROM workout_tag wt WHERE wt.workout_id=w.id AND wt.tag_id=t.id);
-
-INSERT INTO workout_tag (workout_id, tag_id)
-SELECT w.id, t.id FROM workout w JOIN tag t ON t.name='powerlifting'
-WHERE w.name IN ('Full Body Strength')
-  AND NOT EXISTS (SELECT 1 FROM workout_tag wt WHERE wt.workout_id=w.id AND wt.tag_id=t.id);
-
--- 12. Insert coach_clients
-INSERT INTO coach_client (coach_id, client_id, started_at, active)
-SELECT coach.id, client.id, NOW(), true
-FROM profile coach
-JOIN profile client ON client.name = 'Jane Smith'
-WHERE coach.name = 'John Doe'
-  AND NOT EXISTS (
-    SELECT 1 FROM coach_client cc
-    WHERE cc.coach_id = coach.id AND cc.client_id = client.id
+-- === COACH–CLIENT RELATION ===
+INSERT INTO coach_client (id, coach_id, client_id, started_at, active)
+SELECT 1, 1, 2, now(), true
+WHERE NOT EXISTS (
+    SELECT 1 FROM coach_client WHERE coach_id = 1 AND client_id = 2
 );
+
+-- === EXERCISES ===
+INSERT INTO exercise (id, name)
+SELECT * FROM (VALUES
+    (1, 'Squat'),
+    (2, 'Bench Press'),
+    (3, 'Deadlift')
+) AS tmp(id, name)
+WHERE NOT EXISTS (SELECT 1 FROM exercise WHERE id = tmp.id);
+
+INSERT INTO exercise_muscle_group (exercise_id, muscle_group)
+SELECT * FROM (VALUES
+    (1, 'LEGS'),
+    (2, 'CHEST'),
+    (3, 'BACK')
+) AS tmp(exercise_id, muscle_group)
+WHERE NOT EXISTS (
+    SELECT 1 FROM exercise_muscle_group WHERE exercise_id = tmp.exercise_id AND muscle_group = tmp.muscle_group
+);
+
+-- === CYCLE, GOALS, TAGS ===
+INSERT INTO cycle (id, author_id, trainee_id, name, description, level)
+SELECT 1, 1, 2, 'Hypertrophy Cycle', '8-week hypertrophy block', 'INTERMEDIATE'
+WHERE NOT EXISTS (SELECT 1 FROM cycle WHERE id = 1);
+
+INSERT INTO goal (id, cycle_id, text, achieved)
+SELECT * FROM (VALUES
+    (1, 1, 'Add 10kg to squat', false),
+    (2, 1, 'Improve endurance', false)
+) AS tmp(id, cycle_id, text, achieved)
+WHERE NOT EXISTS (SELECT 1 FROM goal WHERE id = tmp.id);
+
+-- === WEEK ===
+INSERT INTO week (id, cycle_id, order_number, completed, note)
+SELECT * FROM (VALUES
+    (1, 1, 1, false, 'Intro week'),
+    (2, 1, 2, false, 'First real push')
+) AS tmp(id, cycle_id, order_number, completed, note)
+WHERE NOT EXISTS (SELECT 1 FROM week WHERE id = tmp.id);
+
+-- === WORKOUTS, TAGS ===
+INSERT INTO workout (id, name, author_id, trainee_id, description, is_template, weight_unit, note)
+SELECT * FROM (VALUES
+    (1, 'Leg Day A', 1, 2, 'Volume lower body day', false, 'KG', 'Tempo work'),
+    (2, 'Push Day', 1, 2, 'Chest and triceps', false, 'KG', 'Focus on form')
+) AS tmp(id, name, author_id, trainee_id, description, is_template, weight_unit, note)
+WHERE NOT EXISTS (SELECT 1 FROM workout WHERE id = tmp.id);
+
+INSERT INTO tag (id, name)
+SELECT * FROM (VALUES
+    (1, 'strength'),
+    (2, 'volume')
+) AS tmp(id, name)
+WHERE NOT EXISTS (SELECT 1 FROM tag WHERE id = tmp.id);
+
+INSERT INTO workout_tag (workout_id, tag_id)
+SELECT * FROM (VALUES
+    (1, 1),
+    (1, 2)
+) AS tmp(workout_id, tag_id)
+WHERE NOT EXISTS (
+    SELECT 1 FROM workout_tag WHERE workout_id = tmp.workout_id AND tag_id = tmp.tag_id
+);
+
+-- === WEEK_WORKOUT ===
+INSERT INTO week_workout (id, workout_id, week_id, day_of_the_week, completed)
+SELECT * FROM (VALUES
+    (1, 1, 1, 1, false),
+    (2, 2, 2, 3, false)
+) AS tmp(id, workout_id, week_id, day_of_the_week, completed)
+WHERE NOT EXISTS (SELECT 1 FROM week_workout WHERE id = tmp.id);
+
+-- === WORKOUT_EXERCISES ===
+INSERT INTO workout_exercise (id, order_number, workout_id, exercise_id, workout_exercise_type, note)
+SELECT * FROM (VALUES
+    (1, 1, 1, 1, 'WEIGHT', 'Controlled descent'),
+    (2, 1, 2, 2, 'WEIGHT_TIME', 'Pause reps'),
+    (3, 2, 2, 3, 'BODYWEIGHT', 'Speed focus')
+) AS tmp(id, order_number, workout_id, exercise_id, workout_exercise_type, note)
+WHERE NOT EXISTS (SELECT 1 FROM workout_exercise WHERE id = tmp.id);
+
+-- === WORKOUT_EXERCISE_SET ===
+INSERT INTO workout_exercise_set (
+    id, workout_exercise_id, order_number, workout_exercise_set_type,
+    goal_repetitions, actual_repetitions, goal_weight, actual_weight,
+    goal_time, actual_time, rest_duration, note
+)
+SELECT * FROM (VALUES
+    (1, 1, 1, 'STRAIGHT_SET', 10, 10, 80, 80, 'PT4M30S', 'PT4M32S', 'PT3M30S', 'some note'),
+    (2, 2, 1, 'TOP_SET', 5, 5, 90, 90, 'PT1M', 'PT1M1S', 'PT3M30S', 'some note'),
+    (3, 2, 2, 'BACKOFF_SET', 8, 8, 75, 75, 'PT1M', 'PT1M', 'PT3M30S', 'some note'),
+    (4, 3, 1, 'WARMUP', 10, 10, 40, 40, 'PT30S', 'PT30S', 'PT3M30S', 'some note')
+) AS tmp(
+    id, workout_exercise_id, order_number, workout_exercise_set_type,
+    goal_repetitions, actual_repetitions, goal_weight, actual_weight,
+    goal_time, actual_time, rest_duration, note
+)
+WHERE NOT EXISTS (SELECT 1 FROM workout_exercise_set WHERE id = tmp.id);
 
 COMMIT;

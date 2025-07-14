@@ -1,2 +1,0 @@
-ALTER TABLE app_user
-ADD COLUMN profile_id BIGINT REFERENCES profile (id) ON DELETE SET NULL;

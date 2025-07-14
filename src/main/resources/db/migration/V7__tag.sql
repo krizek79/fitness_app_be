@@ -1,0 +1,4 @@
+CREATE TABLE tag (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT UNIQUE
+);

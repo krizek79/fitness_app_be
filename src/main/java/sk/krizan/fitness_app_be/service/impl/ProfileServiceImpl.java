@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
 import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
 import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
@@ -18,6 +19,7 @@ import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.ProfileMapper;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
+import sk.krizan.fitness_app_be.service.api.MediaService;
 import sk.krizan.fitness_app_be.service.api.ProfileService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.specification.ProfileSpecification;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class ProfileServiceImpl implements ProfileService {
 
     private final UserService userService;
+    private final MediaService mediaService;
 
     private final ProfileRepository profileRepository;
 
@@ -105,10 +108,26 @@ public class ProfileServiceImpl implements ProfileService {
         return profile.getId();
     }
 
+    @Override
+    public String uploadProfilePicture(MultipartFile multipartFile) {
+        Profile profile = userService.getCurrentUser().getProfile();
+        if (profile == null) {
+            throw new RuntimeException("User has no profile.");
+        }
+
+        mediaService.validateImage(multipartFile);
+        String profilePictureUrl = mediaService.uploadFile(multipartFile, "profile-" + profile.getId());
+
+        profile.setProfilePictureUrl(profilePictureUrl);
+        profile = profileRepository.save(profile);
+
+        return profile.getProfilePictureUrl();
+    }
+
     private String getRandomName() {
         String name;
         do {
-            name = faker.name().username();
+            name = faker.funnyName().name();
         } while (profileRepository.existsByNameAndDeletedFalse(name));
 
         return name;

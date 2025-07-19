@@ -27,6 +27,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
 
+      - name: Make Maven Wrapper executable
+        run: chmod +x ./mvnw
+
       - name: Run tests with Maven (Testcontainers)
         run: ./mvnw clean verify
         env:

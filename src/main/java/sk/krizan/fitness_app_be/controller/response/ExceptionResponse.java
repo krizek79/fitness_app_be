@@ -1,12 +1,13 @@
 package sk.krizan.fitness_app_be.controller.response;
 
-import java.time.LocalDateTime;
-
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 @Builder
 public record ExceptionResponse(
         LocalDateTime timestamp,
-        String message
+        String message,
+        Object detail
 ) {
 }

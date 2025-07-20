@@ -31,6 +31,7 @@ import sk.krizan.fitness_app_be.service.api.WorkoutExerciseSetService;
 import sk.krizan.fitness_app_be.specification.WorkoutExerciseSetSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,6 +118,7 @@ public class WorkoutExerciseSetServiceImpl implements WorkoutExerciseSetService 
     @Transactional
     public List<WorkoutExerciseSet> batchUpdateWorkoutExerciseSets(BatchUpdateRequest<WorkoutExerciseSetUpdateRequest> request) {
         List<WorkoutExerciseSet> updatedWorkoutExerciseSets = request.updateRequestList().stream()
+                .sorted(Comparator.comparing(WorkoutExerciseSetUpdateRequest::order))
                 .map(this::updateWorkoutExerciseSet)
                 .toList();
 

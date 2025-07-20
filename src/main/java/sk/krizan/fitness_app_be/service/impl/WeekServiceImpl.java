@@ -29,6 +29,7 @@ import sk.krizan.fitness_app_be.service.api.WeekService;
 import sk.krizan.fitness_app_be.specification.WeekSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,6 +104,7 @@ public class WeekServiceImpl implements WeekService {
     @Transactional
     public List<Week> batchUpdateWeeks(BatchUpdateRequest<WeekUpdateRequest> request) {
         List<Week> updatedWeeks = request.updateRequestList().stream()
+                .sorted(Comparator.comparing(WeekUpdateRequest::order))
                 .map(this::updateWeek)
                 .toList();
 

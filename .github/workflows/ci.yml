@@ -30,6 +30,10 @@ jobs:
       - name: Make Maven Wrapper executable
         run: chmod +x ./mvnw
 
+      - name: Decode JWT keystore from secret
+        run: |
+          echo "${{ secrets.JWT_KEYSTORE_B64 }}" | base64 -d > src/main/resources/keystore.p12
+
       - name: Run tests and generate coverage
         run: ./mvnw clean verify
         env:

@@ -1,6 +1,7 @@
 package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -8,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.configuration.jwt.JwtProvider;
 import sk.krizan.fitness_app_be.configuration.jwt.JwtValues;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.LocalAuthenticationRequest;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.controller.response.AuthenticationResponse;
@@ -37,7 +39,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse signInLocal(LocalAuthenticationRequest request) {
-        User user = userService.getUserByEmail(request.email());
+        User user;
+        try {
+            user = userService.getUserByEmail(request.email());
+        } catch (ApplicationException e) {
+            throw new ApplicationException(HttpStatus.UNAUTHORIZED, "");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 user.getEmail(),

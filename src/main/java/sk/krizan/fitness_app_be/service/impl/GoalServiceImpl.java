@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.GoalCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.GoalFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.GoalUpdateRequest;
@@ -68,7 +68,7 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public Goal getGoalById(Long id) {
-        return goalRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_GOAL_NOT_FOUND.formatted(id)));
+        return goalRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_GOAL_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class GoalServiceImpl implements GoalService {
                 && goal.getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         return goalRepository.save(GoalMapper.updateRequestToEntity(request, goal));
@@ -102,14 +102,14 @@ public class GoalServiceImpl implements GoalService {
         Goal goal = getGoalById(id);
 
         if (goal.getCycle() == null) {
-            throw new RuntimeException("Cycle is null.");
+            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "Cycle is null.");
         }
 
         if (goal.getCycle().getAuthor() != null
                 && goal.getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         goal.getCycle().removeFromGoalList(goal);
@@ -128,7 +128,7 @@ public class GoalServiceImpl implements GoalService {
                 && goal.getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         goal.setAchieved(!goal.getAchieved());

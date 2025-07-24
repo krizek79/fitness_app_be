@@ -1,14 +1,15 @@
 package sk.krizan.fitness_app_be.service.impl;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.model.enums.BaseEnum;
 import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
-import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 import sk.krizan.fitness_app_be.model.mapper.EnumMapper;
 import sk.krizan.fitness_app_be.service.api.EnumService;
 
@@ -49,13 +50,13 @@ public class EnumServiceImpl implements EnumService {
     @Override
     public <T extends Enum<T> & BaseEnum> T findEnumByKey(Class<T> enumClass, String key) {
         if (!enumClass.isEnum()) {
-            throw new IllegalArgumentException("Provided class is not an enum: " + enumClass.getName());
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, "Provided class is not an enum: " + enumClass.getName());
         }
 
         return Arrays.stream(enumClass.getEnumConstants())
                 .filter(e -> e.getKey().equals(key))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException(ERROR_ENUM_NOT_FOUND.formatted(key)));
+                .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_ENUM_NOT_FOUND.formatted(key)));
     }
 
     private List<EnumResponse> getEnumsOfType(Class<? extends BaseEnum> enumClass) {

@@ -1,15 +1,7 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.endpoint.impl;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutFilterRequest;
@@ -21,47 +13,43 @@ import sk.krizan.fitness_app_be.service.api.WeekWorkoutService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("week-workouts")
-public class WeekWorkoutController {
+public class WeekWorkoutController implements sk.krizan.fitness_app_be.controller.endpoint.api.WeekWorkoutController {
 
     private final WeekWorkoutService weekWorkoutService;
 
-    @PostMapping("filter")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public PageResponse<WeekWorkoutResponse> filterWeekWorkouts(@Valid @RequestBody WeekWorkoutFilterRequest request) {
+    @Override
+    public PageResponse<WeekWorkoutResponse> filterWeekWorkouts(WeekWorkoutFilterRequest request) {
         return weekWorkoutService.filterWeekWorkouts(request);
     }
 
-    @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekWorkoutResponse getWeekWorkoutById(@PathVariable Long id) {
+    @Override
+    public WeekWorkoutResponse getWeekWorkoutById(Long id) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.getWeekWorkoutById(id));
     }
 
-    @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekWorkoutResponse createWeekWorkout(@Valid @RequestBody WeekWorkoutCreateRequest request) {
+    @Override
+    public WeekWorkoutResponse createWeekWorkout(WeekWorkoutCreateRequest request) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.createWeekWorkout(request));
     }
 
-    @PutMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekWorkoutResponse updateWeekWorkout(
-            @PathVariable Long id,
-            @Valid @RequestBody WeekWorkoutUpdateRequest request
-    ) {
+    @Override
+    public WeekWorkoutResponse updateWeekWorkout(Long id, WeekWorkoutUpdateRequest request) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.updateWeekWorkout(id, request));
     }
 
-    @DeleteMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public Long deleteWeekWorkout(@PathVariable Long id) {
+    @Override
+    public Long deleteWeekWorkout(Long id) {
         return weekWorkoutService.deleteWeekWorkout(id);
     }
 
-    @PutMapping("{id}/trigger-completed")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekWorkoutResponse triggerCompleted(@PathVariable Long id) {
+    @Override
+    public WeekWorkoutResponse triggerCompleted(Long id) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.triggerCompleted(id));
     }
 }

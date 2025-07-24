@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import sk.krizan.fitness_app_be.controller.endpoint.api.TagController;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;

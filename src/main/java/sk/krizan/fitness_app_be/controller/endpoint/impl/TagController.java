@@ -1,13 +1,7 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.endpoint.impl;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
@@ -18,26 +12,25 @@ import sk.krizan.fitness_app_be.service.api.TagService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("tags")
-public class TagController {
+public class TagController implements sk.krizan.fitness_app_be.controller.endpoint.api.TagController {
 
     private final TagService tagService;
 
-    @PostMapping("filter")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public PageResponse<TagResponse> filterTags(@Valid @RequestBody TagFilterRequest request) {
+    @Override
+    public PageResponse<TagResponse> filterTags(TagFilterRequest request) {
         return tagService.filterTags(request);
     }
 
-    @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public TagResponse createTag(@Valid @RequestBody TagCreateRequest request) {
+    @Override
+    public TagResponse createTag(TagCreateRequest request) {
         return TagMapper.entityToResponse(tagService.createTag(request));
     }
 
-    @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Long deleteTag(@PathVariable Long id) {
+    @Override
+    public Long deleteTag(Long id) {
         return tagService.deleteTag(id);
     }
 }

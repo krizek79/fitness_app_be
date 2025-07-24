@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
@@ -72,7 +72,7 @@ public class CycleServiceImpl implements CycleService {
 
     @Override
     public Cycle getCycleById(Long id) {
-        return cycleRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_CYCLE_NOT_FOUND.formatted(id)));
+        return cycleRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_CYCLE_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CycleServiceImpl implements CycleService {
         Profile trainee = cycle.getTrainee();
 
         if (author.getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         Level level = enumService.findEnumByKey(Level.class, request.levelKey());
@@ -111,7 +111,7 @@ public class CycleServiceImpl implements CycleService {
         Cycle cycle = getCycleById(id);
 
         if (cycle.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         cycleRepository.delete(cycle);

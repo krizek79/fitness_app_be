@@ -6,7 +6,8 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
+import org.springframework.http.HttpStatus;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
@@ -45,7 +46,7 @@ public class CycleSpecification {
                 try {
                     level = Level.valueOf(request.levelKey());
                 } catch (Exception e) {
-                    throw new IllegalOperationException("Invalid level key: " + request.levelKey());
+                    throw new ApplicationException(HttpStatus.BAD_REQUEST, "Invalid level key: " + request.levelKey());
                 }
                 Predicate levelPredicate = criteriaBuilder.equal(
                         root.get(Cycle.Fields.level),

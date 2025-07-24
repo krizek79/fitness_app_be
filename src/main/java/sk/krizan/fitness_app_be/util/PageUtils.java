@@ -5,9 +5,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
+import org.springframework.http.HttpStatus;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 
 import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PageUtils {
@@ -24,7 +26,13 @@ public class PageUtils {
             List<String> supportedSortFields
     ) {
         if (!supportedSortFields.contains(sortBy)) {
-            throw new IllegalOperationException(ERROR_UNSUPPORTED_SORT_FIELD.formatted(sortBy));
+            throw new ApplicationException(
+                    HttpStatus.BAD_REQUEST,
+                    ERROR_UNSUPPORTED_SORT_FIELD.formatted(sortBy),
+                    Map.of(
+                            "supportedFields", supportedSortFields,
+                            "receivedField", sortBy)
+            );
         }
 
         Sort sort = Sort.by(new Sort.Order(sortDirection.equalsIgnoreCase(DIR_ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy).with(Sort.NullHandling.NULLS_LAST));

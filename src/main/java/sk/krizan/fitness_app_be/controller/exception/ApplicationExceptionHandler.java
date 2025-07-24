@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -22,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -49,58 +48,26 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public final ExceptionResponse handleNotFoundException(NotFoundException exception) {
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ExceptionResponse> handleApiException(ApplicationException exception) {
         logException(exception);
-        return ExceptionResponse.builder()
+        ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .message(exception.getMessage())
+                .detail(exception.getDetail())
                 .build();
+        return new ResponseEntity<>(response, exception.getHttpStatus());
     }
 
-    @ExceptionHandler(IllegalOperationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final ExceptionResponse handleIllegalOperationException(IllegalOperationException exception) {
+    @ExceptionHandler({Exception.class, RuntimeException.class})
+    public ResponseEntity<ExceptionResponse> handleUnexpectedException(Exception exception) {
         logException(exception);
-        return ExceptionResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message(exception.getMessage())
-                .detail(exception.getMessage())
-                .build();
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ExceptionResponse handleAccessDeniedException(ForbiddenException exception) {
-        logException(exception);
-        return ExceptionResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message(exception.getMessage())
-                .detail(exception.getMessage())
-                .build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionResponse handleGenericException(Exception exception) {
-        logException(exception);
-        return ExceptionResponse.builder()
+        ExceptionResponse response = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .message("Unexpected server error.")
                 .detail(exception.getMessage())
                 .build();
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionResponse handleRuntimeException(RuntimeException exception) {
-        logException(exception);
-        return ExceptionResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("Unexpected error occurred. Please try again later.")
-                .detail(exception.getMessage())
-                .build();
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private void logException(Exception exception) {

@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
@@ -30,7 +30,7 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
 
     private static final String ERROR_NOT_FOUND = "Tag with id { %s } does not exist.";
-    private static final String ERROR_NOT_ALREADY_EXISTS = "Tag with name { %s } already exists.";
+    private static final String ERROR_ALREADY_EXISTS_BY_NAME = "Tag with name { %s } already exists.";
 
     private static final List<String> supportedSortFields = List.of(
         Tag.Fields.id,
@@ -64,8 +64,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag getTagById(Long id) {
-        return tagRepository.findById(id).orElseThrow(
-            () -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return tagRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -77,8 +76,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public Tag createTag(TagCreateRequest request) {
         if (tagRepository.existsByName(request.name().toLowerCase())) {
-            throw new IllegalOperationException(
-                ERROR_NOT_ALREADY_EXISTS.formatted(request.name().toLowerCase()));
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, ERROR_ALREADY_EXISTS_BY_NAME.formatted(request.name().toLowerCase()));
         }
 
         return tagRepository.save(TagMapper.createRequestToEntity(request));

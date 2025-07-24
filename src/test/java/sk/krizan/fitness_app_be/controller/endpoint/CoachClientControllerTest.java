@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import sk.krizan.fitness_app_be.controller.endpoint.api.CoachClientController;
 import sk.krizan.fitness_app_be.controller.request.CoachClientCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.CoachClientResponse;

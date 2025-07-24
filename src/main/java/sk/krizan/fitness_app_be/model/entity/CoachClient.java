@@ -40,5 +40,6 @@ public class CoachClient {
     private Instant startedAt;
 
     @NotNull
+    @Builder.Default
     private Boolean active = true;
 }

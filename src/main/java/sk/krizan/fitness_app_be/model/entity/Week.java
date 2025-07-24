@@ -43,11 +43,13 @@ public class Week implements OrderableEntity {
     private Integer order;
 
     @NotNull
+    @Builder.Default
     private Boolean completed = false;
 
     @Length(max = 1024)
     private String note;
 
+    @Builder.Default
     @OneToMany(mappedBy = WeekWorkout.Fields.week, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<WeekWorkout> weekWorkoutList = new ArrayList<>();
 

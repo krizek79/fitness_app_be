@@ -60,6 +60,7 @@ public class WorkoutExercise implements OrderableEntity {
     @Length(max = 1024)
     private String note;
 
+    @Builder.Default
     @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<WorkoutExerciseSet> workoutExerciseSetList = new ArrayList<>();
 

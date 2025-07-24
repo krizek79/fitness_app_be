@@ -73,6 +73,7 @@ public class WorkoutExerciseSet implements OrderableEntity {
     private Duration restDuration;
 
     @NotNull
+    @Builder.Default
     private Boolean completed = false;
 
     @Length(max = 1024)

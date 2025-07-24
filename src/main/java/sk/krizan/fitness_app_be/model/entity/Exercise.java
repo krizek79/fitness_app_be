@@ -10,8 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +17,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -35,6 +36,7 @@ public class Exercise {
 
     private String name;
 
+    @Builder.Default
     @ElementCollection(targetClass = MuscleGroup.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(

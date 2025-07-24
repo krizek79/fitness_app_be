@@ -52,9 +52,11 @@ public class Cycle {
     @Enumerated(EnumType.STRING)
     private Level level;
 
+    @Builder.Default
     @OneToMany(mappedBy = Week.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Week> weekList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = Goal.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Goal> goalList = new ArrayList<>();
 

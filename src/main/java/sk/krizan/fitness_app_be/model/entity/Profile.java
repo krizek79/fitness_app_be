@@ -52,27 +52,34 @@ public class Profile {
     private String bio;
 
     @NotNull
+    @Builder.Default
     private Boolean deleted = false;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private WeightUnit preferredWeightUnit;
 
+    @Builder.Default
     @OneToMany(mappedBy = CoachClient.Fields.coach, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CoachClient> coachingSet = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = CoachClient.Fields.client, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CoachClient> beingCoachedSet = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Workout> authoredWorkoutList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = Workout.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Workout> assignedWorkoutList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = Cycle.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Cycle> authoredCycleList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = Cycle.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Cycle> assignedCycleList = new ArrayList<>();
 

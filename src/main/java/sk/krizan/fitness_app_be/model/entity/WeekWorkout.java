@@ -48,5 +48,6 @@ public class WeekWorkout {
     private Integer dayOfTheWeek;
 
     @NotNull
+    @Builder.Default
     private Boolean completed = false;
 }

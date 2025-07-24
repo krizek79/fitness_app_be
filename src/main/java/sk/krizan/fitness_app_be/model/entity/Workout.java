@@ -55,6 +55,7 @@ public class Workout {
     private String description;
 
     @NotNull
+    @Builder.Default
     private Boolean isTemplate = false;
 
     @NotNull
@@ -64,6 +65,7 @@ public class Workout {
     @Length(max = 1024)
     private String note;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "workout_tag",
@@ -72,6 +74,7 @@ public class Workout {
     )
     private final Set<Tag> tagSet = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = WorkoutExercise.Fields.workout, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
 

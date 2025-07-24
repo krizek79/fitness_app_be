@@ -13,9 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +21,10 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import sk.krizan.fitness_app_be.model.enums.Role;
+
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -53,6 +54,7 @@ public class User {
     @OneToOne
     private Profile profile;
 
+    @Builder.Default
     @ElementCollection(targetClass = Role.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(

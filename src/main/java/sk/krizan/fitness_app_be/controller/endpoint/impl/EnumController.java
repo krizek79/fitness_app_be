@@ -1,4 +1,4 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.endpoint.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +10,7 @@ import sk.krizan.fitness_app_be.service.api.EnumService;
 
 import java.util.List;
 
+//  TODO
 @RestController
 @RequestMapping("enums")
 @RequiredArgsConstructor

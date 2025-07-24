@@ -1,15 +1,7 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.endpoint.impl;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
@@ -23,50 +15,50 @@ import sk.krizan.fitness_app_be.service.api.WeekService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("weeks")
-public class WeekController {
+public class WeekController implements sk.krizan.fitness_app_be.controller.endpoint.api.WeekController {
 
     private final WeekService weekService;
 
-    @PostMapping("filter")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public PageResponse<WeekResponse> filterWeeks(@Valid @RequestBody WeekFilterRequest request) {
+    @Override
+    public PageResponse<WeekResponse> filterWeeks(WeekFilterRequest request) {
         return weekService.filterWeeks(request);
     }
 
-    @GetMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekResponse getWeekById(@PathVariable Long id) {
+    @Override
+    public WeekResponse getWeekById(Long id) {
         return WeekMapper.entityToResponse(weekService.getWeekById(id));
     }
 
-    @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekResponse createWeek(@Valid @RequestBody WeekCreateRequest request) {
+    @Override
+    public WeekResponse createWeek(WeekCreateRequest request) {
         return WeekMapper.entityToResponse(weekService.createWeek(request));
     }
 
-    @PutMapping
+    @Deprecated
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekResponse updateWeek(@Valid @RequestBody WeekUpdateRequest request) {
+    @Override
+    public WeekResponse updateWeek(WeekUpdateRequest request) {
         return WeekMapper.entityToResponse(weekService.updateWeek(request));
     }
 
-    @PutMapping("batch-update")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public SimpleListResponse<WeekResponse> batchUpdateWeeks(@Valid @RequestBody BatchUpdateRequest<WeekUpdateRequest> request) {
+    @Override
+    public SimpleListResponse<WeekResponse> batchUpdateWeeks(BatchUpdateRequest<WeekUpdateRequest> request) {
         return WeekMapper.entityListToSimpleListResponse(weekService.batchUpdateWeeks(request));
     }
 
-    @DeleteMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public Long deleteWeek(@PathVariable Long id) {
+    @Override
+    public Long deleteWeek(Long id) {
         return weekService.deleteWeek(id);
     }
 
-    @PutMapping("{id}/trigger-completed")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekResponse triggerCompleted(@PathVariable Long id) {
+    @Override
+    public WeekResponse triggerCompleted(Long id) {
         return WeekMapper.entityToResponse(weekService.triggerCompleted(id));
     }
 }

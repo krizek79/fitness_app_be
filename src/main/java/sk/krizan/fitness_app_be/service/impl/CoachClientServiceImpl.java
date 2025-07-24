@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.CoachClientCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.CoachClientResponse;
@@ -68,7 +68,7 @@ public class CoachClientServiceImpl implements CoachClientService {
     @Override
     public CoachClient getCoachClientById(Long id) {
         CoachClient coachClient = coachClientRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ERROR_COACH_CLIENT_NOT_FOUND.formatted(id)));
+                .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_COACH_CLIENT_NOT_FOUND.formatted(id)));
 
         checkAuthorization_get(coachClient);
 
@@ -92,7 +92,7 @@ public class CoachClientServiceImpl implements CoachClientService {
                 return author;
             }
             CoachClient coachClient = coachClientRepository.findByCoachIdAndClientId(author.getId(), requestTraineeId)
-                    .orElseThrow(ForbiddenException::new);
+                    .orElseThrow(() -> new ApplicationException(HttpStatus.FORBIDDEN, ""));
             return coachClient.getClient();
         }
         return defaultTrainee;
@@ -113,11 +113,11 @@ public class CoachClientServiceImpl implements CoachClientService {
         boolean isAuthorized = isAdmin || isFilteringAsCoach || isFilteringAsClient;
 
         if (isUnfiltered && !isAdmin) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         if (!isAuthorized) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
     }
 
@@ -131,7 +131,7 @@ public class CoachClientServiceImpl implements CoachClientService {
         boolean isCurrentUserClient = currentUser == client;
 
         if (!isCurrentUserCoachOfTheClient && !isCurrentUserClient && !isCurrentUserAdmin) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
     }
 
@@ -142,7 +142,7 @@ public class CoachClientServiceImpl implements CoachClientService {
         boolean isCurrentUserAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
 
         if (currentUser != coach.getUser() && !isCurrentUserAdmin) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
     }
 }

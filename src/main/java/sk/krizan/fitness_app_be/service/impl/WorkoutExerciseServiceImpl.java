@@ -5,10 +5,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
@@ -81,7 +81,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
 
     @Override
     public WorkoutExercise getWorkoutExerciseById(Long id) {
-        return workoutExerciseRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_NOT_FOUND.formatted(id)));
+        return workoutExerciseRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -152,7 +152,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
         boolean invalidAuthorOwnerCombination = !isTemplate && !workoutAuthor.equals(workoutTrainee);
 
         if (unauthorizedTemplateAccess || unauthorizedNonTemplateAccess || invalidAuthorOwnerCombination) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
     }
 }

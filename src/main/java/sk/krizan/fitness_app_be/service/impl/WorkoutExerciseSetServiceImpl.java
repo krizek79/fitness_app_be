@@ -5,10 +5,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetFilterRequest;
@@ -78,7 +78,7 @@ public class WorkoutExerciseSetServiceImpl implements WorkoutExerciseSetService 
 
     @Override
     public WorkoutExerciseSet getWorkoutExerciseSetById(Long id) {
-        return workoutExerciseSetRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_WORKOUT_EXERCISE_SET_NOT_FOUND.formatted(id)));
+        return workoutExerciseSetRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_WORKOUT_EXERCISE_SET_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -168,7 +168,7 @@ public class WorkoutExerciseSetServiceImpl implements WorkoutExerciseSetService 
         boolean invalidAuthorOwnerCombination = !isTemplate && !workoutAuthor.equals(workoutTrainee);
 
         if (unauthorizedTemplateAccess || unauthorizedNonTemplateAccess || invalidAuthorOwnerCombination) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
     }
 }

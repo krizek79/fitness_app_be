@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.endpoint.api.CloneController;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
@@ -104,7 +104,7 @@ class CloneControllerTest {
         CycleResponse response = cloneController.cloneCycle(originalCycle.getId());
         CloneHelper.assertCycleResponse(originalCycle, response);
 
-        Cycle clonedCycle = cycleRepository.findById(response.id()).orElseThrow(() -> new NotFoundException("Cloned cycle not found."));
+        Cycle clonedCycle = cycleRepository.findById(response.id()).orElseThrow();
         CloneHelper.assertCycle(originalCycle, clonedCycle);
     }
 
@@ -131,9 +131,9 @@ class CloneControllerTest {
         WeekWorkoutResponse response = cloneController.cloneWorkoutToWeekWorkout(request);
 
         CloneHelper.assertWorkoutResponse(request, response);
-        Workout clonedWorkout = workoutRepository.findById(response.workoutId()).orElseThrow(() -> new NotFoundException("Cloned workout not found."));
+        Workout clonedWorkout = workoutRepository.findById(response.workoutId()).orElseThrow();
         CloneHelper.assertWorkout(originalWorkout, clonedWorkout);
-        originalCycle = cycleRepository.findById(originalCycle.getId()).orElseThrow(() -> new NotFoundException("Original cycle not found."));
+        originalCycle = cycleRepository.findById(originalCycle.getId()).orElseThrow();
         CloneHelper.assertCycleWorkoutRelation(originalCycle, clonedWorkout);
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import sk.krizan.fitness_app_be.controller.endpoint.impl.EnumController;
 import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.helper.EnumHelper;
 import sk.krizan.fitness_app_be.helper.ProfileHelper;

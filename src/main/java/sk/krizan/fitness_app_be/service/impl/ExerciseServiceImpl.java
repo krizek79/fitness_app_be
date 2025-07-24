@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
@@ -65,8 +66,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise getExerciseById(Long id) {
-        return exerciseRepository.findById(id).orElseThrow(
-            () -> new NotFoundException(ERROR_EXERCISE_NOT_FOUND.formatted(id)));
+        return exerciseRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_EXERCISE_NOT_FOUND.formatted(id)));
     }
 
     @Override

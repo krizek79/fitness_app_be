@@ -1,12 +1,7 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.endpoint.impl;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
@@ -17,20 +12,19 @@ import sk.krizan.fitness_app_be.service.api.CloneService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("clone")
-public class CloneController {
+public class CloneController implements sk.krizan.fitness_app_be.controller.endpoint.api.CloneController {
 
     private final CloneService cloneService;
 
-    @PostMapping("cycle/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public CycleResponse cloneCycle(@PathVariable Long id) {
+    @Override
+    public CycleResponse cloneCycle(Long id) {
         return CycleMapper.entityToResponse(cloneService.cloneCycle(id));
     }
 
-    @PostMapping("workoutToWeekWorkout")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public WeekWorkoutResponse cloneWorkoutToWeekWorkout(@Valid @RequestBody WeekWorkoutCreateRequest request) {
+    @Override
+    public WeekWorkoutResponse cloneWorkoutToWeekWorkout(WeekWorkoutCreateRequest request) {
         return WeekWorkoutMapper.entityToResponse(cloneService.cloneWorkoutToWeekWorkout(request));
     }
 }

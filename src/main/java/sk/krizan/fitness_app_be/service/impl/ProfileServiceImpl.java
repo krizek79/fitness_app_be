@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
@@ -75,7 +74,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile getProfileById(Long id) {
         return profileRepository.findByIdAndDeletedFalse(id).orElseThrow(
-            () -> new NotFoundException(ERROR_WITH_ID_NOT_FOUND.formatted(id)));
+            () -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_WITH_ID_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -83,7 +82,7 @@ public class ProfileServiceImpl implements ProfileService {
     public void createProfile(Long userId) {
         User user = userService.getUserById(userId);
         if (user.getProfile() != null) {
-            throw new IllegalOperationException(ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
+            throw new ApplicationException(HttpStatus.CONFLICT, ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
         }
 
         String name = getRandomName();
@@ -100,7 +99,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getProfileById(id);
 
         if (profile.getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         profile.setDeleted(true);
@@ -112,7 +111,7 @@ public class ProfileServiceImpl implements ProfileService {
     public String uploadProfilePicture(MultipartFile multipartFile) {
         Profile profile = userService.getCurrentUser().getProfile();
         if (profile == null) {
-            throw new RuntimeException("User has no profile.");
+            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "User has no profile.");
         }
 
         mediaService.validateImage(multipartFile);

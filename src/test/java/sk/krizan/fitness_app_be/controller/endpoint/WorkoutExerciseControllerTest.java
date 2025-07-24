@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import sk.krizan.fitness_app_be.controller.endpoint.api.WorkoutExerciseController;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;

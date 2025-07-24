@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.exception.ForbiddenException;
-import sk.krizan.fitness_app_be.controller.exception.NotFoundException;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutUpdateRequest;
@@ -71,7 +71,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
 
     @Override
     public WeekWorkout getWeekWorkoutById(Long id) {
-        return weekWorkoutRepository.findById(id).orElseThrow(() -> new NotFoundException(ERROR_WEEK_WORKOUT_NOT_FOUND.formatted(id)));
+        return weekWorkoutRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_WEEK_WORKOUT_NOT_FOUND.formatted(id)));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
                 && weekWorkout.getWeek().getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         return weekWorkoutRepository.save(WeekWorkoutMapper.updateRequestToEntity(request, weekWorkout));
@@ -107,7 +107,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
         WeekWorkout weekWorkout = getWeekWorkoutById(id);
 
         if (weekWorkout.getWeek() == null) {
-            throw new RuntimeException("WeekWorkout is null.");
+            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "WeekWorkout is null.");
         }
 
         if (weekWorkout.getWeek().getCycle() != null
@@ -115,7 +115,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
                 && weekWorkout.getWeek().getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
         weekWorkout.getWeek().removeFromWeekWorkoutList(weekWorkout);
@@ -136,7 +136,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
                 && weekWorkout.getWeek().getCycle().getAuthor().getUser() != currentUser
                 && !currentUser.getRoleSet().contains(Role.ADMIN)
         ) {
-            throw new ForbiddenException();
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
         weekWorkout.setCompleted(!weekWorkout.getCompleted());
         return weekWorkoutRepository.save(weekWorkout);

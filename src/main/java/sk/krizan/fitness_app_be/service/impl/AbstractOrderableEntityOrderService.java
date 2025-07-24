@@ -1,6 +1,7 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import sk.krizan.fitness_app_be.controller.exception.IllegalOperationException;
+import org.springframework.http.HttpStatus;
+import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
 import sk.krizan.fitness_app_be.event.EntityReorderEvent;
 import sk.krizan.fitness_app_be.model.entity.OrderableEntity;
 import sk.krizan.fitness_app_be.service.api.OrderableEntityOrderService;
@@ -15,7 +16,7 @@ public abstract class AbstractOrderableEntityOrderService<T extends OrderableEnt
         T entity = (T) event.getEntity();
 
         if (getParent(entity) == null) {
-            throw new IllegalOperationException("Parent entity is null.");
+            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "Parent entity is null.");
         }
 
         switch (event.getEntityLifeCycleEventEnum()) {
@@ -45,7 +46,7 @@ public abstract class AbstractOrderableEntityOrderService<T extends OrderableEnt
 
     private void handleUpdate(T entity, Integer originalOrder) {
         if (entity.getOrder() == null) {
-            throw new IllegalOperationException("Entity order cannot be null.");
+            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "Entity order cannot be null.");
         }
 
         int newOrder = entity.getOrder();

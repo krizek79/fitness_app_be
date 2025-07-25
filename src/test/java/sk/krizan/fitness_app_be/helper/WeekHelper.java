@@ -93,16 +93,16 @@ public class WeekHelper {
             PageResponse<WeekResponse> response
     ) {
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.pageNumber());
-        Assertions.assertNotNull(response.pageSize());
-        Assertions.assertNotNull(response.totalElements());
-        Assertions.assertNotNull(response.totalPages());
-        Assertions.assertNotNull(response.results());
-        Assertions.assertFalse(response.results().isEmpty());
-        Assertions.assertEquals(request.page(), response.pageNumber());
-        Assertions.assertEquals(expectedList.size(), response.results().size());
+        Assertions.assertNotNull(response.getPageNumber());
+        Assertions.assertNotNull(response.getPageSize());
+        Assertions.assertNotNull(response.getTotalElements());
+        Assertions.assertNotNull(response.getTotalPages());
+        Assertions.assertNotNull(response.getResults());
+        Assertions.assertFalse(response.getResults().isEmpty());
+        Assertions.assertEquals(request.page(), response.getPageNumber());
+        Assertions.assertEquals(expectedList.size(), response.getResults().size());
 
-        List<WeekResponse> results = response.results();
+        List<WeekResponse> results = response.getResults();
         results.sort(Comparator.comparingLong(WeekResponse::id));
         expectedList.sort(Comparator.comparingLong(Week::getId));
         for (int i = 0; i < results.size(); i++) {
@@ -156,10 +156,10 @@ public class WeekHelper {
 
     public static void assertBatchUpdate(List<WeekUpdateRequest> requestList, SimpleListResponse<WeekResponse> listResponse) {
         Assertions.assertNotNull(listResponse);
-        Assertions.assertNotNull(listResponse.result());
-        Assertions.assertEquals(requestList.size(), listResponse.result().size());
+        Assertions.assertNotNull(listResponse.getResult());
+        Assertions.assertEquals(requestList.size(), listResponse.getResult().size());
         List<WeekUpdateRequest> sortedRequestList = requestList.stream().sorted(Comparator.comparingLong(WeekUpdateRequest::id)).toList();
-        List<WeekResponse> sortedResponseList = listResponse.result().stream().sorted(Comparator.comparingLong(WeekResponse::id)).toList();
+        List<WeekResponse> sortedResponseList = listResponse.getResult().stream().sorted(Comparator.comparingLong(WeekResponse::id)).toList();
         for (int i = 0; i < sortedResponseList.size(); i++) {
             WeekUpdateRequest request = sortedRequestList.get(i);
             WeekResponse response = sortedResponseList.get(i);

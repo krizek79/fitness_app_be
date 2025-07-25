@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WeekPageResponse;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WeekSimpleListResponse;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
@@ -39,7 +41,7 @@ public interface WeekController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Weeks retrieved successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WeekPageResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -137,7 +139,7 @@ public interface WeekController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Weeks batch updated successfully",
-                            content = @Content(schema = @Schema(implementation = SimpleListResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WeekSimpleListResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",

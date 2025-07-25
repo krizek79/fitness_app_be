@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.CoachClienPageResponse;
 import sk.krizan.fitness_app_be.controller.request.CoachClientCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.CoachClientResponse;
@@ -31,10 +32,14 @@ public interface CoachClientController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval of coach-clients",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = CoachClienPageResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
                             content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
             }
     )
@@ -81,6 +86,10 @@ public interface CoachClientController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Coach or Client not found",
+                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
                             content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
             }
     )

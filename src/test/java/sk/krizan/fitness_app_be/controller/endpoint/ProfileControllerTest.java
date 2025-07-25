@@ -64,7 +64,7 @@ class ProfileControllerTest {
 
         List<Profile> expectedList = new ArrayList<>(List.of(profile2));
 
-        ProfileFilterRequest request = ProfileHelper.createFilterRequest(0, originalList.size(), Profile.Fields.id, Sort.Direction.ASC.name(), expectedList.get(0).getName().substring(0, 3));
+        ProfileFilterRequest request = ProfileHelper.createFilterRequest(0, originalList.size(), Profile.Fields.id, Sort.Direction.ASC.name(), expectedList.get(0).getName().substring(0, 5));
         PageResponse<ProfileResponse> response = profileController.filterProfiles(request);
 
         ProfileHelper.assertFilter(expectedList, request, response);

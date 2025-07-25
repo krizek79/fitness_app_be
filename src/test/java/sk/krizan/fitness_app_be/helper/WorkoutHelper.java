@@ -196,9 +196,9 @@ public class WorkoutHelper {
 
     public static void assertFilter(PageResponse<WorkoutResponse> response, Workout expectedWorkout) {
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.results());
-        Assertions.assertEquals(1, response.results().size());
-        WorkoutResponse workoutResponse = response.results().get(0);
+        Assertions.assertNotNull(response.getResults());
+        Assertions.assertEquals(1, response.getResults().size());
+        WorkoutResponse workoutResponse = response.getResults().get(0);
         Assertions.assertNotNull(workoutResponse);
         Assertions.assertEquals(expectedWorkout.getId(), workoutResponse.id());
         Assertions.assertEquals(expectedWorkout.getName(), workoutResponse.name());

@@ -33,6 +33,7 @@ public class Goal {
     private Cycle cycle;
 
     @NotNull
+    @Builder.Default
     private Boolean achieved = false;
 
     @NotEmpty

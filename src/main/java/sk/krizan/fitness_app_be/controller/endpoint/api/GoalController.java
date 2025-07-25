@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.GoalPageResponse;
 import sk.krizan.fitness_app_be.controller.request.GoalCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.GoalFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.GoalUpdateRequest;
@@ -37,7 +38,7 @@ public interface GoalController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Goals retrieved successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = GoalPageResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",

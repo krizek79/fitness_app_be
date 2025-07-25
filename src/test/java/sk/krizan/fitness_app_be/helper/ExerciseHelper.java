@@ -90,16 +90,16 @@ public class ExerciseHelper {
             PageResponse<ExerciseResponse> response
     ) {
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.pageNumber());
-        Assertions.assertNotNull(response.pageSize());
-        Assertions.assertNotNull(response.totalElements());
-        Assertions.assertNotNull(response.totalPages());
-        Assertions.assertNotNull(response.results());
-        Assertions.assertFalse(response.results().isEmpty());
-        Assertions.assertEquals(request.page(), response.pageNumber());
-        Assertions.assertEquals(request.size(), response.results().size());
+        Assertions.assertNotNull(response.getPageNumber());
+        Assertions.assertNotNull(response.getPageSize());
+        Assertions.assertNotNull(response.getTotalElements());
+        Assertions.assertNotNull(response.getTotalPages());
+        Assertions.assertNotNull(response.getResults());
+        Assertions.assertFalse(response.getResults().isEmpty());
+        Assertions.assertEquals(request.page(), response.getPageNumber());
+        Assertions.assertEquals(request.size(), response.getResults().size());
 
-        List<ExerciseResponse> results = response.results();
+        List<ExerciseResponse> results = response.getResults();
         results.sort(Comparator.comparingLong(ExerciseResponse::id));
         exerciseList.sort(Comparator.comparingLong(Exercise::getId));
         for (int i = 0; i < results.size(); i++) {

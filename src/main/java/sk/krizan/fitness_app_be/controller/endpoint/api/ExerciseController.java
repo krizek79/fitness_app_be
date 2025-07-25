@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.ExercisePageResponse;
 import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
@@ -34,7 +35,7 @@ public interface ExerciseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Exercises retrieved successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ExercisePageResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",

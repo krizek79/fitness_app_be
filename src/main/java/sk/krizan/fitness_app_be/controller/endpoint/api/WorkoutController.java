@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WorkoutPageResponse;
 import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
@@ -29,7 +30,7 @@ public interface WorkoutController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Workouts retrieved successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutPageResponse.class))),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid filter parameters",

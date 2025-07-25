@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.TagPageResponse;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
@@ -28,7 +29,7 @@ public interface TagController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Tags retrieved successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))
+                            content = @Content(schema = @Schema(implementation = TagPageResponse.class))
                     ),
                     @ApiResponse(
                             responseCode = "403",

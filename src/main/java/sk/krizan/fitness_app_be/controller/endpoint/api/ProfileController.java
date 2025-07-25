@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.ProfilePageResponse;
 import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
@@ -29,7 +30,7 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Profiles retrieved successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProfilePageResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",

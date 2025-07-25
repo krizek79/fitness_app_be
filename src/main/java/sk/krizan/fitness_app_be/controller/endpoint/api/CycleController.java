@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.CyclePageResponse;
 import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
@@ -36,7 +37,7 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Successful retrieval of cycles",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = CyclePageResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",

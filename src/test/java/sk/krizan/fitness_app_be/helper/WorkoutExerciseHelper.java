@@ -92,9 +92,9 @@ public class WorkoutExerciseHelper {
 
     public static void assertFilter(PageResponse<WorkoutExerciseResponse> response, List<WorkoutExercise> expectedList) {
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.results());
-        Assertions.assertEquals(expectedList.size(), response.results().size());
-        List<WorkoutExerciseResponse> sortedResults = response.results().stream().sorted(Comparator.comparing(WorkoutExerciseResponse::id)).toList();
+        Assertions.assertNotNull(response.getResults());
+        Assertions.assertEquals(expectedList.size(), response.getResults().size());
+        List<WorkoutExerciseResponse> sortedResults = response.getResults().stream().sorted(Comparator.comparing(WorkoutExerciseResponse::id)).toList();
         List<WorkoutExercise> sortedExpectedList = expectedList.stream().sorted(Comparator.comparing(WorkoutExercise::getId)).toList();
         for (int i = 0; i < sortedExpectedList.size(); i++) {
             WorkoutExercise expected = sortedExpectedList.get(i);
@@ -105,10 +105,10 @@ public class WorkoutExerciseHelper {
 
     public static void assertBatchUpdate(List<WorkoutExerciseUpdateRequest> requestList, SimpleListResponse<WorkoutExerciseResponse> listResponse) {
         Assertions.assertNotNull(listResponse);
-        Assertions.assertNotNull(listResponse.result());
-        Assertions.assertEquals(requestList.size(), listResponse.result().size());
+        Assertions.assertNotNull(listResponse.getResult());
+        Assertions.assertEquals(requestList.size(), listResponse.getResult().size());
         List<WorkoutExerciseUpdateRequest> sortedRequestList = requestList.stream().sorted(Comparator.comparingLong(WorkoutExerciseUpdateRequest::id)).toList();
-        List<WorkoutExerciseResponse> sortedResponseList = listResponse.result().stream().sorted(Comparator.comparingLong(WorkoutExerciseResponse::id)).toList();
+        List<WorkoutExerciseResponse> sortedResponseList = listResponse.getResult().stream().sorted(Comparator.comparingLong(WorkoutExerciseResponse::id)).toList();
         for (int i = 0; i < sortedResponseList.size(); i++) {
             WorkoutExerciseUpdateRequest request = sortedRequestList.get(i);
             WorkoutExerciseResponse response = sortedResponseList.get(i);

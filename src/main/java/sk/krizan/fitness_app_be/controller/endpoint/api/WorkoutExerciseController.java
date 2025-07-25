@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WorkoutExercisePageResponse;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WorkoutExerciseSimpleListResponse;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
@@ -39,7 +41,7 @@ public interface WorkoutExerciseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Filtered workout exercises returned successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutExercisePageResponse.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
@@ -153,7 +155,7 @@ public interface WorkoutExerciseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Workout exercises updated successfully",
-                            content = @Content(schema = @Schema(implementation = SimpleListResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutExerciseSimpleListResponse.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",

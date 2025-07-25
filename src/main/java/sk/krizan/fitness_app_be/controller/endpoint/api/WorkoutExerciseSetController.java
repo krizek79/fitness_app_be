@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WorkoutExerciseSetPageResponse;
+import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.WorkoutExerciseSetSimpleListResponse;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetFilterRequest;
@@ -39,7 +41,7 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Filtered workout exercise sets filtered successfully",
-                            content = @Content(schema = @Schema(implementation = PageResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutExerciseSetPageResponse.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
@@ -161,7 +163,7 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Batch update successful",
-                            content = @Content(schema = @Schema(implementation = SimpleListResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutExerciseSetSimpleListResponse.class))),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Validation failed",

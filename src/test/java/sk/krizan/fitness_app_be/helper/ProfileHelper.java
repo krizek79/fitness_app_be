@@ -79,7 +79,7 @@ public class ProfileHelper {
         Assertions.assertEquals(profile.getUser().getId(), response.userId());
         Assertions.assertEquals(profile.getName(), response.name());
         Assertions.assertEquals(profile.getProfilePictureUrl(), response.profilePictureUrl());
-        EnumHelper.assertEnumResponse(profile.getPreferredWeightUnit().getKey(), response.preferredWeightUnitResponse());
+        EnumHelper.assertEnumResponse(profile.getPreferredWeightUnit(), response.preferredWeightUnitResponse());
     }
 
     public static void assertDelete(Profile profile, Long deletedProfileId) {

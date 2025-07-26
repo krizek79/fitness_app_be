@@ -11,8 +11,6 @@ import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 import sk.krizan.fitness_app_be.util.PredicateUtils;
 
-import java.util.List;
-
 public class ExerciseSpecification {
 
     public static Specification<Exercise> filter(ExerciseFilterRequest request) {
@@ -28,19 +26,15 @@ public class ExerciseSpecification {
                 predicate = criteriaBuilder.and(predicate, namePredicate);
             }
 
-            if (request.muscleGroupKeyList() != null && !request.muscleGroupKeyList().isEmpty()) {
-                List<MuscleGroup> muscleGroupEnums = request.muscleGroupKeyList().stream()
-                        .map(MuscleGroup::valueOf)
-                        .toList();
-
+            if (request.muscleGroupList() != null && !request.muscleGroupList().isEmpty()) {
                 SetJoin<Exercise, MuscleGroup> muscleGroupJoin = root.joinSet(Exercise.Fields.muscleGroupSet);
 
                 query.groupBy(root.get(Exercise.Fields.id));
                 Predicate havingPredicate = criteriaBuilder.equal(
                         criteriaBuilder.countDistinct(muscleGroupJoin),
-                        muscleGroupEnums.size()
+                        request.muscleGroupList().size()
                 );
-                Predicate inPredicate = muscleGroupJoin.in(muscleGroupEnums);
+                Predicate inPredicate = muscleGroupJoin.in(request.muscleGroupList());
                 query.having(criteriaBuilder.and(havingPredicate));
                 predicate = criteriaBuilder.and(predicate, inPredicate);
             }

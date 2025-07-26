@@ -6,9 +6,7 @@ import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
-import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,13 +24,10 @@ public class ExerciseMapper {
             .build();
     }
 
-    public static Exercise createRequestToEntity(
-        ExerciseCreateRequest request,
-        Set<MuscleGroup> muscleGroups
-    ) {
+    public static Exercise createRequestToEntity(ExerciseCreateRequest request) {
         Exercise exercise = new Exercise();
         exercise.setName(request.name());
-        exercise.addToMuscleGroupSet(muscleGroups);
+        exercise.addToMuscleGroupSet(request.muscleGroupSet());
         return exercise;
     }
 }

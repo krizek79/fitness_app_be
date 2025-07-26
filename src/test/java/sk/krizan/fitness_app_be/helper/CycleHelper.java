@@ -46,7 +46,7 @@ public class CycleHelper {
                 .traineeId(traineeId)
                 .name(DefaultValues.DEFAULT_UPDATE_VALUE)
                 .description(DefaultValues.DEFAULT_UPDATE_VALUE)
-                .levelKey(level.getKey())
+                .level(level)
                 .build();
     }
 
@@ -59,7 +59,7 @@ public class CycleHelper {
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
         Assertions.assertEquals(cycle.getTrainee().getId(), response.traineeId());
         Assertions.assertEquals(cycle.getTrainee().getName(), response.traineeName());
-        EnumHelper.assertEnumResponse(cycle.getLevel().getKey(), response.levelResponse());
+        EnumHelper.assertEnumResponse(cycle.getLevel(), response.levelResponse());
     }
 
     public static void assertCycleResponse_create(CycleCreateRequest request, Profile mockProfile, CycleResponse response) {
@@ -90,7 +90,7 @@ public class CycleHelper {
         Assertions.assertEquals(trainee.getName(), response.traineeName());
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertEquals(request.description(), response.description());
-        EnumHelper.assertEnumResponse(request.levelKey(), response.levelResponse());
+        EnumHelper.assertEnumResponse(request.level(), response.levelResponse());
     }
 
     public static void assertDelete(boolean exists, Cycle cycle, Long deletedCycleId) {

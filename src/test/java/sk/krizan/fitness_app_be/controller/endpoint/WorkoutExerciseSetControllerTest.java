@@ -193,7 +193,7 @@ class WorkoutExerciseSetControllerTest {
                 .collect(Collectors.toList());
 
         WorkoutExerciseSet workoutExerciseSetToUpdate = originalList.get(idOfElementToUpdate);
-        WorkoutExerciseSetUpdateRequest request = WorkoutExerciseSetHelper.createUpdateRequest(workoutExerciseSetToUpdate.getId(), newRequestedOrder, WorkoutExerciseSetType.WARMUP.getKey());
+        WorkoutExerciseSetUpdateRequest request = WorkoutExerciseSetHelper.createUpdateRequest(workoutExerciseSetToUpdate.getId(), newRequestedOrder, WorkoutExerciseSetType.WARMUP);
         WorkoutExerciseSetResponse response = workoutExerciseSetController.updateWorkoutExerciseSet(request);
 
         List<WorkoutExerciseSet> finalWorkoutExerciseSetList = workoutExerciseSetRepository.findAllByWorkoutExerciseIdOrderByOrder(workoutExercise.getId());
@@ -215,7 +215,7 @@ class WorkoutExerciseSetControllerTest {
         List<WorkoutExerciseSetUpdateRequest> requestList = new ArrayList<>();
         for (int i = originalList.size(); i > 0; i--) {
             Long id = originalList.get(originalList.size() - i).getId();
-            requestList.add(WorkoutExerciseSetHelper.createUpdateRequest(id, i, WorkoutExerciseSetType.STRAIGHT_SET.getKey()));
+            requestList.add(WorkoutExerciseSetHelper.createUpdateRequest(id, i, WorkoutExerciseSetType.STRAIGHT_SET));
         }
         BatchUpdateRequest<WorkoutExerciseSetUpdateRequest> batchRequest = BatchUpdateRequest.<WorkoutExerciseSetUpdateRequest>builder()
                 .updateRequestList(requestList)

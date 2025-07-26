@@ -3,6 +3,7 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import sk.krizan.fitness_app_be.model.enums.Level;
 
 @Builder
 public record CycleUpdateRequest(
@@ -12,7 +13,7 @@ public record CycleUpdateRequest(
         @Size(max = 2000)
         String description,
         @NotEmpty
-        String levelKey,
+        Level level,
         Long traineeId
 ) {
 }

@@ -9,7 +9,6 @@ import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseSetResponse;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
-import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
 
 import java.time.Duration;
 import java.util.List;
@@ -36,11 +35,11 @@ public class WorkoutExerciseSetMapper {
                 .build();
     }
 
-    public static WorkoutExerciseSet createRequestToEntity(WorkoutExerciseSetCreateRequest request, WorkoutExercise workoutExercise, WorkoutExerciseSetType workoutExerciseSetType) {
+    public static WorkoutExerciseSet createRequestToEntity(WorkoutExerciseSetCreateRequest request, WorkoutExercise workoutExercise) {
         WorkoutExerciseSet workoutExerciseSet = new WorkoutExerciseSet();
         workoutExerciseSet.setWorkoutExercise(workoutExercise);
         workoutExerciseSet.setOrder(request.order());
-        workoutExerciseSet.setWorkoutExerciseSetType(workoutExerciseSetType);
+        workoutExerciseSet.setWorkoutExerciseSetType(request.workoutExerciseSetType());
         workoutExerciseSet.setGoalRepetitions(request.goalRepetitions());
         workoutExerciseSet.setGoalWeight(request.goalWeight());
         workoutExerciseSet.setGoalTime(request.goalTime() != null ? Duration.parse(request.goalTime()) : null);
@@ -50,9 +49,9 @@ public class WorkoutExerciseSetMapper {
         return workoutExerciseSet;
     }
 
-    public static WorkoutExerciseSet updateRequestToEntity(WorkoutExerciseSetUpdateRequest request, WorkoutExerciseSet workoutExerciseSet, WorkoutExerciseSetType workoutExerciseSetType) {
+    public static WorkoutExerciseSet updateRequestToEntity(WorkoutExerciseSetUpdateRequest request, WorkoutExerciseSet workoutExerciseSet) {
         workoutExerciseSet.setOrder(request.order());
-        workoutExerciseSet.setWorkoutExerciseSetType(workoutExerciseSetType);
+        workoutExerciseSet.setWorkoutExerciseSetType(request.workoutExerciseSetType());
         workoutExerciseSet.setGoalRepetitions(request.goalRepetitions());
         workoutExerciseSet.setActualRepetitions(request.actualRepetitions());
         workoutExerciseSet.setGoalWeight(request.goalWeight());

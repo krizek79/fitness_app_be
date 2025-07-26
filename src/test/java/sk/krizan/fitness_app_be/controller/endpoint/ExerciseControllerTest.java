@@ -100,7 +100,7 @@ public class ExerciseControllerTest {
     void createExercise() {
         ExerciseCreateRequest request = ExerciseHelper.createCreateRequest(
                 DefaultValues.DEFAULT_VALUE,
-                Set.of(MuscleGroup.FULL_BODY.name()));
+                Set.of(MuscleGroup.FULL_BODY));
         ExerciseResponse response = exerciseController.createExercise(request);
         ExerciseHelper.assertExerciseResponse_create(request, response);
     }

@@ -13,23 +13,18 @@ import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
-import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 import sk.krizan.fitness_app_be.model.mapper.ExerciseMapper;
 import sk.krizan.fitness_app_be.repository.ExerciseRepository;
-import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.ExerciseService;
 import sk.krizan.fitness_app_be.specification.ExerciseSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
-
-    private final EnumService enumService;
 
     private final ExerciseRepository exerciseRepository;
 
@@ -71,10 +66,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise createExercise(ExerciseCreateRequest request) {
-        Set<MuscleGroup> muscleGroups = request.muscleGroupKeys().stream()
-            .map(key -> enumService.findEnumByKey(MuscleGroup.class, key))
-            .collect(Collectors.toSet());
-        Exercise exercise = ExerciseMapper.createRequestToEntity(request, muscleGroups);
+        Exercise exercise = ExerciseMapper.createRequestToEntity(request);
         return exerciseRepository.save(exercise);
     }
 

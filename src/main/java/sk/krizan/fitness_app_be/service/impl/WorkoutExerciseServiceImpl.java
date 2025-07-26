@@ -22,10 +22,8 @@ import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.model.enums.Role;
-import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 import sk.krizan.fitness_app_be.model.mapper.WorkoutExerciseMapper;
 import sk.krizan.fitness_app_be.repository.WorkoutExerciseRepository;
-import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.ExerciseService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.service.api.WorkoutExerciseService;
@@ -42,7 +40,6 @@ import java.util.stream.Collectors;
 public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
 
     private final UserService userService;
-    private final EnumService enumService;
     private final WorkoutService workoutService;
     private final ExerciseService exerciseService;
     private final WorkoutExerciseRepository workoutExerciseRepository;
@@ -89,8 +86,7 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     public WorkoutExercise createWorkoutExercise(WorkoutExerciseCreateRequest request) {
         Workout workout = workoutService.getWorkoutById(request.workoutId());
         Exercise exercise = exerciseService.getExerciseById(request.exerciseId());
-        WorkoutExerciseType workoutExerciseType = enumService.findEnumByKey(WorkoutExerciseType.class, request.workoutExerciseTypeKey());
-        WorkoutExercise workoutExercise = workoutExerciseRepository.save(WorkoutExerciseMapper.createRequestToEntity(request, workout, exercise, workoutExerciseType));
+        WorkoutExercise workoutExercise = workoutExerciseRepository.save(WorkoutExerciseMapper.createRequestToEntity(request, workout, exercise));
         applicationEventPublisher.publishEvent(new EntityReorderEvent(workoutExercise, EntityLifeCycleEventEnum.CREATE));
         return workoutExercise;
     }
@@ -99,12 +95,11 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     @Transactional
     public WorkoutExercise updateWorkoutExercise(WorkoutExerciseUpdateRequest request) {
         WorkoutExercise workoutExercise = getWorkoutExerciseById(request.id());
-        WorkoutExerciseType workoutExerciseType = enumService.findEnumByKey(WorkoutExerciseType.class, request.workoutExerciseTypeKey());
 
         checkAuthorization(workoutExercise);
 
         int originalOrder = workoutExercise.getOrder();
-        workoutExercise = workoutExerciseRepository.save(WorkoutExerciseMapper.updateRequestToEntity(workoutExercise, workoutExerciseType, request));
+        workoutExercise = workoutExerciseRepository.save(WorkoutExerciseMapper.updateRequestToEntity(workoutExercise, request));
         applicationEventPublisher.publishEvent(new EntityReorderEvent(workoutExercise, EntityLifeCycleEventEnum.UPDATE, originalOrder));
 
         return workoutExercise;

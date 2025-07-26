@@ -14,7 +14,6 @@ import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.enums.MuscleGroup;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -47,20 +46,17 @@ public class ExerciseHelper {
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
                 .name(name)
-                .muscleGroupKeyList(
-                        muscleGroupList != null
-                                ? muscleGroupList.stream().map(MuscleGroup::getKey).collect(Collectors.toList())
-                                : new ArrayList<>())
+                .muscleGroupList(muscleGroupList)
                 .build();
     }
 
     public static ExerciseCreateRequest createCreateRequest(
             @NotEmpty @Size String name,
-            @NotNull Set<String> muscleGroupKeys
+            @NotNull Set<MuscleGroup> muscleGroupSet
     ) {
         return ExerciseCreateRequest.builder()
                 .name(name)
-                .muscleGroupKeys(muscleGroupKeys)
+                .muscleGroupSet(muscleGroupSet)
                 .build();
     }
 
@@ -71,12 +67,16 @@ public class ExerciseHelper {
         Assertions.assertEquals(request.name(), response.name());
         Assertions.assertNotNull(response.muscleGroupResponseList());
         Assertions.assertFalse(response.muscleGroupResponseList().isEmpty());
-        Assertions.assertEquals(request.muscleGroupKeys().size(), response.muscleGroupResponseList().size());
+        Assertions.assertEquals(request.muscleGroupSet().size(), response.muscleGroupResponseList().size());
         Set<String> responseKeys = response.muscleGroupResponseList()
                 .stream()
                 .map(EnumResponse::key)
                 .collect(Collectors.toSet());
-        Assertions.assertEquals(request.muscleGroupKeys(), responseKeys);
+        Set<String> expectedKeys = request.muscleGroupSet()
+                .stream()
+                .map(MuscleGroup::getKey)
+                .collect(Collectors.toSet());
+        Assertions.assertEquals(expectedKeys, responseKeys);
     }
 
     public static void assertDelete(boolean exists, Exercise savedExercise, Long deletedExerciseId) {

@@ -25,7 +25,7 @@ public class CloneHelper {
         Assertions.assertNotEquals(cycle.getId(), response.id());
         Assertions.assertEquals(cycle.getName(), response.name());
         Assertions.assertEquals(cycle.getDescription(), response.description());
-        EnumHelper.assertEnumResponse(cycle.getLevel().getKey(), response.levelResponse());
+        EnumHelper.assertEnumResponse(cycle.getLevel(), response.levelResponse());
         Assertions.assertEquals(cycle.getAuthor().getId(), response.authorId());
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
         Assertions.assertNull(response.traineeId());

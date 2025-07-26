@@ -9,7 +9,6 @@ import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
-import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +21,6 @@ public class WorkoutMapper {
             WorkoutCreateRequest request,
             Profile profile,
             Profile trainee,
-            WeightUnit weightUnit,
             Set<Tag> tagSet
     ) {
         Workout workout = new Workout();
@@ -30,7 +28,7 @@ public class WorkoutMapper {
         workout.setTrainee(trainee);
         workout.setName(request.name());
         workout.setIsTemplate(request.isTemplate());
-        workout.setWeightUnit(weightUnit);
+        workout.setWeightUnit(request.weightUnit());
         workout.setNote(request.note());
         workout.setDescription(request.description());
         workout.addToTagSet(tagSet);
@@ -60,13 +58,12 @@ public class WorkoutMapper {
             WorkoutUpdateRequest request,
             Workout workout,
             Profile trainee,
-            WeightUnit weightUnit,
             Set<Tag> tagSet
     ) {
         workout.setTrainee(trainee);
         workout.setName(request.name());
         workout.setDescription(request.description());
-        workout.setWeightUnit(weightUnit);
+        workout.setWeightUnit(request.weightUnit());
         workout.getTagSet().clear();
         workout.addToTagSet(tagSet);
         workout.setNote(request.note());

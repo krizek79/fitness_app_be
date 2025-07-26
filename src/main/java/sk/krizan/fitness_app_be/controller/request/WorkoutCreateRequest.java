@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public record WorkoutCreateRequest(
         @Size(max = 1000)
         String description,
         @NotEmpty
-        String weightUnitKey,
+        WeightUnit weightUnit,
         @Length(max = 1024)
         String note,
         @NotNull

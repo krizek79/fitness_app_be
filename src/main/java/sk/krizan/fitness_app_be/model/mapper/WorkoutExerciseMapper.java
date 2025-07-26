@@ -11,7 +11,6 @@ import sk.krizan.fitness_app_be.model.entity.Exercise;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
-import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
 import java.util.Comparator;
 import java.util.List;
@@ -23,14 +22,13 @@ public class WorkoutExerciseMapper {
     public static WorkoutExercise createRequestToEntity(
             WorkoutExerciseCreateRequest request,
             Workout workout,
-            Exercise exercise,
-            WorkoutExerciseType workoutExerciseType
+            Exercise exercise
     ) {
         WorkoutExercise workoutExercise = new WorkoutExercise();
         workoutExercise.setWorkout(workout);
         workoutExercise.setExercise(exercise);
         workoutExercise.setOrder(request.order());
-        workoutExercise.setWorkoutExerciseType(workoutExerciseType);
+        workoutExercise.setWorkoutExerciseType(request.workoutExerciseType());
         workoutExercise.setNote(request.note());
         return workoutExercise;
     }
@@ -53,11 +51,10 @@ public class WorkoutExerciseMapper {
 
     public static WorkoutExercise updateRequestToEntity(
             WorkoutExercise workoutExercise,
-            WorkoutExerciseType workoutExerciseType,
             WorkoutExerciseUpdateRequest request
     ) {
         workoutExercise.setOrder(request.order());
-        workoutExercise.setWorkoutExerciseType(workoutExerciseType);
+        workoutExercise.setWorkoutExerciseType(request.workoutExerciseType());
         workoutExercise.setNote(request.note());
 
         return workoutExercise;

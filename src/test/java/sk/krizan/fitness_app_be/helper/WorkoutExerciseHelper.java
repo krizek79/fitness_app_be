@@ -54,7 +54,7 @@ public class WorkoutExerciseHelper {
                 .id(id)
                 .order(order)
                 .note(UUID.randomUUID().toString())
-                .workoutExerciseTypeKey(WorkoutExerciseType.BODYWEIGHT.getKey())
+                .workoutExerciseType(WorkoutExerciseType.BODYWEIGHT)
                 .build();
     }
 
@@ -64,7 +64,7 @@ public class WorkoutExerciseHelper {
                 .exerciseId(exerciseId)
                 .order(order)
                 .note(UUID.randomUUID().toString())
-                .workoutExerciseTypeKey(WorkoutExerciseType.WEIGHT.getKey())
+                .workoutExerciseType(WorkoutExerciseType.WEIGHT)
                 .build();
     }
 
@@ -74,7 +74,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertEquals(workoutExercise.getWorkout().getId(), response.workoutId());
         Assertions.assertEquals(workoutExercise.getExercise().getName(), response.exerciseName());
         Assertions.assertEquals(workoutExercise.getNote(), response.note());
-        EnumHelper.assertEnumResponse(workoutExercise.getWorkoutExerciseType().getKey(), response.workoutExerciseTypeResponse());
+        EnumHelper.assertEnumResponse(workoutExercise.getWorkoutExerciseType(), response.workoutExerciseTypeResponse());
         Assertions.assertNotNull(response.workoutExerciseSetResponseList());
         Assertions.assertEquals(expectedWorkoutExerciseSetList.size(), response.workoutExerciseSetResponseList().size());
         List<WorkoutExerciseSet> sortedExpectedWorkoutExerciseSetList = expectedWorkoutExerciseSetList.stream().sorted(Comparator.comparing(WorkoutExerciseSet::getOrder)).toList();
@@ -130,7 +130,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertEquals(request.workoutId(), response.workoutId());
         Assertions.assertEquals(expectedInsertedOrder, response.order());
         Assertions.assertEquals(request.note(), response.note());
-        EnumHelper.assertEnumResponse(request.workoutExerciseTypeKey(), response.workoutExerciseTypeResponse());
+        EnumHelper.assertEnumResponse(request.workoutExerciseType(), response.workoutExerciseTypeResponse());
 
         Assertions.assertNotNull(finalWorkoutExerciseList);
         Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());
@@ -147,7 +147,7 @@ public class WorkoutExerciseHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(request.id(), response.id());
         Assertions.assertNotNull(response.workoutId());
-        EnumHelper.assertEnumResponse(request.workoutExerciseTypeKey(), response.workoutExerciseTypeResponse());
+        EnumHelper.assertEnumResponse(request.workoutExerciseType(), response.workoutExerciseTypeResponse());
         Assertions.assertNotNull(finalWorkoutExerciseList);
         Assertions.assertEquals(request.note(), response.note());
         Assertions.assertFalse(finalWorkoutExerciseList.isEmpty());

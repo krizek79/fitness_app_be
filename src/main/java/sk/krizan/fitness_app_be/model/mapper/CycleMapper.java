@@ -8,7 +8,6 @@ import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
-import sk.krizan.fitness_app_be.model.enums.Level;
 
 import java.util.List;
 
@@ -40,11 +39,11 @@ public class CycleMapper {
         return cycle;
     }
 
-    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle, Profile trainee, Level level) {
+    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle, Profile trainee) {
         cycle.setTrainee(trainee);
         cycle.setName(request.name());
         cycle.setDescription(request.description());
-        cycle.setLevel(level);
+        cycle.setLevel(request.level());
         return cycle;
     }
 }

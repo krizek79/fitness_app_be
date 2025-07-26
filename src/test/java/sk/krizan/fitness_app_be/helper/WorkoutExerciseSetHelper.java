@@ -56,12 +56,12 @@ public class WorkoutExerciseSetHelper {
     public static WorkoutExerciseSetUpdateRequest createUpdateRequest(
             Long id,
             Integer order,
-            String workoutExerciseSetTypeKey
+            WorkoutExerciseSetType workoutExerciseSetType
     ) {
         return WorkoutExerciseSetUpdateRequest.builder()
                 .id(id)
                 .order(order)
-                .workoutExerciseSetTypeKey(workoutExerciseSetTypeKey)
+                .workoutExerciseSetType(workoutExerciseSetType)
                 .actualRepetitions(RandomHelper.getRandomInt(1, 15))
                 .goalRepetitions(RandomHelper.getRandomInt(1, 15))
                 .goalWeight(RandomHelper.getRandomDouble(2.5, 200))
@@ -77,7 +77,7 @@ public class WorkoutExerciseSetHelper {
         return WorkoutExerciseSetCreateRequest.builder()
                 .order(order)
                 .workoutExerciseId(workoutExerciseId)
-                .workoutExerciseSetTypeKey(WorkoutExerciseSetType.STRAIGHT_SET.getKey())
+                .workoutExerciseSetType(WorkoutExerciseSetType.STRAIGHT_SET)
                 .note(UUID.randomUUID().toString())
                 .goalRepetitions(RandomHelper.getRandomInt(1, 15))
                 .goalWeight(RandomHelper.getRandomDouble(2.5, 200))
@@ -95,7 +95,7 @@ public class WorkoutExerciseSetHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(workoutExerciseSet.getId(), response.id());
         Assertions.assertEquals(workoutExerciseSet.getWorkoutExercise().getId(), response.workoutExerciseId());
-        EnumHelper.assertEnumResponse(workoutExerciseSet.getWorkoutExerciseSetType().getKey(), response.workoutExerciseSetTypeResponse());
+        EnumHelper.assertEnumResponse(workoutExerciseSet.getWorkoutExerciseSetType(), response.workoutExerciseSetTypeResponse());
         Assertions.assertEquals(workoutExerciseSet.getCompleted(), response.completed());
         Assertions.assertEquals(workoutExerciseSet.getOrder(), response.order());
         Assertions.assertEquals(workoutExerciseSet.getGoalWeight(), response.goalWeight());
@@ -146,7 +146,7 @@ public class WorkoutExerciseSetHelper {
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(request.restDuration(), response.restDuration());
         Assertions.assertEquals(request.note(), response.note());
-        EnumHelper.assertEnumResponse(request.workoutExerciseSetTypeKey(), response.workoutExerciseSetTypeResponse());
+        EnumHelper.assertEnumResponse(request.workoutExerciseSetType(), response.workoutExerciseSetTypeResponse());
         Assertions.assertEquals(expectedInsertedOrder, response.order());
 
         Assertions.assertNotNull(finalWorkoutExerciseSetList);
@@ -173,7 +173,7 @@ public class WorkoutExerciseSetHelper {
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(request.restDuration(), response.restDuration());
         Assertions.assertEquals(request.note(), response.note());
-        EnumHelper.assertEnumResponse(request.workoutExerciseSetTypeKey(), response.workoutExerciseSetTypeResponse());
+        EnumHelper.assertEnumResponse(request.workoutExerciseSetType(), response.workoutExerciseSetTypeResponse());
         Assertions.assertNotNull(finalWorkoutExerciseSetList);
         Assertions.assertFalse(finalWorkoutExerciseSetList.isEmpty());
         Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWorkoutExerciseSetList.size());

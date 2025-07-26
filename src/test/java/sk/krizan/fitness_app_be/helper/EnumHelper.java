@@ -24,8 +24,8 @@ public class EnumHelper {
         }
     }
 
-    public static void assertEnumResponse(String key, EnumResponse enumResponse) {
-        Assertions.assertEquals(key, enumResponse.key());
-        Assertions.assertNotNull(enumResponse.value());
+    public static void assertEnumResponse(BaseEnum baseEnum, EnumResponse enumResponse) {
+        Assertions.assertEquals(baseEnum.getKey(), enumResponse.key());
+        Assertions.assertEquals(baseEnum.getValue(), enumResponse.value());
     }
 }

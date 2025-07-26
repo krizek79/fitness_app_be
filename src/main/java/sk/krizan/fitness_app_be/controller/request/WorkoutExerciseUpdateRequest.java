@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
+import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseType;
 
 @Builder
 public record WorkoutExerciseUpdateRequest(
@@ -13,7 +14,7 @@ public record WorkoutExerciseUpdateRequest(
         @NotNull
         Integer order,
         @NotNull
-        String workoutExerciseTypeKey,
+        WorkoutExerciseType workoutExerciseType,
         @Length(max = 1024)
         String note
 ) {

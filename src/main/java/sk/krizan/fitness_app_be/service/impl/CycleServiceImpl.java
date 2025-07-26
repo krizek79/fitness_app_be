@@ -16,13 +16,11 @@ import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
-import sk.krizan.fitness_app_be.model.enums.Level;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.model.mapper.CycleMapper;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.service.api.CoachClientService;
 import sk.krizan.fitness_app_be.service.api.CycleService;
-import sk.krizan.fitness_app_be.service.api.EnumService;
 import sk.krizan.fitness_app_be.service.api.UserService;
 import sk.krizan.fitness_app_be.specification.CycleSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
@@ -35,7 +33,6 @@ import java.util.stream.Collectors;
 public class CycleServiceImpl implements CycleService {
 
     private final UserService userService;
-    private final EnumService enumService;
     private final CycleRepository cycleRepository;
     private final CoachClientService coachClientService;
 
@@ -98,11 +95,9 @@ public class CycleServiceImpl implements CycleService {
             throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 
-        Level level = enumService.findEnumByKey(Level.class, request.levelKey());
-
         trainee = coachClientService.resolveTrainee(request.traineeId(), author, trainee);
 
-        return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, trainee, level));
+        return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, trainee));
     }
 
     @Override

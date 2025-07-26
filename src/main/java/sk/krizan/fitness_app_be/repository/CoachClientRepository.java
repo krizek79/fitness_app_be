@@ -13,5 +13,8 @@ import java.util.Optional;
 public interface CoachClientRepository extends JpaRepository<CoachClient, Long> {
 
     Page<CoachClient> findAll(Specification<CoachClient> specification, Pageable pageable);
-    Optional<CoachClient> findByCoachIdAndClientId(Long coachId, Long clientId);
+
+    Optional<CoachClient> findByCoachIdAndClientIdAndActiveTrue(Long coachId, Long clientId);
+
+    Boolean existsByCoachIdAndClientIdAndActiveTrue(Long coachId, Long clientId);
 }

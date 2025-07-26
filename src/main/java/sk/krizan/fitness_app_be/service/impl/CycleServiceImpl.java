@@ -46,7 +46,16 @@ public class CycleServiceImpl implements CycleService {
     @Override
     @Transactional
     public PageResponse<CycleResponse> filterCycles(CycleFilterRequest request) {
-        Specification<Cycle> specification = CycleSpecification.filter(request);
+        User currentUser = userService.getCurrentUser();
+
+        Specification<Cycle> specification;
+        if (currentUser.getRoleSet().contains(Role.ADMIN)) {
+            specification = CycleSpecification.filter(request, null);
+        } else {
+            Profile currentProfile = currentUser.getProfile();
+            specification = CycleSpecification.filter(request, currentProfile);
+        }
+
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
                 request.size(),
@@ -54,9 +63,12 @@ public class CycleServiceImpl implements CycleService {
                 request.sortDirection(),
                 supportedSortFields
         );
+
         Page<Cycle> page = cycleRepository.findAll(specification, pageable);
+
         List<CycleResponse> responseList = page.stream()
-                .map(CycleMapper::entityToResponse).collect(Collectors.toList());
+                .map(CycleMapper::entityToResponse)
+                .collect(Collectors.toList());
 
         return PageResponse.<CycleResponse>builder()
                 .pageNumber(page.getNumber())
@@ -69,7 +81,9 @@ public class CycleServiceImpl implements CycleService {
 
     @Override
     public Cycle getCycleById(Long id) {
-        return cycleRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_CYCLE_NOT_FOUND.formatted(id)));
+        Cycle cycle = cycleRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_CYCLE_NOT_FOUND.formatted(id)));
+        checkAuthorization(cycle);
+        return cycle;
     }
 
     @Override
@@ -87,29 +101,34 @@ public class CycleServiceImpl implements CycleService {
     @Transactional
     public Cycle updateCycle(Long id, CycleUpdateRequest request) {
         Cycle cycle = getCycleById(id);
-        User currentUser = userService.getCurrentUser();
+
         Profile author = cycle.getAuthor();
         Profile trainee = cycle.getTrainee();
-
-        if (author.getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
-
         trainee = coachClientService.resolveTrainee(request.traineeId(), author, trainee);
 
         return cycleRepository.save(CycleMapper.updateRequestToEntity(request, cycle, trainee));
     }
 
     @Override
+    @Transactional
     public Long deleteCycle(Long id) {
-        User currentUser = userService.getCurrentUser();
         Cycle cycle = getCycleById(id);
-
-        if (cycle.getAuthor().getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
-
         cycleRepository.delete(cycle);
         return cycle.getId();
     }
+
+    private void checkAuthorization(Cycle cycle) {
+        User currentUser = userService.getCurrentUser();
+        Profile author = cycle.getAuthor();
+        Profile currentProfile = currentUser.getProfile();
+
+        boolean isOwner = author.getUser().equals(currentUser);
+        boolean isCoach = coachClientService.areProfilesInCoachClientRelation(author, currentProfile);
+        boolean isAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
+
+        if (!isOwner && !isCoach && !isAdmin) {
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "You are not authorized to access this cycle.");
+        }
+    }
 }
+

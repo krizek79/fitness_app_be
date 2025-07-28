@@ -115,8 +115,8 @@ class CycleControllerTest {
 
     private void filterCycles_byLevelKey(List<Cycle> originalList) {
         List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(3)));
-        String levelKey = expectedList.get(0).getLevel().getKey();
-        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, null, levelKey);
+        Level level = expectedList.get(0).getLevel();
+        CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, null, level);
         PageResponse<CycleResponse> response = cycleController.filterCycles(request);
         CycleHelper.assertFilter(expectedList, request, response);
     }

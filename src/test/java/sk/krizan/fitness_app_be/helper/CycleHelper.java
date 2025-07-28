@@ -124,7 +124,7 @@ public class CycleHelper {
             Long authorId,
             Long traineeId,
             String name,
-            String levelKey
+            Level level
     ) {
         return CycleFilterRequest.builder()
                 .page(page)
@@ -134,7 +134,7 @@ public class CycleHelper {
                 .authorId(authorId)
                 .traineeId(traineeId)
                 .name(name)
-                .levelKey(levelKey)
+                .level(level)
                 .build();
     }
 

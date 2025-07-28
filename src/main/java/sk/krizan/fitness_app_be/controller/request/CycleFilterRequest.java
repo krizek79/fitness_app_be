@@ -3,6 +3,7 @@ package sk.krizan.fitness_app_be.controller.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
+import sk.krizan.fitness_app_be.model.enums.Level;
 
 @Builder
 public record CycleFilterRequest(
@@ -18,6 +19,6 @@ public record CycleFilterRequest(
         Long authorId,
         Long traineeId,
         String name,
-        String levelKey
+        Level level
 ) {
 }

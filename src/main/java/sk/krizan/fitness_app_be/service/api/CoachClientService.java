@@ -31,4 +31,6 @@ public interface CoachClientService {
      * @throws ApplicationException with HttpStatus 403 if the author is not the trainee's coach
      */
     Profile resolveTrainee(Long requestTraineeId, Profile author, Profile defaultTrainee);
+
+    Boolean areProfilesInCoachClientRelation(Profile coach, Profile client);
 }

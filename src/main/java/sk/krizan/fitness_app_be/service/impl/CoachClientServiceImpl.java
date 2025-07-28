@@ -91,11 +91,16 @@ public class CoachClientServiceImpl implements CoachClientService {
             if (requestTraineeId.equals(author.getId())) {
                 return author;
             }
-            CoachClient coachClient = coachClientRepository.findByCoachIdAndClientId(author.getId(), requestTraineeId)
+            CoachClient coachClient = coachClientRepository.findByCoachIdAndClientIdAndActiveTrue(author.getId(), requestTraineeId)
                     .orElseThrow(() -> new ApplicationException(HttpStatus.FORBIDDEN, ""));
             return coachClient.getClient();
         }
         return defaultTrainee;
+    }
+
+    @Override
+    public Boolean areProfilesInCoachClientRelation(Profile coach, Profile client) {
+        return coachClientRepository.existsByCoachIdAndClientIdAndActiveTrue(coach.getId(), client.getId());
     }
 
     private void checkAuthorization_filter(CoachClientFilterRequest request) {

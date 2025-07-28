@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fitness_backend_render
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    networks:
+      - fitness-net
+
+  db:
+    image: postgres:15
+    container_name: postgres_render
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-fitness_app}
+      POSTGRES_USER: ${DB_USERNAME:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - fitness-net
+
+networks:
+  fitness-net:
+
+volumes:
+  pgdata:

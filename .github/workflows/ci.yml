@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
   pull_request:
+    branches: [master]
 
 jobs:
   build-and-test:
@@ -40,14 +41,14 @@ jobs:
           SPRING_PROFILES_ACTIVE: test
           TESTCONTAINERS_RYUK_DISABLED: true
 
-      - name: Upload JUnit test results
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: junit-report
           path: target/surefire-reports/
 
-      - name: Upload Jacoco HTML coverage report
+      - name: Upload Jacoco coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:

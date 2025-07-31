@@ -84,7 +84,3 @@ Interactive OpenAPI docs available at:
     * Triggers only when CI passes on `master` (via `workflow_run`)
     * Deploys backend via Render webhook
     * Ensures clean separation between CI and CD steps
-
----
-
-For questions or contributions, please open an issue or submit a pull request.

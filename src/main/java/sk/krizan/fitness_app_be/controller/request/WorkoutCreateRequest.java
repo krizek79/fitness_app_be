@@ -16,7 +16,7 @@ public record WorkoutCreateRequest(
         String name,
         @Size(max = 1000)
         String description,
-        @NotEmpty
+        @NotNull
         WeightUnit weightUnit,
         @Length(max = 1024)
         String note,

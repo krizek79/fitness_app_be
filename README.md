@@ -53,7 +53,8 @@ docker-compose up --build
 ## API Docs
 
 Interactive OpenAPI docs available at:  
-[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+[https://fitness-app-qfb0.onrender.com/swagger-ui/index.html](https://fitness-app-qfb0.onrender.com/swagger-ui/index.html)
+(Please be patient, currently used hosting is not the best...)
 
 ## Testing & Reports
 

@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fitness_backend_render
+    container_name: fitness_backend_container
     ports:
       - "${SERVER_PORT:-8080}:8080"
     depends_on:
@@ -17,7 +17,7 @@ services:
 
   db:
     image: postgres:15
-    container_name: postgres_render
+    container_name: postgres_container
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME:-fitness_app}

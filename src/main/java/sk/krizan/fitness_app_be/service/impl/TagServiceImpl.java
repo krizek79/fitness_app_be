@@ -69,7 +69,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Optional<Tag> findTagByName(String name) {
-        return tagRepository.findTagByName(name);
+        return tagRepository.findTagByName(name.toLowerCase());
     }
 
     @Override

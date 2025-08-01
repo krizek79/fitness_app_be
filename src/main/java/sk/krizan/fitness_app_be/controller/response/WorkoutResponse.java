@@ -16,7 +16,6 @@ public record WorkoutResponse(
         String description,
         Boolean isTemplate,
         EnumResponse weightUnitResponse,
-        String note,
-        String duration
+        String note
 ) {
 }

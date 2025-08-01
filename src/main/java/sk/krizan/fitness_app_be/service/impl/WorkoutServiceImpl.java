@@ -89,7 +89,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         Set<Tag> tagSet = new HashSet<>();
         if (request.tagNames() != null) {
             tagSet = request.tagNames().stream()
-                    .map(tagName -> tagService.findTagByName(tagName.toLowerCase())
+                    .map(tagName -> tagService.findTagByName(tagName)
                             .orElseGet(() -> tagService.createTag(new TagCreateRequest(tagName))))
                     .collect(Collectors.toSet());
         }

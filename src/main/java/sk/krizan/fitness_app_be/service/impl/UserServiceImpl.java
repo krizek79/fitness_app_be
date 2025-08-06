@@ -47,14 +47,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = null;
 
-        if (principal instanceof Jwt) {
-            email = ((Jwt) principal).getSubject();
-        }
+        String email;
 
-        if (principal instanceof org.springframework.security.core.userdetails.User) {
-            email = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+        if (principal instanceof Jwt jwt) {
+            email = jwt.getSubject();
+        } else if (principal instanceof CustomUserDetails userDetails) {
+            email = userDetails.getUsername();
+        } else {
+            throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Unrecognized authentication principal");
         }
 
         return getUserByEmail(email);

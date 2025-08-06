@@ -3,6 +3,8 @@ package sk.krizan.fitness_app_be.helper;
 import com.github.javafaker.Faker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Assertions;
+import sk.krizan.fitness_app_be.controller.response.UserResponse;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
@@ -25,5 +27,13 @@ public class UserHelper {
         user.setLocked(false);
         user.setPassword("");
         return user;
+    }
+
+    public static void assertUserResponse(User user, UserResponse response) {
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(user.getId(), response.id());
+        Assertions.assertEquals(user.getEmail(), response.email());
+        Assertions.assertEquals(user.getRoleSet(), response.roles());
+        Assertions.assertNull(response.profileResponse());
     }
 }

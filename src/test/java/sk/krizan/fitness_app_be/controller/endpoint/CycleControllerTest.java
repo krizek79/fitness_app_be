@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.endpoint.api.CycleController;
@@ -27,13 +26,10 @@ import sk.krizan.fitness_app_be.repository.CoachClientRepository;
 import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
-import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -54,9 +50,6 @@ class CycleControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @MockBean
-    private UserService userService;
-
     private Profile mockProfile;
 
     @BeforeEach
@@ -68,7 +61,6 @@ class CycleControllerTest {
         mockProfile = profileRepository.save(mockProfile);
 
         SecurityHelper.setAuthentication(mockUser);
-        when(userService.getCurrentUser()).thenReturn(mockUser);
     }
 
     @Test

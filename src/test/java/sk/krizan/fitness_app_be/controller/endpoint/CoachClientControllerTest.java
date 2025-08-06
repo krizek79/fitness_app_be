@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.endpoint.api.CoachClientController;
@@ -23,13 +22,10 @@ import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.CoachClientRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
-import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -47,16 +43,12 @@ class CoachClientControllerTest {
     @Autowired
     private CoachClientRepository coachClientRepository;
 
-    @MockBean
-    private UserService userService;
-
     private User mockUser1;
 
     @BeforeEach
     void setUp() {
         mockUser1 = userRepository.save(UserHelper.createMockUser(Set.of(Role.USER)));
         SecurityHelper.setAuthentication(mockUser1);
-
     }
 
     @Test
@@ -72,7 +64,7 @@ class CoachClientControllerTest {
     }
 
     private void filterCoachClientsTest(User mockUser2, User currentUser, boolean filterByCoach) {
-        when(userService.getCurrentUser()).thenReturn(currentUser);
+        SecurityHelper.setAuthentication(currentUser);
 
         Profile profile1 = profileRepository.save(ProfileHelper.createMockProfile(mockUser1));
         Profile profile2 = profileRepository.save(ProfileHelper.createMockProfile(mockUser2));
@@ -105,7 +97,7 @@ class CoachClientControllerTest {
 
     @Test
     void getCoachClientById() {
-        when(userService.getCurrentUser()).thenReturn(mockUser1);
+        SecurityHelper.setAuthentication(mockUser1);
 
         Profile profile1 = profileRepository.save(ProfileHelper.createMockProfile(mockUser1));
         User mockUser2 = userRepository.save(UserHelper.createMockUser(Set.of(Role.USER)));
@@ -120,7 +112,7 @@ class CoachClientControllerTest {
 
     @Test
     void createCoachClient() {
-        when(userService.getCurrentUser()).thenReturn(mockUser1);
+        SecurityHelper.setAuthentication(mockUser1);
 
         Profile profile1 = profileRepository.save(ProfileHelper.createMockProfile(mockUser1));
         User mockUser2 = userRepository.save(UserHelper.createMockUser(Set.of(Role.USER)));

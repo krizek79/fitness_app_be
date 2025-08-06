@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.endpoint.api.TagController;
@@ -13,20 +12,17 @@ import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.TagResponse;
 import sk.krizan.fitness_app_be.helper.SecurityHelper;
-import sk.krizan.fitness_app_be.helper.UserHelper;
 import sk.krizan.fitness_app_be.helper.TagHelper;
-import sk.krizan.fitness_app_be.model.entity.User;
+import sk.krizan.fitness_app_be.helper.UserHelper;
 import sk.krizan.fitness_app_be.model.entity.Tag;
+import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 import sk.krizan.fitness_app_be.repository.TagRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
-import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -41,16 +37,12 @@ class TagControllerTest {
     @Autowired
     private TagRepository tagRepository;
 
-    @MockBean
-    private UserService userService;
-
     @BeforeEach
     void setUp() {
         User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
         mockUser = userRepository.save(mockUser);
 
         SecurityHelper.setAuthentication(mockUser);
-        when(userService.getCurrentUser()).thenReturn(mockUser);
     }
 
     @Test

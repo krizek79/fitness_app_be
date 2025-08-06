@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.endpoint.api.WorkoutExerciseController;
@@ -40,7 +39,6 @@ import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutExerciseRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutExerciseSetRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
-import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,7 +48,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
 import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
 @Transactional
@@ -78,9 +75,6 @@ class WorkoutExerciseControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    @MockBean
-    private UserService userService;
-
     private Profile mockProfile;
 
     @BeforeEach
@@ -93,7 +87,6 @@ class WorkoutExerciseControllerTest {
         mockUser.setProfile(mockProfile);
 
         SecurityHelper.setAuthentication(mockUser);
-        when(userService.getCurrentUser()).thenReturn(mockUser);
     }
 
     @Test

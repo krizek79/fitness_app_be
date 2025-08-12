@@ -35,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtValues jwtValues;
     private final AuthenticationManager authenticationManager;
 
-    private final static String REGISTRATION_SUCCESSFUL = "Registration successful.";
+    public final static String REGISTRATION_SUCCESSFUL = "Registration successful.";
 
     @Override
     public AuthenticationResponse signInLocal(LocalAuthenticationRequest request) {

@@ -19,44 +19,44 @@ public class WeekController implements sk.krizan.fitness_app_be.controller.endpo
 
     private final WeekService weekService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<WeekResponse> filterWeeks(WeekFilterRequest request) {
         return weekService.filterWeeks(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekResponse getWeekById(Long id) {
         return WeekMapper.entityToResponse(weekService.getWeekById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekResponse createWeek(WeekCreateRequest request) {
         return WeekMapper.entityToResponse(weekService.createWeek(request));
     }
 
     @Deprecated
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekResponse updateWeek(WeekUpdateRequest request) {
         return WeekMapper.entityToResponse(weekService.updateWeek(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public SimpleListResponse<WeekResponse> batchUpdateWeeks(BatchUpdateRequest<WeekUpdateRequest> request) {
         return WeekMapper.entityListToSimpleListResponse(weekService.batchUpdateWeeks(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteWeek(Long id) {
         return weekService.deleteWeek(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekResponse triggerCompleted(Long id) {
         return WeekMapper.entityToResponse(weekService.triggerCompleted(id));

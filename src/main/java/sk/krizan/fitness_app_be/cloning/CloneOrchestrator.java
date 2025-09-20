@@ -20,11 +20,11 @@ public class CloneOrchestrator {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T deepClone(T original, CloneContext context) {
+    public <T> T deepClone(T original) {
         Cloner<T> cloner = (Cloner<T>) clonerMap.get(original.getClass());
         if (cloner == null) {
             throw new IllegalArgumentException("No cloner registered for " + original.getClass());
         }
-        return cloner.clone(original, context);
+        return cloner.clone(original);
     }
 }

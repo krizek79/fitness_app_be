@@ -19,44 +19,44 @@ public class WorkoutExerciseSetController implements sk.krizan.fitness_app_be.co
 
     private final WorkoutExerciseSetService workoutExerciseSetService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<WorkoutExerciseSetResponse> filterWorkoutExerciseSets(WorkoutExerciseSetFilterRequest request) {
         return workoutExerciseSetService.filterWorkoutExerciseSets(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseSetResponse getWorkoutExerciseSetById(Long id) {
         return WorkoutExerciseSetMapper.entityToResponse(workoutExerciseSetService.getWorkoutExerciseSetById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseSetResponse createWorkoutExerciseSet(WorkoutExerciseSetCreateRequest request) {
         return WorkoutExerciseSetMapper.entityToResponse(workoutExerciseSetService.createWorkoutExerciseSet(request));
     }
 
     @Deprecated
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseSetResponse updateWorkoutExerciseSet(WorkoutExerciseSetUpdateRequest request) {
         return WorkoutExerciseSetMapper.entityToResponse(workoutExerciseSetService.updateWorkoutExerciseSet(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public SimpleListResponse<WorkoutExerciseSetResponse> batchUpdateWorkoutExerciseSets(BatchUpdateRequest<WorkoutExerciseSetUpdateRequest> request) {
         return WorkoutExerciseSetMapper.entityListToSimpleListResponse(workoutExerciseSetService.batchUpdateWorkoutExerciseSets(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteWorkoutExerciseSet(Long id) {
         return workoutExerciseSetService.deleteWorkoutExerciseSet(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseSetResponse triggerCompleted(Long id) {
         return WorkoutExerciseSetMapper.entityToResponse(workoutExerciseSetService.triggerCompleted(id));

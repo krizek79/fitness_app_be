@@ -27,7 +27,7 @@ public class UserHelper {
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
         user.setLocked(false);
-        user.setPassword(passwordEncoder.encode(""));
+        user.setPassword(passwordEncoder.encode("password"));
         return user;
     }
 

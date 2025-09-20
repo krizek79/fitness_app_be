@@ -17,32 +17,32 @@ public class WorkoutController implements sk.krizan.fitness_app_be.controller.en
 
     private final WorkoutService workoutService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<WorkoutResponse> filterWorkouts(WorkoutFilterRequest request) {
         return workoutService.filterWorkouts(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutResponse getWorkoutById(Long id) {
         return WorkoutMapper.entityToResponse(workoutService.getWorkoutById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutResponse createWorkout(WorkoutCreateRequest request) {
         return WorkoutMapper.entityToResponse(workoutService.createWorkout(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutResponse updateWorkout(
             Long id, WorkoutUpdateRequest request) {
         return WorkoutMapper.entityToResponse(workoutService.updateWorkout(id, request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteWorkout(Long id) {
         return workoutService.deleteWorkout(id);

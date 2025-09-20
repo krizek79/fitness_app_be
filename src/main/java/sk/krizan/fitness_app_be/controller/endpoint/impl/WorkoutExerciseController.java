@@ -19,38 +19,38 @@ public class WorkoutExerciseController implements sk.krizan.fitness_app_be.contr
 
     private final WorkoutExerciseService workoutExerciseService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<WorkoutExerciseResponse> filterWorkoutExercises(WorkoutExerciseFilterRequest request) {
         return workoutExerciseService.filterWorkoutExercises(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseResponse getWorkoutExerciseById(Long id) {
         return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.getWorkoutExerciseById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseResponse createWorkoutExercise(WorkoutExerciseCreateRequest request) {
         return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.createWorkoutExercise(request));
     }
 
     @Deprecated
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WorkoutExerciseResponse updateWorkoutExercise(WorkoutExerciseUpdateRequest request) {
         return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.updateWorkoutExercise(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public SimpleListResponse<WorkoutExerciseResponse> batchUpdateWorkoutExercises(BatchUpdateRequest<WorkoutExerciseUpdateRequest> request) {
         return WorkoutExerciseMapper.entityListToSimpleListResponse(workoutExerciseService.batchUpdateWorkoutExercises(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteWorkoutExercise(Long id) {
         return workoutExerciseService.deleteWorkoutExercise(id);

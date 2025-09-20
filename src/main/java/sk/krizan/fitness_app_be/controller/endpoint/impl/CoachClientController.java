@@ -16,19 +16,19 @@ public class CoachClientController implements sk.krizan.fitness_app_be.controlle
 
     private final CoachClientService coachClientService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<CoachClientResponse> filterCoachClients(CoachClientFilterRequest request) {
         return coachClientService.filterCoachClients(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public CoachClientResponse getCoachClientById(Long id) {
         return CoachClientMapper.entityToResponse(coachClientService.getCoachClientById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public CoachClientResponse createCoachClient(CoachClientCreateRequest request) {
         return CoachClientMapper.entityToResponse(coachClientService.createCoachClient(request));

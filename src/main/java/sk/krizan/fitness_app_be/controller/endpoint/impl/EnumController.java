@@ -14,31 +14,31 @@ public class EnumController implements sk.krizan.fitness_app_be.controller.endpo
 
     private final EnumService enumService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public List<EnumResponse> getWorkoutLevels() {
         return enumService.getWorkoutLevels();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public List<EnumResponse> getMuscleGroups() {
         return enumService.getMuscleGroups();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public List<EnumResponse> getWeightUnits() {
         return enumService.getWeightUnits();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public List<EnumResponse> getWorkoutExerciseTypes() {
         return enumService.getWorkoutExerciseTypes();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public List<EnumResponse> getWorkoutExerciseSetTypes() {
         return enumService.getWorkoutExerciseSetTypes();

@@ -14,7 +14,7 @@ public class UserController implements sk.krizan.fitness_app_be.controller.endpo
 
     private final UserService userService;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public UserResponse getUserById(@PathVariable Long id) {
         return UserMapper.entityToResponse(userService.getUserById(id));

@@ -17,37 +17,37 @@ public class GoalController implements sk.krizan.fitness_app_be.controller.endpo
 
     private final GoalService goalService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<GoalResponse> filterGoals(GoalFilterRequest request) {
         return goalService.filterGoals(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public GoalResponse getGoalById(Long id) {
         return GoalMapper.entityToResponse(goalService.getGoalById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public GoalResponse createGoal(GoalCreateRequest request) {
         return GoalMapper.entityToResponse(goalService.createGoal(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public GoalResponse updateGoal(Long id, GoalUpdateRequest request) {
         return GoalMapper.entityToResponse(goalService.updateGoal(id, request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteGoal(Long id) {
         return goalService.deleteGoal(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public GoalResponse triggerAchieved(Long id) {
         return GoalMapper.entityToResponse(goalService.triggerAchieved(id));

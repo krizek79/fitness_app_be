@@ -17,37 +17,37 @@ public class WeekWorkoutController implements sk.krizan.fitness_app_be.controlle
 
     private final WeekWorkoutService weekWorkoutService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<WeekWorkoutResponse> filterWeekWorkouts(WeekWorkoutFilterRequest request) {
         return weekWorkoutService.filterWeekWorkouts(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekWorkoutResponse getWeekWorkoutById(Long id) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.getWeekWorkoutById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekWorkoutResponse createWeekWorkout(WeekWorkoutCreateRequest request) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.createWeekWorkout(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekWorkoutResponse updateWeekWorkout(Long id, WeekWorkoutUpdateRequest request) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.updateWeekWorkout(id, request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteWeekWorkout(Long id) {
         return weekWorkoutService.deleteWeekWorkout(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekWorkoutResponse triggerCompleted(Long id) {
         return WeekWorkoutMapper.entityToResponse(weekWorkoutService.triggerCompleted(id));

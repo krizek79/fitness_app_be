@@ -16,19 +16,19 @@ public class TagController implements sk.krizan.fitness_app_be.controller.endpoi
 
     private final TagService tagService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<TagResponse> filterTags(TagFilterRequest request) {
         return tagService.filterTags(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public TagResponse createTag(TagCreateRequest request) {
         return TagMapper.entityToResponse(tagService.createTag(request));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public Long deleteTag(Long id) {
         return tagService.deleteTag(id);

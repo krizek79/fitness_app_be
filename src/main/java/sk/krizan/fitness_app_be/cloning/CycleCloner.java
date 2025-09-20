@@ -19,23 +19,17 @@ public class CycleCloner extends AbstractCloner<Cycle> {
     }
 
     @Override
-    public Cycle clone(Cycle original, CloneContext context) {
-        if (context.isAlreadyCloned(original)) {
-            return context.getCachedClone(original);
-        }
-
+    public Cycle clone(Cycle original) {
         Cycle clone = new Cycle();
         clone.setName(original.getName());
         clone.setDescription(original.getDescription());
         clone.setLevel(original.getLevel());
         List<Week> clonedWeeks = original.getWeekList().stream()
-                .map(week -> weekCloner.clone(week, context))
+                .map(weekCloner::clone)
                 .toList();
         clone.addToWeekList(clonedWeeks);
         original.getAuthor().addToAuthoredCycleList(List.of(clone));
         //  skip goals
-
-        context.cacheClone(original, clone);
 
         return clone;
     }

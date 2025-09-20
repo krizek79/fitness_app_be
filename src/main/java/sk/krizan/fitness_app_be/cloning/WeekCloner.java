@@ -19,20 +19,14 @@ public class WeekCloner extends AbstractCloner<Week> {
     }
 
     @Override
-    public Week clone(Week original, CloneContext context) {
-        if (context.isAlreadyCloned(original)) {
-            return context.getCachedClone(original);
-        }
-
+    public Week clone(Week original) {
         Week clone = new Week();
         clone.setOrder(original.getOrder());
         clone.setCompleted(false);
         List<WeekWorkout> clonedWeekWorkouts = original.getWeekWorkoutList().stream()
-                .map(weekWorkout -> weekWorkoutCloner.clone(weekWorkout, context))
+                .map(weekWorkoutCloner::clone)
                 .toList();
         clone.addToWeekWorkoutList(clonedWeekWorkouts);
-
-        context.cacheClone(original, clone);
 
         return clone;
     }

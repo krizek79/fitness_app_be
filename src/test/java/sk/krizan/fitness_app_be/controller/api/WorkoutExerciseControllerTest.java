@@ -1,5 +1,7 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,10 +9,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.endpoint.api.WorkoutExerciseController;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
@@ -20,7 +27,6 @@ import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.helper.ProfileHelper;
-import sk.krizan.fitness_app_be.helper.SecurityHelper;
 import sk.krizan.fitness_app_be.helper.UserHelper;
 import sk.krizan.fitness_app_be.helper.WorkoutExerciseHelper;
 import sk.krizan.fitness_app_be.helper.WorkoutExerciseSetHelper;
@@ -39,6 +45,7 @@ import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutExerciseRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutExerciseSetRepository;
 import sk.krizan.fitness_app_be.repository.WorkoutRepository;
+import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,17 +55,22 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static sk.krizan.fitness_app_be.helper.DefaultValues.DEFAULT_VALUE;
 
 @Transactional
 @SpringBootTest
+@AutoConfigureMockMvc
 class WorkoutExerciseControllerTest {
 
     @Autowired
     private WorkoutExerciseSetRepository workoutExerciseSetRepository;
-
-    @Autowired
-    private WorkoutExerciseController workoutExerciseController;
 
     @Autowired
     private WorkoutExerciseRepository workoutExerciseRepository;
@@ -75,22 +87,28 @@ class WorkoutExerciseControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserService userService;
+
     private Profile mockProfile;
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
-        mockUser = userRepository.save(mockUser);
+        User user = userRepository.save(UserHelper.createMockUser(Set.of(Role.ADMIN)));
+        mockProfile = profileRepository.save(ProfileHelper.createMockProfile(user));
 
-        mockProfile = ProfileHelper.createMockProfile(mockUser);
-        mockProfile = profileRepository.save(mockProfile);
-        mockUser.setProfile(mockProfile);
-
-        SecurityHelper.setAuthentication(mockUser);
+        when(userService.getCurrentUser()).thenReturn(user);
     }
 
     @Test
-    void filterWorkoutExercises() {
+    @WithMockUser(roles = "ADMIN")
+    void filterWorkoutExercises() throws Exception {
         Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS)));
 
         Workout workout1 = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE));
@@ -103,21 +121,42 @@ class WorkoutExerciseControllerTest {
 
         WorkoutExerciseFilterRequest request = WorkoutExerciseHelper.createFilterRequest(0, originalList.size(), WorkoutExercise.Fields.id, Sort.Direction.DESC.name(), workout2.getId());
 
-        PageResponse<WorkoutExerciseResponse> response = workoutExerciseController.filterWorkoutExercises(request);
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/workout-exercises/filter")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        PageResponse<WorkoutExerciseResponse> response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         List<WorkoutExercise> expectedList = new ArrayList<>(List.of(originalList.get(1)));
         WorkoutExerciseHelper.assertFilter(response, expectedList);
     }
 
     @Test
-    void getWorkoutExerciseById() {
+    @WithMockUser(roles = "ADMIN")
+    void getWorkoutExerciseById() throws Exception {
         Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE));
         Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS)));
         WorkoutExercise workoutExercise = workoutExerciseRepository.save(WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1));
         WorkoutExerciseSet workoutExerciseSet = workoutExerciseSetRepository.save(WorkoutExerciseSetHelper.createMockWorkoutExerciseSet(workoutExercise, 1));
         List<WorkoutExerciseSet> expectedWorkoutExerciseSetList = new ArrayList<>(List.of(workoutExerciseSet));
 
-        WorkoutExerciseResponse response = workoutExerciseController.getWorkoutExerciseById(workoutExercise.getId());
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/workout-exercises/" + workoutExercise.getId())
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WorkoutExerciseResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
+
         WorkoutExerciseHelper.assertGet(workoutExercise, response, expectedWorkoutExerciseSetList);
     }
 
@@ -131,8 +170,13 @@ class WorkoutExerciseControllerTest {
     }
 
     @ParameterizedTest
+    @WithMockUser(roles = "ADMIN")
     @MethodSource("createWorkoutExerciseMethodSource")
-    void createWorkoutExercise(Integer requestedOrder, Integer expectedInsertedOrder, List<Integer> expectedFinalOrder) {
+    void createWorkoutExercise(
+            Integer requestedOrder,
+            Integer expectedInsertedOrder,
+            List<Integer> expectedFinalOrder
+    ) throws Exception {
         Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), UUID.randomUUID().toString()));
         Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of()));
         List<WorkoutExercise> originalList = List.of(
@@ -143,7 +187,18 @@ class WorkoutExerciseControllerTest {
         workoutExerciseRepository.saveAll(originalList);
 
         WorkoutExerciseCreateRequest request = WorkoutExerciseHelper.createCreateRequest(workout.getId(), exercise.getId(), requestedOrder);
-        WorkoutExerciseResponse response = workoutExerciseController.createWorkoutExercise(request);
+
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/workout-exercises")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WorkoutExerciseResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         List<WorkoutExercise> finalWorkoutExerciseList = workoutExerciseRepository.findAllByWorkoutIdOrderByOrder(workout.getId());
         WorkoutExerciseHelper.assertCreate(request, response, expectedInsertedOrder, finalWorkoutExerciseList, expectedFinalOrder);
@@ -165,8 +220,14 @@ class WorkoutExerciseControllerTest {
     }
 
     @ParameterizedTest
+    @WithMockUser(roles = "ADMIN")
     @MethodSource("updateWorkoutExerciseMethodSource")
-    void updateWorkoutExercise(List<Integer> originalOrders, Integer idOfElementToUpdate, Integer newRequestedOrder, List<Integer> listIdsOfExpectedElementsInOrder) {
+    void updateWorkoutExercise(
+            List<Integer> originalOrders,
+            Integer idOfElementToUpdate,
+            Integer newRequestedOrder,
+            List<Integer> listIdsOfExpectedElementsInOrder
+    ) throws Exception {
         Workout workout = workoutRepository.save(WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), UUID.randomUUID().toString()));
         Exercise exercise = exerciseRepository.save(ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of()));
 
@@ -182,14 +243,26 @@ class WorkoutExerciseControllerTest {
 
         WorkoutExercise workoutExerciseToUpdate = originalList.get(idOfElementToUpdate);
         WorkoutExerciseUpdateRequest request = WorkoutExerciseHelper.createUpdateRequest(workoutExerciseToUpdate.getId(), newRequestedOrder);
-        WorkoutExerciseResponse response = workoutExerciseController.updateWorkoutExercise(request);
+
+        MvcResult mvcResult = mockMvc.perform(
+                        put("/workout-exercises")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WorkoutExerciseResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         List<WorkoutExercise> finalWorkoutExerciseList = workoutExerciseRepository.findAllByWorkoutIdOrderByOrder(workout.getId());
         WorkoutExerciseHelper.assertUpdate(request, response, idsOfExpectedElementsInOrder, finalWorkoutExerciseList);
     }
 
     @Test
-    void deleteWorkoutExercise() {
+    @WithMockUser(roles = "ADMIN")
+    void deleteWorkoutExercise() throws Exception {
         Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
         Exercise exercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS));
@@ -197,15 +270,24 @@ class WorkoutExerciseControllerTest {
         WorkoutExercise workoutExercise = WorkoutExerciseHelper.createMockWorkoutExercise(workout, exercise, 1);
         workoutExercise = workoutExerciseRepository.save(workoutExercise);
 
-        Long deletedWorkoutExerciseId = workoutExerciseController.deleteWorkoutExercise(workoutExercise.getId());
+        MvcResult mvcResult = mockMvc.perform(
+                        delete("/workout-exercises/" + workoutExercise.getId())
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        Long deletedWorkoutExerciseId = Long.parseLong(jsonResponse);
+
         boolean exists = workoutExerciseRepository.existsById(deletedWorkoutExerciseId);
 
         WorkoutExerciseHelper.assertDelete(exists, workoutExercise, deletedWorkoutExerciseId);
     }
 
-
     @Test
-    void batchUpdateWorkoutExercises() {
+    @WithMockUser(roles = "ADMIN")
+    void batchUpdateWorkoutExercises() throws Exception {
         Workout workout = WorkoutHelper.createMockWorkout(mockProfile, new HashSet<>(), DEFAULT_VALUE);
         workout = workoutRepository.save(workout);
         Exercise exercise = ExerciseHelper.createMockExercise(UUID.randomUUID().toString(), Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS));
@@ -226,7 +308,17 @@ class WorkoutExerciseControllerTest {
                 .updateRequestList(requestList)
                 .build();
 
-        SimpleListResponse<WorkoutExerciseResponse> listResponse = workoutExerciseController.batchUpdateWorkoutExercises(batchRequest);
+        MvcResult mvcResult = mockMvc.perform(
+                        put("/workout-exercises/batch-update")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(batchRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        SimpleListResponse<WorkoutExerciseResponse> listResponse = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         WorkoutExerciseHelper.assertBatchUpdate(requestList, listResponse);
     }

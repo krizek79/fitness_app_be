@@ -12,11 +12,7 @@ public class WorkoutExerciseSetCloner extends AbstractCloner<WorkoutExerciseSet>
     }
 
     @Override
-    public WorkoutExerciseSet clone(WorkoutExerciseSet original, CloneContext context) {
-        if (context.isAlreadyCloned(original)) {
-            return context.getCachedClone(original);
-        }
-
+    public WorkoutExerciseSet clone(WorkoutExerciseSet original) {
         WorkoutExerciseSet clone = new WorkoutExerciseSet();
         clone.setOrder(original.getOrder());
         clone.setWorkoutExerciseSetType(original.getWorkoutExerciseSetType());
@@ -25,8 +21,6 @@ public class WorkoutExerciseSetCloner extends AbstractCloner<WorkoutExerciseSet>
         clone.setGoalRepetitions(original.getGoalRepetitions());
         clone.setGoalWeight(original.getGoalWeight());
         clone.setGoalTime(original.getGoalTime());
-
-        context.cacheClone(original, clone);
 
         return clone;
     }

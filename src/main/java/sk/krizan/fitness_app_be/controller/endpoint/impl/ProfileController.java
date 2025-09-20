@@ -16,22 +16,22 @@ public class ProfileController implements sk.krizan.fitness_app_be.controller.en
 
     private final ProfileService profileService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public PageResponse<ProfileResponse> filterProfiles(ProfileFilterRequest request) {
         return profileService.filterProfiles(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ProfileResponse getProfileById(Long id) {
         return ProfileMapper.entityToResponse(profileService.getProfileById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Long deleteProfile(Long id) {
         return profileService.deleteProfile(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String uploadProfilePicture(MultipartFile multipartFile) {
         return profileService.uploadProfilePicture(multipartFile);
     }

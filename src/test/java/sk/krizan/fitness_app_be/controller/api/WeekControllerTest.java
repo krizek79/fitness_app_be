@@ -1,5 +1,7 @@
-package sk.krizan.fitness_app_be.controller.endpoint;
+package sk.krizan.fitness_app_be.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,10 +9,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.endpoint.api.WeekController;
 import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
@@ -20,7 +27,6 @@ import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekResponse;
 import sk.krizan.fitness_app_be.helper.CycleHelper;
 import sk.krizan.fitness_app_be.helper.ProfileHelper;
-import sk.krizan.fitness_app_be.helper.SecurityHelper;
 import sk.krizan.fitness_app_be.helper.UserHelper;
 import sk.krizan.fitness_app_be.helper.WeekHelper;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
@@ -33,6 +39,7 @@ import sk.krizan.fitness_app_be.repository.CycleRepository;
 import sk.krizan.fitness_app_be.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.repository.WeekRepository;
+import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +47,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @Transactional
 @SpringBootTest
+@AutoConfigureMockMvc
 class WeekControllerTest {
 
     @Autowired
@@ -51,33 +68,36 @@ class WeekControllerTest {
     private CycleRepository cycleRepository;
 
     @Autowired
-    private WeekController weekController;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private WeekRepository weekRepository;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserService userService;
 
     private Profile mockProfile;
     private Cycle mockCycle;
 
     @BeforeEach
     void setUp() {
-        User mockUser = UserHelper.createMockUser(Set.of(Role.ADMIN));
-        mockUser = userRepository.save(mockUser);
+        User user = userRepository.save(UserHelper.createMockUser(Set.of(Role.ADMIN)));
+        when(userService.getCurrentUser()).thenReturn(user);
 
-        mockProfile = ProfileHelper.createMockProfile(mockUser);
-        mockProfile = profileRepository.save(mockProfile);
+        mockProfile = profileRepository.save(ProfileHelper.createMockProfile(user));
 
-        SecurityHelper.setAuthentication(mockUser);
-
-        mockCycle = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
-        mockCycle = cycleRepository.save(mockCycle);
+        mockCycle = cycleRepository.save(CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER));
     }
 
     @Test
-    void filterWeeks() {
+    @WithMockUser(roles = "ADMIN")
+    void filterWeeks() throws Exception {
         Cycle cycle1 = CycleHelper.createMockCycle(mockProfile, mockProfile, Level.BEGINNER);
         cycle1 = cycleRepository.save(cycle1);
 
@@ -89,17 +109,39 @@ class WeekControllerTest {
         List<Week> expectedList = new ArrayList<>(List.of(originalList.get(1)));
 
         WeekFilterRequest request = WeekHelper.createFilterRequest(0, originalList.size(), Week.Fields.id, Sort.Direction.DESC.name(), cycle1.getId());
-        PageResponse<WeekResponse> response = weekController.filterWeeks(request);
+
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/weeks/filter")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        PageResponse<WeekResponse> response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         WeekHelper.assertFilter(expectedList, request, response);
     }
 
     @Test
-    void getWeekById() {
+    @WithMockUser(roles = "ADMIN")
+    void getWeekById() throws Exception {
         Week week = WeekHelper.createMockWeek(mockCycle, 1);
         week = weekRepository.save(week);
 
-        WeekResponse response = weekController.getWeekById(week.getId());
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/weeks/" + week.getId())
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WeekResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
+
         WeekHelper.assertGet(week, response);
     }
 
@@ -113,8 +155,13 @@ class WeekControllerTest {
     }
 
     @ParameterizedTest
+    @WithMockUser(roles = "ADMIN")
     @MethodSource("createWeekMethodSource")
-    void createWeek(Integer requestedOrder, Integer expectedInsertedOrder, List<Integer> expectedFinalOrder) {
+    void createWeek(
+            Integer requestedOrder,
+            Integer expectedInsertedOrder,
+            List<Integer> expectedFinalOrder
+    ) throws Exception {
         List<Week> originalList = List.of(
                 WeekHelper.createMockWeek(mockCycle, 1),
                 WeekHelper.createMockWeek(mockCycle, 2),
@@ -123,7 +170,18 @@ class WeekControllerTest {
         weekRepository.saveAll(originalList);
 
         WeekCreateRequest request = WeekHelper.createCreateRequest(mockCycle.getId(), requestedOrder);
-        WeekResponse response = weekController.createWeek(request);
+
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/weeks")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WeekResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         List<Week> finalWeekList = weekRepository.findAllByCycleIdOrderByOrder(mockCycle.getId());
         WeekHelper.assertCreateWeek(request, response, expectedInsertedOrder, finalWeekList, expectedFinalOrder);
@@ -145,8 +203,14 @@ class WeekControllerTest {
     }
 
     @ParameterizedTest
+    @WithMockUser(roles = "ADMIN")
     @MethodSource("updateWeekMethodSource")
-    void updateWeek(List<Integer> originalOrders, Integer idOfElementToUpdate, Integer newRequestedOrder, List<Integer> listIdsOfExpectedElementsInOrder) {
+    void updateWeek(
+            List<Integer> originalOrders,
+            Integer idOfElementToUpdate,
+            Integer newRequestedOrder,
+            List<Integer> listIdsOfExpectedElementsInOrder
+    ) throws Exception {
         List<Week> originalList = new ArrayList<>();
         for (Integer order : originalOrders) {
             Week week = WeekHelper.createMockWeek(mockCycle, order);
@@ -159,14 +223,26 @@ class WeekControllerTest {
 
         Week weekToUpdate = originalList.get(idOfElementToUpdate);
         WeekUpdateRequest request = WeekHelper.createUpdateRequest(weekToUpdate.getId(), newRequestedOrder);
-        WeekResponse response = weekController.updateWeek(request);
+
+        MvcResult mvcResult = mockMvc.perform(
+                        put("/weeks")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WeekResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         List<Week> finalWeekList = weekRepository.findAllByCycleIdOrderByOrder(mockCycle.getId());
         WeekHelper.assertUpdateWeek(request, response, idsOfExpectedElementsInOrder, finalWeekList);
     }
 
     @Test
-    void batchUpdateWeeks() {
+    @WithMockUser(roles = "ADMIN")
+    void batchUpdateWeeks() throws Exception {
         List<Week> originalList = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             Week week = WeekHelper.createMockWeek(mockCycle, i);
@@ -182,19 +258,37 @@ class WeekControllerTest {
                 .updateRequestList(requestList)
                 .build();
 
-        SimpleListResponse<WeekResponse> listResponse = weekController.batchUpdateWeeks(batchRequest);
+        MvcResult mvcResult = mockMvc.perform(
+                        put("/weeks/batch-update")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(batchRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        SimpleListResponse<WeekResponse> listResponse = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
 
         WeekHelper.assertBatchUpdate(requestList, listResponse);
     }
 
     @Test
-    void deleteWeek() {
-        Week weekToUpdate = WeekHelper.createMockWeek(mockCycle, 2);
-        weekToUpdate = weekRepository.save(weekToUpdate);
-        Week weekToDelete = WeekHelper.createMockWeek(mockCycle, 1);
-        weekToDelete = weekRepository.save(weekToDelete);
+    @WithMockUser(roles = "ADMIN")
+    void deleteWeek() throws Exception {
+        Week weekToUpdate = weekRepository.save(WeekHelper.createMockWeek(mockCycle, 2));
+        Week weekToDelete = weekRepository.save(WeekHelper.createMockWeek(mockCycle, 1));
 
-        Long deletedWeekId = weekController.deleteWeek(weekToDelete.getId());
+        MvcResult mvcResult = mockMvc.perform(
+                        delete("/weeks/" + weekToDelete.getId())
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        Long deletedWeekId = Long.parseLong(jsonResponse);
+
         boolean exists = weekRepository.existsById(deletedWeekId);
         weekToUpdate = weekRepository.findById(weekToUpdate.getId()).orElseThrow();
 
@@ -202,12 +296,22 @@ class WeekControllerTest {
     }
 
     @Test
-    void triggerCompleted() {
-        Week week = WeekHelper.createMockWeek(mockCycle, 1);
-        week = weekRepository.save(week);
+    @WithMockUser(roles = "ADMIN")
+    void triggerCompleted() throws Exception {
+        Week week = weekRepository.save(WeekHelper.createMockWeek(mockCycle, 1));
         Boolean originalState = week.getCompleted();
 
-        WeekResponse response = weekController.triggerCompleted(week.getId());
+        MvcResult mvcResult = mockMvc.perform(
+                        patch("/weeks/" + week.getId() + "/trigger-completed")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        WeekResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
+
         WeekHelper.assertTriggerCompleted(originalState, response);
     }
 }

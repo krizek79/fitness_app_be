@@ -16,17 +16,11 @@ public class WeekWorkoutCloner extends AbstractCloner<WeekWorkout> {
     }
 
     @Override
-    public WeekWorkout clone(WeekWorkout original, CloneContext context) {
-        if (context.isAlreadyCloned(original)) {
-            return context.getCachedClone(original);
-        }
-
+    public WeekWorkout clone(WeekWorkout original) {
         WeekWorkout clone = new WeekWorkout();
         clone.setCompleted(false);
         clone.setDayOfTheWeek(original.getDayOfTheWeek());
-        clone.setWorkout(workoutCloner.clone(original.getWorkout(), context));
-
-        context.cacheClone(original, clone);
+        clone.setWorkout(workoutCloner.clone(original.getWorkout()));
 
         return clone;
     }

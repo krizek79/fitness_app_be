@@ -17,31 +17,31 @@ public class CycleController implements sk.krizan.fitness_app_be.controller.endp
 
     private final CycleService cycleService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<CycleResponse> filterCycles(CycleFilterRequest request) {
         return cycleService.filterCycles(request);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public CycleResponse getCycleById(Long id) {
         return CycleMapper.entityToResponse(cycleService.getCycleById(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public CycleResponse createCycle(CycleCreateRequest request) {
         return CycleMapper.entityToResponse(cycleService.createCycle(request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public CycleResponse updateCycle(Long id, CycleUpdateRequest request) {
         return CycleMapper.entityToResponse(cycleService.updateCycle(id, request));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public Long deleteCycle(Long id) {
         return cycleService.deleteCycle(id);

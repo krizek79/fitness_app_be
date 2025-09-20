@@ -16,13 +16,13 @@ public class CloneController implements sk.krizan.fitness_app_be.controller.endp
 
     private final CloneService cloneService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public CycleResponse cloneCycle(Long id) {
         return CycleMapper.entityToResponse(cloneService.cloneCycle(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public WeekWorkoutResponse cloneWorkoutToWeekWorkout(WeekWorkoutCreateRequest request) {
         return WeekWorkoutMapper.entityToResponse(cloneService.cloneWorkoutToWeekWorkout(request));

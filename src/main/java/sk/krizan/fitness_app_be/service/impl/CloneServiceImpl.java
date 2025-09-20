@@ -2,7 +2,6 @@ package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sk.krizan.fitness_app_be.cloning.CloneContext;
 import sk.krizan.fitness_app_be.cloning.CloneOrchestrator;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
@@ -32,7 +31,7 @@ public class CloneServiceImpl implements CloneService {
     @Override
     public Cycle cloneCycle(Long cycleId) {
         Cycle originalCycle = cycleService.getCycleById(cycleId);
-        Cycle clonedCycle = cloneOrchestrator.deepClone(originalCycle, new CloneContext());
+        Cycle clonedCycle = cloneOrchestrator.deepClone(originalCycle);
         return cycleRepository.save(clonedCycle);
     }
 
@@ -41,7 +40,7 @@ public class CloneServiceImpl implements CloneService {
         Week week = weekService.getWeekById(request.weekId());
         Workout originalWorkout = workoutService.getWorkoutById(request.workoutId());
 
-        Workout clonedWorkout = cloneOrchestrator.deepClone(originalWorkout, new CloneContext());
+        Workout clonedWorkout = cloneOrchestrator.deepClone(originalWorkout);
         WeekWorkout weekWorkout = WeekWorkoutMapper.createRequestToEntity(request, week, clonedWorkout);
 
         return weekWorkoutRepository.save(weekWorkout);

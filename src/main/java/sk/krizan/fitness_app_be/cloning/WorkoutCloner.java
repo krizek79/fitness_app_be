@@ -19,23 +19,17 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
     }
 
     @Override
-    public Workout clone(Workout original, CloneContext context) {
-        if (context.isAlreadyCloned(original)) {
-            return context.getCachedClone(original);
-        }
-
+    public Workout clone(Workout original) {
         Workout clone = new Workout();
         clone.setName(original.getName());
         clone.setDescription(original.getDescription());
         clone.addToTagSet(original.getTagSet());
         clone.setWeightUnit(original.getWeightUnit());
         List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExerciseList().stream()
-                .map(workoutExercise -> workoutExerciseCloner.clone(workoutExercise, context))
+                .map(workoutExerciseCloner::clone)
                 .toList();
         clone.addToWorkoutExerciseList(clonedWorkoutExercises);
         original.getAuthor().addToAuthoredWorkoutList(List.of(clone));
-
-        context.cacheClone(original, clone);
 
         return clone;
     }

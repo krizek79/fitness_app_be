@@ -16,7 +16,7 @@ services:
       - fitness-net
 
   db:
-    image: postgres:15
+    image: postgres:17-alpine
     container_name: postgres_container
     restart: always
     environment:

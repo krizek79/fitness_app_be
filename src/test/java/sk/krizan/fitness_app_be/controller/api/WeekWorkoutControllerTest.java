@@ -212,7 +212,7 @@ class WeekWorkoutControllerTest {
         WeekWorkout weekWorkout = weekWorkoutRepository.save(WeekWorkoutHelper.createMockWeekWorkout(week, workout, 1));
 
         MvcResult mvcResult = mockMvc.perform(
-                        delete("/week-workouts/" + workout.getId())
+                        delete("/week-workouts/" + weekWorkout.getId())
                                 .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -236,7 +236,7 @@ class WeekWorkoutControllerTest {
         Boolean originalState = weekWorkout.getCompleted();
 
         MvcResult mvcResult = mockMvc.perform(
-                        patch("/week-workouts/" + week.getId() + "/trigger-completed")
+                        patch("/week-workouts/" + weekWorkout.getId() + "/trigger-completed")
                                 .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

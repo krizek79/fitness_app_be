@@ -79,13 +79,13 @@ class CloneControllerTest {
     private TagRepository tagRepository;
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @MockBean
     private UserService userService;
+
+    @Autowired
+    private MockMvc mockMvc;
 
     private Profile mockProfile;
     private User mockUser;

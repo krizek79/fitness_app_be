@@ -61,7 +61,7 @@ docker-compose up --build
 
 ## API Documentation
 
-Interactive OpenAPI docs (currently not) available at:
+Interactive OpenAPI docs available at:
 [https://fitness-app-qfb0.onrender.com/swagger-ui/index.html](https://fitness-app-qfb0.onrender.com/swagger-ui/index.html)
 (Please be patient, the current hosting service is slow af.)
 

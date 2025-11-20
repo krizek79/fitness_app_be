@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.ProfilePageResponse;
 import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
 
@@ -34,11 +34,11 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping("filter")
@@ -55,15 +55,15 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Profile not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @GetMapping("{id}")
@@ -80,15 +80,15 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Profile not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @DeleteMapping("{id}")
@@ -105,23 +105,23 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid file upload",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "413",
                             description = "File too large",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "415",
                             description = "Unsupported media type",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping(

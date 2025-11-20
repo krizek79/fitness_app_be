@@ -22,7 +22,7 @@ import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetUpdateRequest;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.SimpleListResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutExerciseSetResponse;
@@ -45,15 +45,15 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping("filter")
@@ -70,19 +70,19 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @GetMapping("{id}")
@@ -99,19 +99,19 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Validation failed",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping
@@ -134,23 +134,23 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Validation failed",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PutMapping
@@ -167,19 +167,19 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Validation failed",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PutMapping("batch-update")
@@ -196,19 +196,19 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @DeleteMapping("{id}")
@@ -225,19 +225,19 @@ public interface WorkoutExerciseSetController {
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PatchMapping("{id}/trigger-completed")

@@ -20,7 +20,7 @@ import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
 import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 
 @Tag(
@@ -41,11 +41,11 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping("filter")
@@ -62,15 +62,15 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Cycle not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @GetMapping("{id}")
@@ -87,11 +87,11 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping
@@ -109,15 +109,15 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Cycle not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PutMapping("{id}")
@@ -134,15 +134,15 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Cycle not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @DeleteMapping("{id}")

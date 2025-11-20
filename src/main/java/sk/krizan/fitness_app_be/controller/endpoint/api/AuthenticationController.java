@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import sk.krizan.fitness_app_be.controller.request.LocalAuthenticationRequest;
 import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.controller.response.AuthenticationResponse;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 
 @Tag(
         name = "Authentication",
@@ -34,15 +34,15 @@ public interface AuthenticationController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid request or credentials",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized – incorrect email or password",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping("sign-in")
@@ -59,15 +59,15 @@ public interface AuthenticationController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Validation failed – missing or invalid fields",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "409",
                             description = "Email is already in use",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping("/sign-up")

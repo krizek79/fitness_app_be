@@ -17,7 +17,7 @@ import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.CoachClienPa
 import sk.krizan.fitness_app_be.controller.request.CoachClientCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.CoachClientResponse;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 
 @Tag(
@@ -38,11 +38,11 @@ public interface CoachClientController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping("filter")
@@ -59,15 +59,15 @@ public interface CoachClientController {
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @GetMapping("{id}")
@@ -84,15 +84,15 @@ public interface CoachClientController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Coach or Client not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
             }
     )
     @PostMapping

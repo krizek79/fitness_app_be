@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 
 @Tag(
@@ -36,17 +36,17 @@ public interface CloneController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Cycle not found",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     )
             }
     )
@@ -66,17 +66,17 @@ public interface CloneController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid request",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     )
             }
     )

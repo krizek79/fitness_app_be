@@ -20,24 +20,20 @@ public class JwtProvider {
     private final JwtValues jwtValues;
     private final JwtEncoder jwtEncoder;
 
-    private static final String ISSUER = "self";
-    private static final String CLAIM_NAME = "roles";
-    private static final String ROLE_PREFIX = "ROLE_";
-
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
         long expiresIn = jwtValues.getExpiration();
 
         String authorities = authentication.getAuthorities().stream()
-            .map(grantedAuthority -> ROLE_PREFIX + grantedAuthority.getAuthority())
+            .map(grantedAuthority -> JwtConstants.ROLE_PREFIX.getValue() + grantedAuthority.getAuthority())
             .collect(Collectors.joining(" "));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-            .issuer(ISSUER)
+            .issuer(JwtConstants.ISSUER.getValue())
             .issuedAt(now)
             .expiresAt(now.plus(expiresIn, ChronoUnit.HOURS))
             .subject(authentication.getName())
-            .claim(CLAIM_NAME, authorities)
+            .claim(JwtConstants.ROLES_CLAIM.getValue(), authorities)
             .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

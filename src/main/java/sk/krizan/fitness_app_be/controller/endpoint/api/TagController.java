@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.TagPageResponse;
 import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
-import sk.krizan.fitness_app_be.controller.response.ExceptionResponse;
+import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.TagResponse;
 
@@ -34,12 +34,12 @@ public interface TagController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     )
             }
     )
@@ -58,12 +58,12 @@ public interface TagController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     )
             }
     )
@@ -83,12 +83,12 @@ public interface TagController {
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     )
             }
     )

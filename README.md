@@ -29,7 +29,8 @@ This is the backend for a fitness management application. It provides a secure a
 * springdoc-openapi (Swagger UI)
 * Cloudinary (media hosting)
 * Docker, Docker Compose
-* Render (application and database hosting)
+* Render (application hosting)
+* Aiven (database hosting)
 
 ## Local Development
 
@@ -41,6 +42,15 @@ cp .env.template .env
 
 * Edit `.env` to provide your local development values (e.g., database credentials, JWT keystore paths).
 * The `.env` file is excluded from version control (via `.gitignore`) to keep sensitive data safe.
+
+### Generating a local keystore
+This project requires a PKCS12 keystore (keystore.p12) for SSL / JWT signing. The keystore should be placed in src/main/resources.
+
+Run the following command from the project root:
+```bash
+keytool -genkeypair -alias fitness-app-key -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore src/main/resources/keystore.p12 -validity 3650
+```
+Do not commit keystore.p12 to version control (it’s ignored in .gitignore).
 
 ## Running with Docker Compose
 

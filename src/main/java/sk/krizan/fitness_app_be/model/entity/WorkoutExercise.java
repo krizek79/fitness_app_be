@@ -33,7 +33,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class WorkoutExercise implements OrderableEntity {
+public class WorkoutExercise extends AuditableEntity implements OrderableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

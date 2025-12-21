@@ -18,7 +18,6 @@ import sk.krizan.fitness_app_be.repository.UserRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.time.Instant;
 import java.util.Set;
 
 @Slf4j
@@ -88,8 +87,6 @@ public class InitialDataInserter implements CommandLineRunner {
                     user.setLocked(false);
                     user.setEnabled(true);
                     user.setCredentialsNonExpired(true);
-                    user.setCreatedAt(Instant.now());
-                    user.setUpdatedAt(Instant.now());
                     user.addToRoleSet(Set.of(Role.USER));
                     userRepository.save(user);
 
@@ -102,6 +99,7 @@ public class InitialDataInserter implements CommandLineRunner {
                     profileRepository.save(profile);
 
                     user.setProfile(profile);
+
                     userRepository.save(user);
                 }
         );

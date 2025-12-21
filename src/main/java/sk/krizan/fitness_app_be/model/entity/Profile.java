@@ -33,7 +33,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class Profile {
+public class Profile extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

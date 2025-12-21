@@ -36,7 +36,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class Workout {
+public class Workout extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

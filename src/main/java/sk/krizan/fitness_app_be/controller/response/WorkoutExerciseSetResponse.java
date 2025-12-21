@@ -2,6 +2,8 @@ package sk.krizan.fitness_app_be.controller.response;
 
 import lombok.Builder;
 
+import java.math.BigDecimal;
+
 @Builder
 public record WorkoutExerciseSetResponse(
         Long id,
@@ -10,8 +12,8 @@ public record WorkoutExerciseSetResponse(
         EnumResponse workoutExerciseSetTypeResponse,
         Integer goalRepetitions,
         Integer actualRepetitions,
-        Double goalWeight,
-        Double actualWeight,
+        BigDecimal goalWeight,
+        BigDecimal actualWeight,
         String goalTime,
         String actualTime,
         String restDuration,

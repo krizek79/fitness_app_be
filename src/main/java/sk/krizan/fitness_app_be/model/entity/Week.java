@@ -28,7 +28,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class Week implements OrderableEntity {
+public class Week extends AuditableEntity implements OrderableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

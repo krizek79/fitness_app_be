@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.configuration.attribute_converter.DurationConverter;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 
 @Entity
@@ -32,7 +33,7 @@ import java.time.Duration;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class WorkoutExerciseSet implements OrderableEntity {
+public class WorkoutExerciseSet extends AuditableEntity implements OrderableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,10 +59,12 @@ public class WorkoutExerciseSet implements OrderableEntity {
     private Integer actualRepetitions;
 
     @DecimalMin("0.125")
-    private Double goalWeight;
+    @Column(precision = 10, scale = 3)
+    private BigDecimal goalWeight;
 
     @DecimalMin("0.125")
-    private Double actualWeight;
+    @Column(precision = 10, scale = 3)
+    private BigDecimal actualWeight;
 
     @Convert(converter = DurationConverter.class)
     private Duration goalTime;

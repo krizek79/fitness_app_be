@@ -2,8 +2,6 @@ CREATE TABLE app_user (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE,
     password TEXT,
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
     profile_id BIGINT UNIQUE,
     active BOOLEAN,
     locked BOOLEAN,

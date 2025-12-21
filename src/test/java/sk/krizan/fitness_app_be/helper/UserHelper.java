@@ -9,7 +9,6 @@ import sk.krizan.fitness_app_be.controller.response.UserResponse;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
-import java.time.Instant;
 import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -22,7 +21,6 @@ public class UserHelper {
         User user = new User();
         user.setEmail(faker.internet().emailAddress());
         user.addToRoleSet(roles);
-        user.setCreatedAt(Instant.now());
         user.setActive(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);

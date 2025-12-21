@@ -13,6 +13,7 @@ import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
@@ -31,8 +32,8 @@ public class WorkoutExerciseSetHelper {
         workoutExerciseSet.setWorkoutExerciseSetType(WorkoutExerciseSetType.STRAIGHT_SET);
         workoutExerciseSet.setGoalRepetitions(RandomHelper.getRandomInt(1, 15));
         workoutExerciseSet.setActualRepetitions(RandomHelper.getRandomInt(1, 15));
-        workoutExerciseSet.setGoalWeight(RandomHelper.getRandomDouble(0.125, 150));
-        workoutExerciseSet.setActualWeight(RandomHelper.getRandomDouble(0.125, 150));
+        workoutExerciseSet.setGoalWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(0.125), BigDecimal.valueOf(150), 3));
+        workoutExerciseSet.setActualWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(0.125), BigDecimal.valueOf(150), 3));
         workoutExerciseSet.setGoalTime(Duration.ofMinutes(45));
         workoutExerciseSet.setActualTime(Duration.ofMinutes(41));
         workoutExerciseSet.setRestDuration(Duration.ofMinutes(5));
@@ -64,8 +65,8 @@ public class WorkoutExerciseSetHelper {
                 .workoutExerciseSetType(workoutExerciseSetType)
                 .actualRepetitions(RandomHelper.getRandomInt(1, 15))
                 .goalRepetitions(RandomHelper.getRandomInt(1, 15))
-                .goalWeight(RandomHelper.getRandomDouble(2.5, 200))
-                .actualWeight(RandomHelper.getRandomDouble(2.5, 200))
+                .goalWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(2.5), BigDecimal.valueOf(200), 3))
+                .actualWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(2.5), BigDecimal.valueOf(200), 3))
                 .goalTime(RandomHelper.getRandomDuration(Duration.ofMinutes(1), Duration.ofMinutes(3)).toString())
                 .actualTime(RandomHelper.getRandomDuration(Duration.ofMinutes(1), Duration.ofMinutes(3)).toString())
                 .restDuration(RandomHelper.getRandomDuration(Duration.ofMinutes(3), Duration.ofMinutes(5)).toString())
@@ -80,7 +81,7 @@ public class WorkoutExerciseSetHelper {
                 .workoutExerciseSetType(WorkoutExerciseSetType.STRAIGHT_SET)
                 .note(UUID.randomUUID().toString())
                 .goalRepetitions(RandomHelper.getRandomInt(1, 15))
-                .goalWeight(RandomHelper.getRandomDouble(2.5, 200))
+                .goalWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(2.5), BigDecimal.valueOf(200), 3))
                 .goalTime(RandomHelper.getRandomDuration(Duration.ofMinutes(1), Duration.ofMinutes(3)).toString())
                 .restDuration(RandomHelper.getRandomDuration(Duration.ofMinutes(3), Duration.ofMinutes(5)).toString())
                 .build();

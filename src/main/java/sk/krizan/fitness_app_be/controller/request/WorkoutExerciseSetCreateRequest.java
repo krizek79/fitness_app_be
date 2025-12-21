@@ -8,6 +8,8 @@ import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.model.enums.WorkoutExerciseSetType;
 
+import java.math.BigDecimal;
+
 @Builder
 public record WorkoutExerciseSetCreateRequest(
         @NotNull
@@ -19,7 +21,7 @@ public record WorkoutExerciseSetCreateRequest(
         @Min(1)
         Integer goalRepetitions,
         @DecimalMin("0.125")
-        Double goalWeight,
+        BigDecimal goalWeight,
         @Schema(example = "PT1M30S")
         String goalTime,
         @Schema(example = "PT1M30S")

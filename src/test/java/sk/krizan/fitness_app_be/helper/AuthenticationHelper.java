@@ -36,6 +36,13 @@ public class AuthenticationHelper {
         Assertions.assertFalse(user.getLocked());
         Assertions.assertEquals(Set.of(Role.USER), user.getRoleSet());
 
+        Assertions.assertNotNull(user.getCreatedAt());
+        Assertions.assertNotNull(user.getCreatedBy());
+        Assertions.assertNotNull(user.getLastModifiedAt());
+        Assertions.assertNotNull(user.getLastModifiedBy());
+        Assertions.assertNull(user.getDeletedAt());
+        Assertions.assertNull(user.getDeletedBy());
+
         Profile profile = user.getProfile();
         Assertions.assertNotNull(profile);
         Assertions.assertNotNull(profile.getId());
@@ -49,6 +56,13 @@ public class AuthenticationHelper {
         Assertions.assertEquals(List.of(), profile.getAssignedWorkoutList());
         Assertions.assertEquals(Set.of(), profile.getCoachingSet());
         Assertions.assertEquals(Set.of(), profile.getBeingCoachedSet());
+
+        Assertions.assertNotNull(profile.getCreatedAt());
+        Assertions.assertNotNull(profile.getCreatedBy());
+        Assertions.assertNotNull(profile.getLastModifiedAt());
+        Assertions.assertNotNull(profile.getLastModifiedBy());
+        Assertions.assertNull(profile.getDeletedAt());
+        Assertions.assertNull(profile.getDeletedBy());
     }
 
     public static void assertSignInLocal_success(User user, AuthenticationResponse response) {

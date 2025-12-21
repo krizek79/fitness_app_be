@@ -1,6 +1,5 @@
 package sk.krizan.fitness_app_be.model.mapper;
 
-import java.time.Instant;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,8 +31,6 @@ public class UserMapper {
         user.setEmail(request.email());
         user.setPassword(encodedPassword);
         user.addToRoleSet(roleSet);
-        user.setCreatedAt(Instant.now());
-        user.setUpdatedAt(Instant.now());
         user.setActive(true);
         user.setEnabled(true);
         user.setLocked(false);

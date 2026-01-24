@@ -2,6 +2,7 @@ package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.cloning.CloneOrchestrator;
 import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
@@ -17,6 +18,7 @@ import sk.krizan.fitness_app_be.service.api.WeekService;
 import sk.krizan.fitness_app_be.service.api.WorkoutService;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CloneServiceImpl implements CloneService {
 

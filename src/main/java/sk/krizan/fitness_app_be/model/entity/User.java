@@ -1,5 +1,6 @@
 package sk.krizan.fitness_app_be.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -18,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
 import java.util.HashSet;
@@ -29,6 +31,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldNameConstants
 @Table(name = "app_user")
 public class User extends AuditableEntity {
 
@@ -42,7 +45,8 @@ public class User extends AuditableEntity {
 
     private String password;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
     @Builder.Default

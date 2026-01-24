@@ -50,7 +50,7 @@ public class Week extends AuditableEntity implements OrderableEntity {
     private String note;
 
     @Builder.Default
-    @OneToMany(mappedBy = WeekWorkout.Fields.week, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = WeekWorkout.Fields.week, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<WeekWorkout> weekWorkoutList = new ArrayList<>();
 
     public void addToWeekWorkoutList(List<WeekWorkout> weekWorkoutList) {

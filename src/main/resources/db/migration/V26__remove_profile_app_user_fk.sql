@@ -1,0 +1,8 @@
+ALTER TABLE profile
+DROP CONSTRAINT IF EXISTS profile_user_id_key;
+
+ALTER TABLE profile
+DROP CONSTRAINT IF EXISTS fk_user;
+
+ALTER TABLE profile
+DROP COLUMN IF EXISTS user_id;

@@ -1,6 +1,6 @@
 package sk.krizan.fitness_app_be.cloning;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,7 +13,6 @@ public class CloneOrchestrator {
 
     private final Map<Class<?>, Cloner<?>> clonerMap;
 
-    @Autowired
     public CloneOrchestrator(List<AbstractCloner<?>> cloners) {
         this.clonerMap = cloners.stream()
                 .collect(Collectors.toMap(AbstractCloner::getHandledClass, Function.identity()));
@@ -21,7 +20,9 @@ public class CloneOrchestrator {
 
     @SuppressWarnings("unchecked")
     public <T> T deepClone(T original) {
-        Cloner<T> cloner = (Cloner<T>) clonerMap.get(original.getClass());
+        Class<?> clazz = Hibernate.getClass(original);
+        Cloner<T> cloner = (Cloner<T>) clonerMap.get(clazz);
+
         if (cloner == null) {
             throw new IllegalArgumentException("No cloner registered for " + original.getClass());
         }

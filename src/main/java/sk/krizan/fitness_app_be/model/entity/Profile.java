@@ -9,7 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
@@ -39,8 +38,7 @@ public class Profile extends AuditableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @OneToOne(mappedBy = User.Fields.profile)
     private User user;
 
     @Column(length = 64)
@@ -60,27 +58,27 @@ public class Profile extends AuditableEntity {
     private WeightUnit preferredWeightUnit;
 
     @Builder.Default
-    @OneToMany(mappedBy = CoachClient.Fields.coach, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = CoachClient.Fields.coach, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private Set<CoachClient> coachingSet = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = CoachClient.Fields.client, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = CoachClient.Fields.client, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private Set<CoachClient> beingCoachedSet = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Workout> authoredWorkoutList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Workout.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = Workout.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Workout> assignedWorkoutList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Cycle.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = Cycle.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Cycle> authoredCycleList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Cycle.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = Cycle.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Cycle> assignedCycleList = new ArrayList<>();
 
     public void addToCoachingSet(Set<CoachClient> coachClientSet) {

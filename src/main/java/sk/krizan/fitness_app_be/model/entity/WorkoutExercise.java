@@ -61,7 +61,7 @@ public class WorkoutExercise extends AuditableEntity implements OrderableEntity 
     private String note;
 
     @Builder.Default
-    @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<WorkoutExerciseSet> workoutExerciseSetList = new ArrayList<>();
 
     public void addToWorkoutExerciseSetList(List<WorkoutExerciseSet> workoutExerciseSetList) {

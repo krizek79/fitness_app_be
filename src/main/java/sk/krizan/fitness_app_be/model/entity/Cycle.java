@@ -53,11 +53,11 @@ public class Cycle extends AuditableEntity {
     private Level level;
 
     @Builder.Default
-    @OneToMany(mappedBy = Week.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = Week.Fields.cycle, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Week> weekList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Goal.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = Goal.Fields.cycle, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Goal> goalList = new ArrayList<>();
 
     public void addToWeekList(List<Week> weekList) {

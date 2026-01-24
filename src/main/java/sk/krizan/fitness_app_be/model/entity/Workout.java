@@ -75,7 +75,7 @@ public class Workout extends AuditableEntity {
     private final Set<Tag> tagSet = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = WorkoutExercise.Fields.workout, orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = WorkoutExercise.Fields.workout, orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private final List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
 
     public void addToTagSet(Set<Tag> tagSet) {

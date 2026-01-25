@@ -2,7 +2,6 @@ package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,15 +49,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @Cacheable(value = "users", key = "#jwt.getSubject()")
     public User syncUser(Jwt jwt, Set<Role> roles) {
         String keycloakId = jwt.getSubject();
         log.info("Synchronizing user from JWT token with keycloakId: { {} }", keycloakId);
+
         return userRepository.findByKeycloakId(keycloakId)
                 .map(user -> {
-                    user.getRoleSet().clear();
-                    user.addToRoleSet(roles);
-                    return userRepository.save(user);
+                    if (!user.getRoleSet().equals(roles)) {
+                        log.info("Updating roles for user: {}", keycloakId);
+                        user.getRoleSet().clear();
+                        user.addToRoleSet(roles);
+                        return userRepository.save(user);
+                    }
+                    return user;
                 })
                 .orElseGet(() -> createNewUserWithProfileFromToken(jwt, roles, keycloakId));
     }

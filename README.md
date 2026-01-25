@@ -39,7 +39,7 @@ Copy `.env.template` to `.env` in the project root:
 cp .env.template .env
 ```
 
-* Edit `.env` to provide your local development values (e.g., database credentials, JWT keystore paths).
+* Edit `.env` to provide your local development values (e.g., database credentials, Keycloak information...).
 * The `.env` file is excluded from version control (via `.gitignore`) to keep sensitive data safe.
 
 ## Running with Docker Compose

@@ -1,13 +1,10 @@
 package sk.krizan.fitness_app_be.model.mapper;
 
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
 import sk.krizan.fitness_app_be.controller.response.UserResponse;
 import sk.krizan.fitness_app_be.model.entity.User;
-import sk.krizan.fitness_app_be.model.enums.Role;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,22 +17,5 @@ public class UserMapper {
             .roles(user.getRoleSet())
             .profileResponse(ProfileMapper.entityToResponse(user.getProfile()))
             .build();
-    }
-
-    public static User signUpRequestToEntity(
-        SignUpRequest request,
-        Set<Role> roleSet,
-        String encodedPassword
-    ) {
-        User user = new User();
-        user.setEmail(request.email());
-        user.setPassword(encodedPassword);
-        user.addToRoleSet(roleSet);
-        user.setActive(true);
-        user.setEnabled(true);
-        user.setLocked(false);
-        user.setCredentialsNonExpired(true);
-
-        return user;
     }
 }

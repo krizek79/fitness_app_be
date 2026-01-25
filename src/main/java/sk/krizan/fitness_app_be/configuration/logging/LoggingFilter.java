@@ -10,8 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import sk.krizan.fitness_app_be.configuration.jwt.JwtConstants;
-import sk.krizan.fitness_app_be.model.CustomUserDetails;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -39,17 +37,10 @@ public class LoggingFilter extends OncePerRequestFilter {
                 if (principal instanceof Jwt jwt) {
                     MDC.put(MdcConstants.USER_ID.getValue(), jwt.getSubject());
 
-                    Object rolesClaim = jwt.getClaim(JwtConstants.ROLES_CLAIM.getValue());
+                    Object rolesClaim = jwt.getClaim("roles");
                     if (rolesClaim instanceof String roleStr) {
                         MDC.put(MdcConstants.USER_ROLES.getValue(), roleStr.replace(" ", ", "));
                     }
-                } else if (principal instanceof CustomUserDetails userDetails) {
-                    MDC.put(MdcConstants.USER_ID.getValue(), userDetails.getUsername());
-                    MDC.put(
-                            MdcConstants.USER_ROLES.getValue(),
-                            String.join(", ", userDetails.getAuthorities().stream()
-                                    .map(Object::toString)
-                                    .toList()));
                 }
             }
 

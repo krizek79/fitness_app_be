@@ -33,7 +33,6 @@ build/
 .vscode/
 
 ### Custom ignores ###
-src/main/resources/keystore.p12
 
 # Environment variables file
 .env

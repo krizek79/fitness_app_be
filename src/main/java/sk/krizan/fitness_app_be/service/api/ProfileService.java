@@ -12,8 +12,6 @@ public interface ProfileService {
 
     Profile getProfileById(Long id);
 
-    void createProfile(Long userId);
-
     Long deleteProfile(Long id);
 
     String uploadProfilePicture(MultipartFile multipartFile);

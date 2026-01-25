@@ -4,28 +4,23 @@ import com.github.javafaker.Faker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import sk.krizan.fitness_app_be.controller.response.UserResponse;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
 
 import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserHelper {
 
     private static final Faker faker = new Faker();
-    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public static User createMockUser(Set<Role> roles) {
         User user = new User();
         user.setEmail(faker.internet().emailAddress());
+        user.setKeycloakId(UUID.randomUUID().toString());
         user.addToRoleSet(roles);
-        user.setActive(true);
-        user.setCredentialsNonExpired(true);
-        user.setEnabled(true);
-        user.setLocked(false);
-        user.setPassword(passwordEncoder.encode("password"));
         return user;
     }
 

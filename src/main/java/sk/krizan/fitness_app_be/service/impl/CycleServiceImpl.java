@@ -127,7 +127,7 @@ public class CycleServiceImpl implements CycleService {
         boolean isAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
 
         if (!isOwner && !isCoach && !isAdmin) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "You are not authorized to access this cycle.");
+            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
     }
 }

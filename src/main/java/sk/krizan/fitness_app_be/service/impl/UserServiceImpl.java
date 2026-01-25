@@ -1,38 +1,31 @@
 package sk.krizan.fitness_app_be.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
-import sk.krizan.fitness_app_be.controller.request.SignUpRequest;
-import sk.krizan.fitness_app_be.model.CustomUserDetails;
+import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.User;
 import sk.krizan.fitness_app_be.model.enums.Role;
-import sk.krizan.fitness_app_be.model.mapper.UserMapper;
+import sk.krizan.fitness_app_be.model.enums.WeightUnit;
 import sk.krizan.fitness_app_be.repository.UserRepository;
 import sk.krizan.fitness_app_be.service.api.UserService;
 
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-            .map(CustomUserDetails::new)
-            .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "User with email { " + email + " } does not exist."));
-    }
 
     @Override
     public User getUserById(Long id) {
@@ -40,37 +33,54 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "User with email { " + email + " } does not exist."));
-    }
-
-    @Override
+    @Transactional
     public User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String email;
+        if (authentication instanceof JwtAuthenticationToken jwtToken) {
+            Jwt jwt = jwtToken.getToken();
+            String keycloakId = jwt.getSubject();
 
-        if (principal instanceof Jwt jwt) {
-            email = jwt.getSubject();
-        } else if (principal instanceof CustomUserDetails userDetails) {
-            email = userDetails.getUsername();
-        } else {
-            throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Unrecognized authentication principal");
+            return userRepository.findByKeycloakId(keycloakId)
+                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "User with keycloakId { " + keycloakId + " } does not exist."));
         }
 
-        return getUserByEmail(email);
+        throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Unrecognized authentication principal");
     }
 
     @Override
     @Transactional
-    public User createUser(SignUpRequest request, Set<Role> roleSet) {
-        Boolean existsByEmail = userRepository.existsByEmail(request.email());
-        if (existsByEmail) {
-            throw new ApplicationException(HttpStatus.CONFLICT, "User with email { " + request.email() + " } already exists.");
-        }
+    @Cacheable(value = "users", key = "#jwt.getSubject()")
+    public User syncUser(Jwt jwt, Set<Role> roles) {
+        String keycloakId = jwt.getSubject();
+        log.info("Synchronizing user from JWT token with keycloakId: { {} }", keycloakId);
+        return userRepository.findByKeycloakId(keycloakId)
+                .map(user -> {
+                    user.getRoleSet().clear();
+                    user.addToRoleSet(roles);
+                    return userRepository.save(user);
+                })
+                .orElseGet(() -> createNewUserWithProfileFromToken(jwt, roles, keycloakId));
+    }
 
-        String encodedPassword = passwordEncoder.encode(request.password());
-        User user = UserMapper.signUpRequestToEntity(request, roleSet, encodedPassword);
+    private User createNewUserWithProfileFromToken(Jwt jwt, Set<Role> roles, String keycloakId) {
+        String pictureUrl = jwt.getClaimAsString("picture");
+        String email = jwt.getClaimAsString("email");
+        String name = jwt.getClaimAsString("name");
+
+        User user = new User();
+        user.setEmail(email);
+        user.setKeycloakId(keycloakId);
+        user.addToRoleSet(roles);
+
+        Profile profile = new Profile();
+        profile.setName(name);
+        profile.setProfilePictureUrl(pictureUrl);
+        profile.setPreferredWeightUnit(WeightUnit.KG);
+
+        profile.setUser(user);
+        user.setProfile(profile);
+
         return userRepository.save(user);
     }
 }

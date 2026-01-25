@@ -1,0 +1,9 @@
+ALTER TABLE app_user
+DROP COLUMN IF EXISTS password,
+DROP COLUMN IF EXISTS active,
+DROP COLUMN IF EXISTS locked,
+DROP COLUMN IF EXISTS enabled,
+DROP COLUMN IF EXISTS credentials_non_expired;
+
+ALTER TABLE app_user
+ADD COLUMN keycloak_id VARCHAR(255);

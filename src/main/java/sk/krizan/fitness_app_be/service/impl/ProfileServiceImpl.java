@@ -1,6 +1,5 @@
 package sk.krizan.fitness_app_be.service.impl;
 
-import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +24,6 @@ import sk.krizan.fitness_app_be.specification.ProfileSpecification;
 import sk.krizan.fitness_app_be.util.PageUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +35,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
 
-    private final Faker faker = new Faker(Locale.getDefault());
-
     private static final String ERROR_WITH_ID_NOT_FOUND = "Profile with id { %s } does not exist.";
-    private static final String ERROR_ALREADY_HAS_PROFILE = "User { %s } already has an assigned profile.";
 
     private static final List<String> supportedSortFields = List.of(
             Profile.Fields.id,
@@ -78,22 +73,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    @Transactional
-    public void createProfile(Long userId) {
-        User user = userService.getUserById(userId);
-        if (user.getProfile() != null) {
-            throw new ApplicationException(HttpStatus.CONFLICT, ERROR_ALREADY_HAS_PROFILE.formatted(user.getEmail()));
-        }
-
-        String name = getRandomName();
-        String profilePictureUrl = getRandomProfilePictureUrl();
-        Profile profile = ProfileMapper.createInitialProfile(name, profilePictureUrl, user);
-        user.setProfile(profile);
-
-        profileRepository.save(profile);
-    }
-
-    @Override
     public Long deleteProfile(Long id) {
         User currentUser = userService.getCurrentUser();
         Profile profile = getProfileById(id);
@@ -121,18 +100,5 @@ public class ProfileServiceImpl implements ProfileService {
         profile = profileRepository.save(profile);
 
         return profile.getProfilePictureUrl();
-    }
-
-    private String getRandomName() {
-        String name;
-        do {
-            name = faker.funnyName().name();
-        } while (profileRepository.existsByNameAndDeletedFalse(name));
-
-        return name;
-    }
-
-    private String getRandomProfilePictureUrl() {
-        return "";
     }
 }

@@ -6,7 +6,7 @@ This is the backend for a fitness management application. It provides a secure a
 
 ## Key Features
 
-* **User Management & Authentication**: Secure JWT-based authentication, role-based access, and strong password hashing.
+* **User Management & Authentication**: Integrated with Keycloak for secure SSO, social login (Google), and robust Role-Based Access Control.
 * **Coach-Client Relationships**: Manage connections between coaches and clients for collaborative training.
 * **Training Structure**: CRUD and filtering for cycles, weeks, workouts, and exercises to support long-term planning.
 * **Goal Tracking**: Track, update, and filter fitness goals.
@@ -19,16 +19,15 @@ This is the backend for a fitness management application. It provides a secure a
 
 ## Technologies Used
 
-* Java 17
-* Spring Boot (Web, Data JPA, Validation, Security, OAuth2 Resource Server)
-* PostgreSQL
-* Flyway
-* Maven
-* Lombok
+* Java 17 & Spring Boot 3
+* Spring Security & OAuth2 Resource Server
+* Keycloak (Identity & Access Management)
+* PostgreSQL & Flyway
+* Maven & Lombok
 * JUnit, Testcontainers, JaCoCo, Codecov
 * springdoc-openapi (Swagger UI)
 * Cloudinary (media hosting)
-* Docker, Docker Compose
+* Docker
 * Render (application hosting)
 * Aiven (database hosting)
 
@@ -42,15 +41,6 @@ cp .env.template .env
 
 * Edit `.env` to provide your local development values (e.g., database credentials, JWT keystore paths).
 * The `.env` file is excluded from version control (via `.gitignore`) to keep sensitive data safe.
-
-### Generating a local keystore
-This project requires a PKCS12 keystore (keystore.p12) for SSL / JWT signing. The keystore should be placed in src/main/resources.
-
-Run the following command from the project root:
-```bash
-keytool -genkeypair -alias fitness-app-key -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore src/main/resources/keystore.p12 -validity 3650
-```
-Do not commit keystore.p12 to version control (it’s ignored in .gitignore).
 
 ## Running with Docker Compose
 

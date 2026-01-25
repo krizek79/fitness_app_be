@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,7 +44,9 @@ public class User extends AuditableEntity {
     @Column(unique = true)
     private String email;
 
-    private String password;
+    @NotNull
+    @Column(nullable = false)
+    private String keycloakId;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_id", nullable = false)
@@ -58,11 +61,6 @@ public class User extends AuditableEntity {
     )
     @Column(name = "role")
     private final Set<Role> roleSet = new HashSet<>();
-
-    private Boolean active;
-    private Boolean locked;
-    private Boolean enabled;
-    private Boolean credentialsNonExpired;
 
     public void addToRoleSet(Set<Role> roleSet) {
         this.getRoleSet().addAll(roleSet);

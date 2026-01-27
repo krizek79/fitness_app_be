@@ -2,7 +2,7 @@ package sk.krizan.fitness_app_be.specification;
 
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.util.PredicateUtils;
@@ -23,12 +23,12 @@ public class CycleSpecification {
                 predicate = cb.and(predicate, cb.equal(traineeJoin.get(Profile.Fields.id), request.traineeId()));
             }
 
-            if (request.name() != null) {
+            if (request.title() != null) {
                 Predicate namePredicate = PredicateUtils.sanitizedLike(
                         root,
                         cb,
-                        Cycle.Fields.name,
-                        request.name());
+                        Cycle.Fields.title,
+                        request.title());
                 predicate = cb.and(predicate, namePredicate);
             }
 

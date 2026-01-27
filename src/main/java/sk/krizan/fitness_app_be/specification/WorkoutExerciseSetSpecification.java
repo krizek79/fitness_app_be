@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseSetFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.workout_exercise_set.WorkoutExerciseSetFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExerciseSet;
 

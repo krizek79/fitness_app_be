@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
-import sk.krizan.fitness_app_be.controller.request.TagCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.tag.TagCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
@@ -47,7 +47,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private static final List<String> supportedSortFields = List.of(
             Workout.Fields.id,
-            Workout.Fields.name,
+            Workout.Fields.title,
             Workout.Fields.author + "." + Profile.Fields.name
     );
 

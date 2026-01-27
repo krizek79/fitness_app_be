@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     private User createNewUserWithProfileFromToken(Jwt jwt, Set<Role> roles, String keycloakId) {
         String pictureUrl = jwt.getClaimAsString("picture");
         String email = jwt.getClaimAsString("email");
-        String name = jwt.getClaimAsString("name");
+        String name = jwt.getClaimAsString("title");
 
         User user = new User();
         user.setEmail(email);

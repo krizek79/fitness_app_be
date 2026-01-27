@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.controller.endpoint.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
-import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.week_workout.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.model.mapper.CycleMapper;

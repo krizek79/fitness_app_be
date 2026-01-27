@@ -10,21 +10,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PredicateUtils {
 
-    public static <T> Predicate sanitizedLike(
-        Root<T> root, CriteriaBuilder criteriaBuilder, String fieldName, String value) {
+    public static <T> Predicate sanitizedLike(Root<T> root, CriteriaBuilder criteriaBuilder, String fieldName, String value) {
         if (value == null) {
             return criteriaBuilder.conjunction();
         } else {
-            String sanitizedValue =
-                "%" + value.replaceAll("\\s+", "").toLowerCase() + "%";
+            String sanitizedValue = "%" + value.replaceAll("\\s+", "").toLowerCase() + "%";
 
             Expression<String> sanitizedFieldExpression = criteriaBuilder.lower(
-                criteriaBuilder.function(
-                    "REPLACE",
-                    String.class,
-                    root.get(fieldName),
-                    criteriaBuilder.literal(" "),
-                    criteriaBuilder.literal("")));
+                    criteriaBuilder.function(
+                            "REPLACE",
+                            String.class,
+                            root.get(fieldName),
+                            criteriaBuilder.literal(" "),
+                            criteriaBuilder.literal("")));
             Expression<String> sanitizedValueExpression = criteriaBuilder.literal(sanitizedValue);
 
             return criteriaBuilder.like(sanitizedFieldExpression, sanitizedValueExpression);

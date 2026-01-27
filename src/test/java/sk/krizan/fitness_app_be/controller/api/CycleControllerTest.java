@@ -14,10 +14,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.endpoint.api.CycleController;
-import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.helper.CoachClientHelper;
@@ -57,9 +56,6 @@ class CycleControllerTest {
 
     @Autowired
     private ProfileRepository profileRepository;
-
-    @Autowired
-    private CycleController cycleController;
 
     @Autowired
     private CycleRepository cycleRepository;
@@ -123,7 +119,7 @@ class CycleControllerTest {
 
     private void filterCycles_byName(List<Cycle> originalList) throws Exception {
         List<Cycle> expectedList = new ArrayList<>(List.of(originalList.get(2)));
-        String name = expectedList.get(0).getName().substring(0, 5);
+        String name = expectedList.get(0).getTitle().substring(0, 5);
         CycleFilterRequest request = CycleHelper.createFilterRequest(0, originalList.size(), Cycle.Fields.id, Sort.Direction.DESC.name(), null, null, name, null);
         PageResponse<CycleResponse> response = filter(request);
         CycleHelper.assertFilter(expectedList, request, response);
@@ -174,10 +170,22 @@ class CycleControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void createCycle() {
-        CycleCreateRequest createRequest = CycleHelper.createCreateRequest();
-        CycleResponse response = cycleController.createCycle(createRequest);
-        CycleHelper.assertCycleResponse_create(createRequest, mockProfile, response);
+    void createCycle() throws Exception {
+        CycleCreateRequest request = CycleHelper.createCreateRequest();
+
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/cycles")
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        CycleResponse response = objectMapper.readValue(jsonResponse, new TypeReference<>() {
+        });
+
+        CycleHelper.assertCycleResponse_create(request, mockProfile, response);
     }
 
     @Test

@@ -13,7 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.profile.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
 import sk.krizan.fitness_app_be.helper.ProfileHelper;

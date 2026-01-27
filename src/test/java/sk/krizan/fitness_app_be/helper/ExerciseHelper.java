@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.controller.request.ExerciseCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.ExerciseFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.exercise.ExerciseCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.exercise.ExerciseFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.EnumResponse;
 import sk.krizan.fitness_app_be.controller.response.ExerciseResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
@@ -142,11 +142,11 @@ public class ExerciseHelper {
     /**
      * Contains:
      * <ul>
-     * <li>name: 'Bench press', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
-     * <li>name: 'Push ups', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
-     * <li>name: 'Pull ups', muscle groups: [BACK, BICEPS]</li>
-     * <li>name: 'Biceps curls', muscle groups: [BICEPS]</li>
-     * <li>name: 'Squats', muscle groups: [LEGS]</li>
+     * <li>title: 'Bench press', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
+     * <li>title: 'Push ups', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
+     * <li>title: 'Pull ups', muscle groups: [BACK, BICEPS]</li>
+     * <li>title: 'Biceps curls', muscle groups: [BICEPS]</li>
+     * <li>title: 'Squats', muscle groups: [LEGS]</li>
      * </ul>
      * <br>
      * @return List of sample exercises

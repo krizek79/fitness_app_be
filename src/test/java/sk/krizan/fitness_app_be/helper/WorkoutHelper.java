@@ -3,9 +3,9 @@ package sk.krizan.fitness_app_be.helper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.TagResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
@@ -36,7 +36,7 @@ public class WorkoutHelper {
             String sortDirection,
             Long authorId,
             List<Long> tagIdList,
-            String name,
+            String title,
             Boolean isTemplate) {
         return WorkoutFilterRequest.builder()
                 .page(page)
@@ -45,7 +45,7 @@ public class WorkoutHelper {
                 .sortDirection(sortDirection)
                 .authorId(authorId)
                 .tagIdList(tagIdList)
-                .name(name)
+                .title(title)
                 .isTemplate(isTemplate)
                 .build();
     }
@@ -53,10 +53,10 @@ public class WorkoutHelper {
     public static Workout createMockWorkout(
             Profile profile,
             Set<Tag> tagSet,
-            String name
+            String title
     ) {
         Workout workout = new Workout();
-        workout.setName(name);
+        workout.setTitle(title);
         workout.setWeightUnit(WeightUnit.KG);
         workout.setNote(UUID.randomUUID().toString());
         workout.addToTagSet(tagSet);
@@ -100,7 +100,7 @@ public class WorkoutHelper {
 
     public static WorkoutCreateRequest createCreateRequest() {
         return WorkoutCreateRequest.builder()
-                .name(DEFAULT_VALUE)
+                .title(DEFAULT_VALUE)
                 .isTemplate(true)
                 .weightUnit(WeightUnit.KG)
                 .note(UUID.randomUUID().toString())
@@ -112,7 +112,7 @@ public class WorkoutHelper {
     public static WorkoutUpdateRequest createUpdateRequest(Long traineeId) {
         return WorkoutUpdateRequest.builder()
                 .traineeId(traineeId)
-                .name(DEFAULT_UPDATE_VALUE)
+                .title(DEFAULT_UPDATE_VALUE)
                 .description(DEFAULT_UPDATE_VALUE)
                 .note(UUID.randomUUID().toString())
                 .weightUnit(WeightUnit.LB)
@@ -144,7 +144,7 @@ public class WorkoutHelper {
         Assertions.assertEquals(profile.getName(), response.authorName());
         Assertions.assertNull(response.traineeId());
         Assertions.assertNull(response.traineeName());
-        Assertions.assertEquals(request.name(), response.name());
+        Assertions.assertEquals(request.title(), response.name());
         Assertions.assertEquals(request.description(), response.description());
         Assertions.assertFalse(profile.getAuthoredWorkoutList().isEmpty());
         Assertions.assertEquals(request.isTemplate(), response.isTemplate());
@@ -172,7 +172,7 @@ public class WorkoutHelper {
         Assertions.assertEquals(profile.getName(), response.authorName());
         Assertions.assertEquals(profile.getId(), response.traineeId());
         Assertions.assertEquals(profile.getName(), response.traineeName());
-        Assertions.assertEquals(request.name(), response.name());
+        Assertions.assertEquals(request.title(), response.name());
         Assertions.assertNotNull(response.description());
         Assertions.assertFalse(response.isTemplate());
         Assertions.assertEquals(request.note(), response.note());
@@ -201,7 +201,7 @@ public class WorkoutHelper {
         WorkoutResponse workoutResponse = response.getResults().get(0);
         Assertions.assertNotNull(workoutResponse);
         Assertions.assertEquals(expectedWorkout.getId(), workoutResponse.id());
-        Assertions.assertEquals(expectedWorkout.getName(), workoutResponse.name());
+        Assertions.assertEquals(expectedWorkout.getTitle(), workoutResponse.name());
         Assertions.assertEquals(expectedWorkout.getDescription(), workoutResponse.description());
         Assertions.assertEquals(expectedWorkout.getAuthor().getId(), workoutResponse.authorId());
         Assertions.assertEquals(expectedWorkout.getAuthor().getName(), workoutResponse.authorName());

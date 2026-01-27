@@ -1,9 +1,9 @@
 package sk.krizan.fitness_app_be.service.api;
 
-import sk.krizan.fitness_app_be.controller.request.BatchUpdateRequest;
-import sk.krizan.fitness_app_be.controller.request.WeekCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WeekFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.WeekUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.common.BatchUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.week.WeekCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.week.WeekFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.week.WeekUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.WeekResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Week;

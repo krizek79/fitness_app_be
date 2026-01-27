@@ -5,7 +5,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.request.TagFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.tag.TagFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.util.PredicateUtils;
 

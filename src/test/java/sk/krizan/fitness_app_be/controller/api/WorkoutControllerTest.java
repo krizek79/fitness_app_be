@@ -15,9 +15,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.helper.ProfileHelper;
@@ -138,7 +138,7 @@ class WorkoutControllerTest {
     private void filterWorkouts_ByName(List<Workout> originalWorkoutList) throws Exception {
         Workout expectedWorkout = originalWorkoutList.get(0);
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, expectedWorkout.getName().substring(0, 5), false);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, expectedWorkout.getTitle().substring(0, 5), false);
         PageResponse<WorkoutResponse> response = filter(request);
 
         WorkoutHelper.assertFilter(response, expectedWorkout);

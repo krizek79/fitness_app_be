@@ -13,7 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.week_workout.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.helper.CloneHelper;

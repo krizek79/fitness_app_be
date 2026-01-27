@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.controller.endpoint.api.dto_wrapper.ProfilePageResponse;
-import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.profile.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;

@@ -1,8 +1,8 @@
 package sk.krizan.fitness_app_be.service.api;
 
 import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
-import sk.krizan.fitness_app_be.controller.request.CoachClientCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.CoachClientFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.coach_client.CoachClientCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.coach_client.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.CoachClientResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.CoachClient;

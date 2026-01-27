@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.request.CoachClientFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.coach_client.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.CoachClient;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 

@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.specification;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.request.WorkoutExerciseFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.workout_exercise.WorkoutExerciseFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.Workout;
 import sk.krizan.fitness_app_be.model.entity.WorkoutExercise;
 

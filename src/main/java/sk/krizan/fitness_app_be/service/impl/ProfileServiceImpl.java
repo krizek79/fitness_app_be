@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
-import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.profile.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;

@@ -3,8 +3,8 @@ package sk.krizan.fitness_app_be.model.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.controller.request.WorkoutCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
@@ -26,7 +26,7 @@ public class WorkoutMapper {
         Workout workout = new Workout();
         workout.setAuthor(profile);
         workout.setTrainee(trainee);
-        workout.setName(request.name());
+        workout.setTitle(request.title());
         workout.setIsTemplate(request.isTemplate());
         workout.setWeightUnit(request.weightUnit());
         workout.setNote(request.note());
@@ -39,7 +39,7 @@ public class WorkoutMapper {
     public static WorkoutResponse entityToResponse(Workout workout) {
         return WorkoutResponse.builder()
                 .id(workout.getId())
-                .name(workout.getName())
+                .name(workout.getTitle())
                 .authorId(workout.getAuthor().getId())
                 .authorName(workout.getAuthor().getName())
                 .traineeId(workout.getTrainee() != null ? workout.getTrainee().getId() : null)
@@ -61,7 +61,7 @@ public class WorkoutMapper {
             Set<Tag> tagSet
     ) {
         workout.setTrainee(trainee);
-        workout.setName(request.name());
+        workout.setTitle(request.title());
         workout.setDescription(request.description());
         workout.setWeightUnit(request.weightUnit());
         workout.getTagSet().clear();

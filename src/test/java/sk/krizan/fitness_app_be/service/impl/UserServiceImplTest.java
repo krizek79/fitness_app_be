@@ -62,7 +62,7 @@ class UserServiceImplTest {
 
         when(jwt.getClaimAsString("picture")).thenReturn("http://image.com/avatar.png");
         when(jwt.getClaimAsString("email")).thenReturn("new@example.com");
-        when(jwt.getClaimAsString("name")).thenReturn("John Doe");
+        when(jwt.getClaimAsString("title")).thenReturn("John Doe");
 
         when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);

@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.controller.exception.ApplicationException;
-import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
@@ -40,7 +40,7 @@ public class CycleServiceImpl implements CycleService {
 
     private static final List<String> supportedSortFields = List.of(
             Cycle.Fields.id,
-            Cycle.Fields.name
+            Cycle.Fields.title
     );
 
     @Override
@@ -113,6 +113,7 @@ public class CycleServiceImpl implements CycleService {
     @Transactional
     public Long deleteCycle(Long id) {
         Cycle cycle = getCycleById(id);
+        checkAuthorization(cycle);
         cycleRepository.delete(cycle);
         return cycle.getId();
     }

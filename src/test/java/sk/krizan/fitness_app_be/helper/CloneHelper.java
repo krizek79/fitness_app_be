@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.helper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.week_workout.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
@@ -23,7 +23,7 @@ public class CloneHelper {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
         Assertions.assertNotEquals(cycle.getId(), response.id());
-        Assertions.assertEquals(cycle.getName(), response.name());
+        Assertions.assertEquals(cycle.getTitle(), response.name());
         Assertions.assertEquals(cycle.getDescription(), response.description());
         EnumHelper.assertEnumResponse(cycle.getLevel(), response.levelResponse());
         Assertions.assertEquals(cycle.getAuthor().getId(), response.authorId());
@@ -34,7 +34,7 @@ public class CloneHelper {
 
     public static void assertCycle(Cycle originalCycle, Cycle clonedCycle) {
         Assertions.assertNotEquals(originalCycle.getId(), clonedCycle.getId());
-        Assertions.assertEquals(originalCycle.getName(), clonedCycle.getName());
+        Assertions.assertEquals(originalCycle.getTitle(), clonedCycle.getTitle());
         Assertions.assertEquals(originalCycle.getDescription(), clonedCycle.getDescription());
         Assertions.assertEquals(originalCycle.getLevel(), clonedCycle.getLevel());
         Assertions.assertEquals(originalCycle.getAuthor(), clonedCycle.getAuthor());
@@ -87,7 +87,7 @@ public class CloneHelper {
         Assertions.assertNotNull(clonedWorkout.getId());
         Assertions.assertNotEquals(originalWorkout.getId(), clonedWorkout.getId());
         Assertions.assertEquals(originalWorkout.getDescription(), clonedWorkout.getDescription());
-        Assertions.assertEquals(originalWorkout.getName(), clonedWorkout.getName());
+        Assertions.assertEquals(originalWorkout.getTitle(), clonedWorkout.getTitle());
         Assertions.assertEquals(originalWorkout.getAuthor(), clonedWorkout.getAuthor());
         Assertions.assertNull(clonedWorkout.getNote());
         Assertions.assertEquals(originalWorkout.getTagSet(), clonedWorkout.getTagSet());

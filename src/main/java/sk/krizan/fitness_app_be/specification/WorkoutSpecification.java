@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-import sk.krizan.fitness_app_be.controller.request.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.workout.WorkoutFilterRequest;
 import sk.krizan.fitness_app_be.model.entity.Profile;
 import sk.krizan.fitness_app_be.model.entity.Tag;
 import sk.krizan.fitness_app_be.model.entity.Workout;
@@ -18,12 +18,12 @@ public class WorkoutSpecification {
         return (Root<Workout> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
-            if (request.name() != null) {
+            if (request.title() != null) {
                 Predicate namePredicate = PredicateUtils.sanitizedLike(
                         root,
                         criteriaBuilder,
-                        Workout.Fields.name,
-                        request.name());
+                        Workout.Fields.title,
+                        request.title());
                 predicate = criteriaBuilder.and(predicate, namePredicate);
             }
 

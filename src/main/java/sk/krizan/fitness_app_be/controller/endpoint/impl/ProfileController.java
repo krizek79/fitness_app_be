@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import sk.krizan.fitness_app_be.controller.request.ProfileFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.profile.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.controller.response.ProfileResponse;
 import sk.krizan.fitness_app_be.model.mapper.ProfileMapper;

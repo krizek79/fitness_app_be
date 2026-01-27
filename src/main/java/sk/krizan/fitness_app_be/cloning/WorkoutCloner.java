@@ -21,7 +21,7 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
     @Override
     public Workout clone(Workout original) {
         Workout clone = new Workout();
-        clone.setName(original.getName());
+        clone.setTitle(original.getTitle());
         clone.setDescription(original.getDescription());
         clone.addToTagSet(original.getTagSet());
         clone.setWeightUnit(original.getWeightUnit());

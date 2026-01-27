@@ -21,7 +21,7 @@ public class CycleCloner extends AbstractCloner<Cycle> {
     @Override
     public Cycle clone(Cycle original) {
         Cycle clone = new Cycle();
-        clone.setName(original.getName());
+        clone.setTitle(original.getTitle());
         clone.setDescription(original.getDescription());
         clone.setLevel(original.getLevel());
         List<Week> clonedWeeks = original.getWeekList().stream()

@@ -3,8 +3,8 @@ package sk.krizan.fitness_app_be.model.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.WeekWorkoutUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.week_workout.WeekWorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.week_workout.WeekWorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.model.entity.Week;
 import sk.krizan.fitness_app_be.model.entity.WeekWorkout;
@@ -31,7 +31,7 @@ public class WeekWorkoutMapper {
                 .id(weekWorkout.getId())
                 .weekId(weekWorkout.getWeek() != null ? weekWorkout.getWeek().getId() : null)
                 .workoutId(weekWorkout.getWorkout() != null ? weekWorkout.getWorkout().getId() : null)
-                .workoutName(weekWorkout.getWorkout() != null ? weekWorkout.getWorkout().getName() : null)
+                .workoutName(weekWorkout.getWorkout() != null ? weekWorkout.getWorkout().getTitle() : null)
                 .workoutTagResponseList(
                         weekWorkout.getWorkout() != null && weekWorkout.getWorkout().getTagSet() != null
                                 ? weekWorkout.getWorkout().getTagSet().stream().map(TagMapper::entityToResponse).toList()

@@ -1,8 +1,8 @@
 package sk.krizan.fitness_app_be.service.api;
 
-import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;

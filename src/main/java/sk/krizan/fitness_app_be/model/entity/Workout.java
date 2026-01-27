@@ -42,7 +42,7 @@ public class Workout extends AuditableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String title;
 
     @NotNull
     @ManyToOne

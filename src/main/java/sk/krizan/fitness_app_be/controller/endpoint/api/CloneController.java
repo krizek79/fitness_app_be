@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import sk.krizan.fitness_app_be.controller.request.WeekWorkoutCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.week_workout.WeekWorkoutCreateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.ProblemDetails;
 import sk.krizan.fitness_app_be.controller.response.WeekWorkoutResponse;

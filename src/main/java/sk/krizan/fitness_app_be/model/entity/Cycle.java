@@ -44,7 +44,7 @@ public class Cycle extends AuditableEntity {
     private Profile trainee;
 
     @NotEmpty
-    private String name;
+    private String title;
 
     @Size(max = 2000)
     private String description;

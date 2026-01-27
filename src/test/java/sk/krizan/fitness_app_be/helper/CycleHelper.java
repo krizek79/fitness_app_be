@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.controller.request.CycleCreateRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleFilterRequest;
-import sk.krizan.fitness_app_be.controller.request.CycleUpdateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleCreateRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleFilterRequest;
+import sk.krizan.fitness_app_be.controller.request.cycle.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.controller.response.CycleResponse;
 import sk.krizan.fitness_app_be.controller.response.PageResponse;
 import sk.krizan.fitness_app_be.model.entity.Cycle;
@@ -28,7 +28,7 @@ public class CycleHelper {
         Cycle cycle = new Cycle();
         cycle.setAuthor(author);
         cycle.setTrainee(trainee);
-        cycle.setName(UUID.randomUUID().toString());
+        cycle.setTitle(UUID.randomUUID().toString());
         cycle.setDescription(DefaultValues.DEFAULT_VALUE);
         cycle.setLevel(level);
         return cycle;
@@ -37,14 +37,14 @@ public class CycleHelper {
 
     public static CycleCreateRequest createCreateRequest() {
         return CycleCreateRequest.builder()
-                .name(DefaultValues.DEFAULT_VALUE)
+                .title(DefaultValues.DEFAULT_VALUE)
                 .build();
     }
 
     public static CycleUpdateRequest createUpdateRequest(Level level, Long traineeId) {
         return CycleUpdateRequest.builder()
                 .traineeId(traineeId)
-                .name(DefaultValues.DEFAULT_UPDATE_VALUE)
+                .title(DefaultValues.DEFAULT_UPDATE_VALUE)
                 .description(DefaultValues.DEFAULT_UPDATE_VALUE)
                 .level(level)
                 .build();
@@ -53,7 +53,7 @@ public class CycleHelper {
     public static void assertCycleResponse_get(Cycle cycle, CycleResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(cycle.getId(), response.id());
-        Assertions.assertEquals(cycle.getName(), response.name());
+        Assertions.assertEquals(cycle.getTitle(), response.name());
         Assertions.assertEquals(cycle.getDescription(), response.description());
         Assertions.assertEquals(cycle.getAuthor().getId(), response.authorId());
         Assertions.assertEquals(cycle.getAuthor().getName(), response.authorName());
@@ -74,7 +74,7 @@ public class CycleHelper {
         Assertions.assertNotNull(response.traineeName());
         Assertions.assertEquals(mockProfile.getName(), response.traineeName());
         Assertions.assertNotNull(response.name());
-        Assertions.assertEquals(request.name(), response.name());
+        Assertions.assertEquals(request.title(), response.name());
         Assertions.assertNull(response.description());
         Assertions.assertNull(response.levelResponse());
         Assertions.assertFalse(mockProfile.getAuthoredCycleList().isEmpty());
@@ -88,7 +88,7 @@ public class CycleHelper {
         Assertions.assertEquals(author.getName(), response.authorName());
         Assertions.assertEquals(trainee.getId(), response.traineeId());
         Assertions.assertEquals(trainee.getName(), response.traineeName());
-        Assertions.assertEquals(request.name(), response.name());
+        Assertions.assertEquals(request.title(), response.name());
         Assertions.assertEquals(request.description(), response.description());
         EnumHelper.assertEnumResponse(request.level(), response.levelResponse());
     }
@@ -123,7 +123,7 @@ public class CycleHelper {
             @NotNull String sortDirection,
             Long authorId,
             Long traineeId,
-            String name,
+            String title,
             Level level
     ) {
         return CycleFilterRequest.builder()
@@ -133,7 +133,7 @@ public class CycleHelper {
                 .sortDirection(sortDirection)
                 .authorId(authorId)
                 .traineeId(traineeId)
-                .name(name)
+                .title(title)
                 .level(level)
                 .build();
     }

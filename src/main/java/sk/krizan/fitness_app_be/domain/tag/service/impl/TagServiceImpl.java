@@ -8,19 +8,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
-import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
-import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagFilterRequest;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.tag.rest.dto.response.TagResponse;
+import sk.krizan.fitness_app_be.common.util.PageUtils;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.tag.mapper.TagMapper;
 import sk.krizan.fitness_app_be.domain.tag.repository.TagRepository;
+import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
+import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagFilterRequest;
+import sk.krizan.fitness_app_be.domain.tag.rest.dto.response.TagResponse;
 import sk.krizan.fitness_app_be.domain.tag.service.api.TagService;
 import sk.krizan.fitness_app_be.domain.tag.specification.TagSpecification;
-import sk.krizan.fitness_app_be.common.util.PageUtils;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,11 +70,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<Tag> findTagByName(String name) {
-        return tagRepository.findTagByName(name.toLowerCase());
-    }
-
-    @Override
     @Transactional
     public Tag createTag(TagCreateRequest request) {
         if (tagRepository.existsByName(request.name().toLowerCase())) {
@@ -83,9 +80,41 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Long deleteTag(Long id) {
+    public void deleteTag(Long id) {
         Tag tag = getTagById(id);
         tagRepository.delete(tag);
-        return tag.getId();
     }
+
+    @Override
+    @Transactional
+    public Set<Tag> getOrCreateTags(Set<String> tagNames) {
+        if (tagNames == null || tagNames.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<String> uniqueNames = tagNames.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        List<Tag> existingTags = tagRepository.findAllByNameIn(uniqueNames);
+
+        Set<String> existingNames = existingTags.stream()
+                .map(Tag::getName)
+                .collect(Collectors.toSet());
+
+        List<String> newTagNames = uniqueNames.stream()
+                .filter(name -> !existingNames.contains(name))
+                .toList();
+
+        Set<Tag> newTags = new HashSet<>();
+        for (String name : newTagNames) {
+            newTags.add(createTag(new TagCreateRequest(name)));
+        }
+
+        Set<Tag> result = new HashSet<>(existingTags);
+        result.addAll(newTags);
+
+        return result;
+    }
+
 }

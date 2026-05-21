@@ -7,14 +7,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
+import sk.krizan.fitness_app_be.common.validation.group.UpdateGroup;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutInputRequest;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutDetailResponse;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutSimpleResponse;
 import sk.krizan.fitness_app_be.domain.workout.rest.dto.wrapper.WorkoutPageResponse;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutCreateRequest;
 import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutFilterRequest;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutUpdateRequest;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutResponse;
 
 @Tag(
         name = "Workout",
@@ -50,7 +53,7 @@ public interface WorkoutController {
             }
     )
     @PostMapping("filter")
-    PageResponse<WorkoutResponse> filterWorkouts(@Valid @RequestBody WorkoutFilterRequest request);
+    PageResponse<WorkoutSimpleResponse> filterWorkouts(@Valid @RequestBody WorkoutFilterRequest request);
 
 
     @Operation(
@@ -60,7 +63,7 @@ public interface WorkoutController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Workout found",
-                            content = @Content(schema = @Schema(implementation = WorkoutResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
@@ -80,20 +83,19 @@ public interface WorkoutController {
             }
     )
     @GetMapping("{id}")
-    WorkoutResponse getWorkoutById(@PathVariable Long id);
-
+    WorkoutDetailResponse getWorkoutById(@PathVariable Long id);
 
     @Operation(
             summary = "Create workout",
-            description = "Creates a new workout with the provided data.",
+            description = "Creates a new workout with tags, workout exercises and sets.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
                             description = "Workout created successfully",
-                            content = @Content(schema = @Schema(implementation = WorkoutResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid input data",
+                            description = "Invalid data",
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
@@ -111,20 +113,19 @@ public interface WorkoutController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    WorkoutResponse createWorkout(@Valid @RequestBody WorkoutCreateRequest request);
-
+    WorkoutDetailResponse createWorkout(@Valid @Validated(CreateGroup.class) @RequestBody WorkoutInputRequest request);
 
     @Operation(
             summary = "Update workout",
-            description = "Updates an existing workout with the given ID and request data.",
+            description = "Updates the workout with the specified ID, including its tags, workout exercises and sets.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Workout updated successfully",
-                            content = @Content(schema = @Schema(implementation = WorkoutResponse.class))),
+                            content = @Content(schema = @Schema(implementation = WorkoutDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid input data",
+                            description = "Invalid data",
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
@@ -145,8 +146,7 @@ public interface WorkoutController {
             }
     )
     @PutMapping("{id}")
-    WorkoutResponse updateWorkout(@PathVariable Long id, @Valid @RequestBody WorkoutUpdateRequest request);
-
+    WorkoutDetailResponse updateWorkout(@PathVariable Long id, @Valid @Validated(UpdateGroup.class) @RequestBody WorkoutInputRequest request);
 
     @Operation(
             summary = "Delete workout",
@@ -155,7 +155,7 @@ public interface WorkoutController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Workout deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))),
+                            content = @Content(schema = @Schema())),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
@@ -175,5 +175,7 @@ public interface WorkoutController {
             }
     )
     @DeleteMapping("{id}")
-    Long deleteWorkout(@PathVariable Long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteWorkout(@PathVariable Long id);
+
 }

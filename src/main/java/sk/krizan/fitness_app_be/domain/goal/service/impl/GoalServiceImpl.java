@@ -8,22 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalCreateRequest;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalFilterRequest;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalUpdateRequest;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.common.util.PageUtils;
 import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
-import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.goal.mapper.GoalMapper;
 import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
-import sk.krizan.fitness_app_be.domain.cycle.service.api.CycleService;
+import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalFilterRequest;
+import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
+import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
 import sk.krizan.fitness_app_be.domain.goal.service.api.GoalService;
-import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 import sk.krizan.fitness_app_be.domain.goal.specification.GoalSpecification;
-import sk.krizan.fitness_app_be.common.util.PageUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,16 +27,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GoalServiceImpl implements GoalService {
 
-    private final UserService userService;
-    private final CycleService cycleService;
     private final GoalRepository goalRepository;
-
-    private final static String ERROR_GOAL_NOT_FOUND = "Goal with id { %s } does not exist.";
 
     private static final List<String> supportedSortFields = List.of(
             Goal.Fields.id
     );
 
+    /**
+     * Retrieves a paginated list of goals based on the specified filter criteria.
+     *
+     * @param request the request containing the filter criteria for retrieving goals. The request may include parameters such as page number, page size, sorting options, and various filters based on workout attributes.
+     * @return a paginated response containing a list of goals that match the specified filter criteria. The response includes metadata about the pagination, such as total pages, total elements, and the current page number.
+     */
     @Override
     @Transactional
     public PageResponse<GoalResponse> filterGoals(GoalFilterRequest request) {
@@ -66,72 +63,26 @@ public class GoalServiceImpl implements GoalService {
                 .build();
     }
 
+    /**
+     * Creates a new goal or updates an existing goal for the specified cycle based on the provided request data.
+     *
+     * @param cycle the cycle for which the goal is being created or updated
+     * @param request the request containing the data for creating or updating the goal
+     */
     @Override
-    public Goal getGoalById(Long id) {
-        return goalRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_GOAL_NOT_FOUND.formatted(id)));
-    }
-
-    @Override
-    @Transactional
-    public Goal createGoal(GoalCreateRequest request) {
-        Cycle cycle = cycleService.getCycleById(request.cycleId());
-        Goal goal = GoalMapper.createRequestToEntity(request, cycle);
-        return goalRepository.save(goal);
-    }
-
-    @Override
-    @Transactional
-    public Goal updateGoal(Long id, GoalUpdateRequest request) {
-        User currentUser = userService.getCurrentUser();
-        Goal goal = getGoalById(id);
-
-        if (goal.getCycle() != null
-                && goal.getCycle().getAuthor() != null
-                && goal.getCycle().getAuthor().getUser() != currentUser
-                && !currentUser.getRoleSet().contains(Role.ADMIN)
-        ) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
+    public void createUpdateGoal(Cycle cycle, GoalInputRequest request) {
+        Goal goal;
+        if (request.id() != null) {
+            //  Update existing goal
+            goal = cycle.getGoals().stream()
+                    .filter(g -> g.getId().equals(request.id()))
+                    .findFirst()
+                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Goal with id %d not found in cycle with id %d.".formatted(request.id(), cycle.getId())));
+            GoalMapper.inputRequestToEntity(goal, request, cycle);
+        } else {
+            //  Create new goal
+            GoalMapper.inputRequestToEntity(null, request, cycle);
         }
-
-        return goalRepository.save(GoalMapper.updateRequestToEntity(request, goal));
     }
 
-    @Override
-    public Long deleteGoal(Long id) {
-        User currentUser = userService.getCurrentUser();
-        Goal goal = getGoalById(id);
-
-        if (goal.getCycle() == null) {
-            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "Cycle is null.");
-        }
-
-        if (goal.getCycle().getAuthor() != null
-                && goal.getCycle().getAuthor().getUser() != currentUser
-                && !currentUser.getRoleSet().contains(Role.ADMIN)
-        ) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
-
-        goal.getCycle().removeFromGoalList(goal);
-        goalRepository.delete(goal);
-        return goal.getId();
-    }
-
-    @Override
-    @Transactional
-    public Goal triggerAchieved(Long id) {
-        User currentUser = userService.getCurrentUser();
-        Goal goal = getGoalById(id);
-
-        if (goal.getCycle() != null
-                && goal.getCycle().getAuthor() != null
-                && goal.getCycle().getAuthor().getUser() != currentUser
-                && !currentUser.getRoleSet().contains(Role.ADMIN)
-        ) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
-
-        goal.setAchieved(!goal.getAchieved());
-        return goalRepository.save(goal);
-    }
 }

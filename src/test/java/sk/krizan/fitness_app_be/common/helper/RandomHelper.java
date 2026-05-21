@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class RandomHelper {
+public final class RandomHelper {
 
     public static int getRandomInt(int min, int max) {
         if (min > max) throw new IllegalArgumentException("min must be <= max");

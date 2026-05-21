@@ -2,7 +2,7 @@ package sk.krizan.fitness_app_be.domain.week.cloner;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.cloning.AbstractCloner;
+import sk.krizan.fitness_app_be.common.cloning.AbstractCloner;
 import sk.krizan.fitness_app_be.domain.week_workout.cloner.WeekWorkoutCloner;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
@@ -25,10 +25,10 @@ public class WeekCloner extends AbstractCloner<Week> {
         Week clone = new Week();
         clone.setOrder(original.getOrder());
         clone.setCompleted(false);
-        List<WeekWorkout> clonedWeekWorkouts = original.getWeekWorkoutList().stream()
+        List<WeekWorkout> clonedWeekWorkouts = original.getWeekWorkouts().stream()
                 .map(weekWorkoutCloner::clone)
                 .toList();
-        clone.addToWeekWorkoutList(clonedWeekWorkouts);
+        clonedWeekWorkouts.forEach(clone::addToWeekWorkouts);
 
         return clone;
     }

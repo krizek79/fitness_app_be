@@ -19,5 +19,6 @@ public class UserController implements sk.krizan.fitness_app_be.domain.user.rest
     public UserResponse getUserById(@PathVariable Long id) {
         return UserMapper.entityToResponse(userService.getUserById(id));
     }
+
 }
 

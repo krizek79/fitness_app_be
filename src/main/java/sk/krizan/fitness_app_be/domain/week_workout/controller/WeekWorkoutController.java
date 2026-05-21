@@ -3,12 +3,11 @@ package sk.krizan.fitness_app_be.domain.week_workout.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutCreateRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.week_workout.mapper.WeekWorkoutMapper;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
+import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.week_workout.service.api.WeekWorkoutService;
 
 @RestController
@@ -25,31 +24,20 @@ public class WeekWorkoutController implements sk.krizan.fitness_app_be.domain.we
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
-    public WeekWorkoutResponse getWeekWorkoutById(Long id) {
-        return WeekWorkoutMapper.entityToResponse(weekWorkoutService.getWeekWorkoutById(id));
+    public WeekWorkoutResponse createWeekWorkout(WeekWorkoutInputRequest request) {
+        return WeekWorkoutMapper.entityToResponse(weekWorkoutService.createUpdateWeekWorkout(null, request));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
-    public WeekWorkoutResponse createWeekWorkout(WeekWorkoutCreateRequest request) {
-        return WeekWorkoutMapper.entityToResponse(weekWorkoutService.createWeekWorkout(request));
+    public WeekWorkoutResponse updateWeekWorkout(Long id, WeekWorkoutInputRequest request) {
+        return WeekWorkoutMapper.entityToResponse(weekWorkoutService.createUpdateWeekWorkout(id, request));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
-    public WeekWorkoutResponse updateWeekWorkout(Long id, WeekWorkoutUpdateRequest request) {
-        return WeekWorkoutMapper.entityToResponse(weekWorkoutService.updateWeekWorkout(id, request));
+    public void deleteWeekWorkout(Long id) {
+        weekWorkoutService.deleteWeekWorkout(id);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @Override
-    public Long deleteWeekWorkout(Long id) {
-        return weekWorkoutService.deleteWeekWorkout(id);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @Override
-    public WeekWorkoutResponse triggerCompleted(Long id) {
-        return WeekWorkoutMapper.entityToResponse(weekWorkoutService.triggerCompleted(id));
-    }
 }

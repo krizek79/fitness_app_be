@@ -1,161 +1,38 @@
 package sk.krizan.fitness_app_be.domain.workout_exercise_set.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
-import sk.krizan.fitness_app_be.common.rest.dto.request.BatchUpdateRequest;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.request.WorkoutExerciseSetCreateRequest;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.request.WorkoutExerciseSetFilterRequest;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.request.WorkoutExerciseSetUpdateRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.response.WorkoutExerciseSetResponse;
-import sk.krizan.fitness_app_be.common.order.event.EntityLifeCycleEventEnum;
-import sk.krizan.fitness_app_be.common.order.event.EntityReorderEvent;
-import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSet;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.mapper.WorkoutExerciseSetMapper;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.repository.WorkoutExerciseSetRepository;
-import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
-import sk.krizan.fitness_app_be.domain.workout_exercise.service.api.WorkoutExerciseService;
+import sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.request.WorkoutExerciseSetInputRequest;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.service.api.WorkoutExerciseSetService;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.specification.WorkoutExerciseSetSpecification;
-import sk.krizan.fitness_app_be.common.util.PageUtils;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WorkoutExerciseSetServiceImpl implements WorkoutExerciseSetService {
 
-    private final UserService userService;
-    private final WorkoutExerciseService workoutExerciseService;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final WorkoutExerciseSetRepository workoutExerciseSetRepository;
-
-    private final static String ERROR_WORKOUT_EXERCISE_SET_NOT_FOUND = "WorkoutExerciseSet with id { %s } does not exist.";
-
-    private static final List<String> supportedSortFields = List.of(
-            WorkoutExerciseSet.Fields.id,
-            WorkoutExerciseSet.Fields.order
-    );
-
+    /**
+     * Creates a new workout exercise set or updates an existing one based on the provided input request. If the input request contains an identifier for an existing workout exercise set, the method will update that set with the new information. If no identifier is provided, a new workout exercise set will be created and associated with the specified workout exercise.
+     *
+     * @param workoutExercise the workout exercise to which the workout exercise set will be associated. This parameter is required for both creating a new workout exercise set and updating an existing one, as it establishes the relationship between the workout exercise set and its parent workout exercise.
+     * @param workoutExerciseSetInputRequest the input request containing the data for creating or updating the workout exercise set. This request may include attributes such as the order of the set, the number of repetitions, the weight used, and other relevant information needed to create or update the workout exercise set.
+     */
     @Override
-    @Transactional
-    public PageResponse<WorkoutExerciseSetResponse> filterWorkoutExerciseSets(WorkoutExerciseSetFilterRequest request) {
-        Specification<WorkoutExerciseSet> specification = WorkoutExerciseSetSpecification.filter(request);
-        Pageable pageable = PageUtils.createPageable(
-                request.page(),
-                request.size(),
-                request.sortBy(),
-                request.sortDirection(),
-                supportedSortFields
-        );
-        Page<WorkoutExerciseSet> page = workoutExerciseSetRepository.findAll(specification, pageable);
-        List<WorkoutExerciseSetResponse> responseList = page.stream()
-                .map(WorkoutExerciseSetMapper::entityToResponse).collect(Collectors.toList());
-
-        return PageResponse.<WorkoutExerciseSetResponse>builder()
-                .pageNumber(page.getNumber())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .results(responseList)
-                .build();
-    }
-
-    @Override
-    public WorkoutExerciseSet getWorkoutExerciseSetById(Long id) {
-        return workoutExerciseSetRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_WORKOUT_EXERCISE_SET_NOT_FOUND.formatted(id)));
-    }
-
-    @Override
-    @Transactional
-    public WorkoutExerciseSet createWorkoutExerciseSet(WorkoutExerciseSetCreateRequest request) {
-        WorkoutExercise workoutExercise = workoutExerciseService.getWorkoutExerciseById(request.workoutExerciseId());
-        WorkoutExerciseSet workoutExerciseSet = workoutExerciseSetRepository.save(WorkoutExerciseSetMapper.createRequestToEntity(request, workoutExercise));
-        applicationEventPublisher.publishEvent(new EntityReorderEvent(workoutExerciseSet, EntityLifeCycleEventEnum.CREATE));
-        return workoutExerciseSet;
-    }
-
-    @Override
-    @Transactional
-    public WorkoutExerciseSet updateWorkoutExerciseSet(WorkoutExerciseSetUpdateRequest request) {
-        WorkoutExerciseSet workoutExerciseSet = getWorkoutExerciseSetById(request.id());
-
-        checkAuthorization(workoutExerciseSet);
-
-        int originalOrder = workoutExerciseSet.getOrder();
-        workoutExerciseSet = workoutExerciseSetRepository.save(WorkoutExerciseSetMapper.updateRequestToEntity(request, workoutExerciseSet));
-        applicationEventPublisher.publishEvent(new EntityReorderEvent(workoutExerciseSet, EntityLifeCycleEventEnum.UPDATE, originalOrder));
-
-        return workoutExerciseSet;
-    }
-
-    @Override
-    @Transactional
-    public List<WorkoutExerciseSet> batchUpdateWorkoutExerciseSets(BatchUpdateRequest<WorkoutExerciseSetUpdateRequest> request) {
-        List<WorkoutExerciseSet> updatedWorkoutExerciseSets = request.updateRequestList().stream()
-                .sorted(Comparator.comparing(WorkoutExerciseSetUpdateRequest::order))
-                .map(this::updateWorkoutExerciseSet)
-                .toList();
-
-        return workoutExerciseSetRepository.saveAll(updatedWorkoutExerciseSets);
-    }
-
-    @Override
-    public Long deleteWorkoutExerciseSet(Long id) {
-        WorkoutExerciseSet workoutExerciseSet = getWorkoutExerciseSetById(id);
-
-        checkAuthorization(workoutExerciseSet);
-
-        workoutExerciseSet.getWorkoutExercise().removeFromWorkoutExerciseSetList(workoutExerciseSet);
-        workoutExerciseSetRepository.delete(workoutExerciseSet);
-        applicationEventPublisher.publishEvent(new EntityReorderEvent(workoutExerciseSet, EntityLifeCycleEventEnum.DELETE));
-
-        return workoutExerciseSet.getId();
-
-    }
-
-    @Override
-    @Transactional
-    public WorkoutExerciseSet triggerCompleted(Long id) {
-        WorkoutExerciseSet workoutExerciseSet = getWorkoutExerciseSetById(id);
-
-        checkAuthorization(workoutExerciseSet);
-
-        workoutExerciseSet.setCompleted(!workoutExerciseSet.getCompleted());
-        return workoutExerciseSetRepository.save(workoutExerciseSet);
-    }
-
-    private void checkAuthorization(WorkoutExerciseSet workoutExerciseSet) {
-        User currentUser = userService.getCurrentUser();
-
-        boolean isTemplate = workoutExerciseSet.getWorkoutExercise().getWorkout().getIsTemplate();
-        User workoutAuthor = workoutExerciseSet.getWorkoutExercise().getWorkout().getAuthor().getUser();
-        User workoutTrainee = workoutExerciseSet.getWorkoutExercise().getWorkout().getTrainee().getUser();
-        boolean isAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
-
-        // Only trainee or admin can access non-template workouts
-        boolean unauthorizedNonTemplateAccess = !isTemplate && !workoutTrainee.equals(currentUser) && !isAdmin;
-
-        // Only author or admin can access template workouts
-        boolean unauthorizedTemplateAccess = isTemplate && !workoutAuthor.equals(currentUser) && !isAdmin;
-
-        // Non-template workout must have the same author and trainee
-        boolean invalidAuthorOwnerCombination = !isTemplate && !workoutAuthor.equals(workoutTrainee);
-
-        if (unauthorizedTemplateAccess || unauthorizedNonTemplateAccess || invalidAuthorOwnerCombination) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
+    public void createOrUpdateWorkoutExerciseSet(WorkoutExercise workoutExercise, WorkoutExerciseSetInputRequest workoutExerciseSetInputRequest) {
+        WorkoutExerciseSet workoutExerciseSet;
+        if (workoutExerciseSetInputRequest.id() != null) {
+            //  Update existing workout exercise set
+            workoutExerciseSet = workoutExercise.getWorkoutExerciseSets().stream()
+                    .filter(we -> we.getId().equals(workoutExerciseSetInputRequest.id()))
+                    .findFirst()
+                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Workout exercise set with id %d not found in workout exercise with id %d.".formatted(workoutExerciseSetInputRequest.id(), workoutExercise.getId())));
+            WorkoutExerciseSetMapper.inputRequestToEntity(workoutExerciseSet, workoutExerciseSetInputRequest, workoutExercise);
+        } else {
+            //  Create new workout exercise set
+            WorkoutExerciseSetMapper.inputRequestToEntity(null, workoutExerciseSetInputRequest, workoutExercise);
         }
     }
 }

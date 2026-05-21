@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
+import sk.krizan.fitness_app_be.common.validation.group.UpdateGroup;
+import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleInputRequest;
 import sk.krizan.fitness_app_be.domain.cycle.rest.dto.wrapper.CyclePageResponse;
-import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleCreateRequest;
 import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleFilterRequest;
-import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleUpdateRequest;
 import sk.krizan.fitness_app_be.domain.cycle.rest.dto.response.CycleResponse;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
@@ -96,7 +98,7 @@ public interface CycleController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    CycleResponse createCycle(@Valid @RequestBody CycleCreateRequest request);
+    CycleResponse createCycle(@Valid @Validated(CreateGroup.class) @RequestBody CycleInputRequest request);
 
     @Operation(
             summary = "Update an existing training cycle",
@@ -121,7 +123,7 @@ public interface CycleController {
             }
     )
     @PutMapping("{id}")
-    CycleResponse updateCycle(@PathVariable Long id, @Valid @RequestBody CycleUpdateRequest request);
+    CycleResponse updateCycle(@PathVariable @Validated(UpdateGroup.class) Long id, @Valid @RequestBody CycleInputRequest request);
 
     @Operation(
             summary = "Delete a training cycle",
@@ -130,7 +132,7 @@ public interface CycleController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Cycle deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))),
+                            content = @Content(schema = @Schema())),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -146,6 +148,8 @@ public interface CycleController {
             }
     )
     @DeleteMapping("{id}")
-    Long deleteCycle(@PathVariable Long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteCycle(@PathVariable Long id);
+
 }
 

@@ -9,6 +9,7 @@ public record WeekResponse(
         Integer order,
         Boolean completed,
         String note,
-        Integer numberOfWorkouts
+        Integer numberOfWorkouts,
+        Integer numberOfCompletedWorkouts
 ) {
 }

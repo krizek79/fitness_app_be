@@ -12,6 +12,7 @@ import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 
 public class GoalSpecification {
 
+    //  TODO: Add access control to ensure users can only see goals they are authorized to view
     public static Specification<Goal> filter(GoalFilterRequest request) {
         return (Root<Goal> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();

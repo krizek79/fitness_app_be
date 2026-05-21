@@ -12,7 +12,8 @@ public interface ProfileService {
 
     Profile getProfileById(Long id);
 
-    Long deleteProfile(Long id);
+    void deleteProfile(Long id);
 
     String uploadProfilePicture(MultipartFile multipartFile);
+
 }

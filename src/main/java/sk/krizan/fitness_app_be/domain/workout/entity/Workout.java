@@ -22,11 +22,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
-import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
+import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -70,31 +70,33 @@ public class Workout extends AuditableEntity {
     private String note;
 
     @Builder.Default
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "workout_tag",
             joinColumns = @JoinColumn(name = "workout_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private final Set<Tag> tagSet = new HashSet<>();
+    private final Set<Tag> tags = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = WorkoutExercise.Fields.workout, orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private final List<WorkoutExercise> workoutExerciseList = new ArrayList<>();
+    @OneToMany(mappedBy = WorkoutExercise.Fields.workout, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private final List<WorkoutExercise> workoutExercises = new ArrayList<>();
 
-    public void addToTagSet(Set<Tag> tagSet) {
-        this.getTagSet().addAll(tagSet);
+    public void addToTags(Set<Tag> tagSet) {
+        if (tagSet == null || tagSet.isEmpty()) {
+            return;
+        }
+
+        this.tags.addAll(tagSet);
     }
 
-    public void addToWorkoutExerciseList(List<WorkoutExercise> workoutExerciseList) {
-        this.getWorkoutExerciseList().addAll(workoutExerciseList);
-        workoutExerciseList.forEach(workoutExercise -> workoutExercise.setWorkout(this));
-    }
-
-    public void removeFromWorkoutExerciseList(WorkoutExercise workoutExercise) {
+    public void addToWorkoutExercises(WorkoutExercise workoutExercise) {
         if (workoutExercise == null) {
             return;
         }
-        this.workoutExerciseList.remove(workoutExercise);
+
+        workoutExercise.setWorkout(this);
+        this.workoutExercises.add(workoutExercise);
     }
+
 }

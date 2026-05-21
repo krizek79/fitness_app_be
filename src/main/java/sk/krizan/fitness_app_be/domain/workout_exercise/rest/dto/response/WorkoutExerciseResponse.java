@@ -14,8 +14,8 @@ public record WorkoutExerciseResponse(
         Long workoutId,
         Integer order,
         String exerciseName,
-        ReferenceDataResponse workoutExerciseTypeResponse,
+        ReferenceDataResponse workoutExerciseType,
         String note,
-        List<WorkoutExerciseSetResponse> workoutExerciseSetResponseList
+        List<WorkoutExerciseSetResponse> workoutExerciseSets
 ) {
 }

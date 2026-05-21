@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -52,38 +53,33 @@ public class Cycle extends AuditableEntity {
     @Size(max = 2000)
     private String description;
 
+    //  TODO: Might delete this field, as it might be useless
     @Enumerated(EnumType.STRING)
     private Level level;
 
     @Builder.Default
-    @OneToMany(mappedBy = Week.Fields.cycle, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Week> weekList = new ArrayList<>();
+    @OneToMany(mappedBy = Week.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private final List<Week> weeks = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Goal.Fields.cycle, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Goal> goalList = new ArrayList<>();
+    @OneToMany(mappedBy = Goal.Fields.cycle, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private final List<Goal> goals = new ArrayList<>();
 
-    public void addToWeekList(List<Week> weekList) {
-        weekList.forEach(week -> week.setCycle(this));
-        this.getWeekList().addAll(weekList);
-    }
-
-    public void removeFromWeekList(Week week) {
+    public void addToWeeks(Week week) {
         if (week == null) {
             return;
         }
-        this.weekList.remove(week);
+
+        week.setCycle(this);
+        this.weeks.add(week);
     }
 
-    public void addToGoalList(List<Goal> goalList) {
-        goalList.forEach(goal -> goal.setCycle(this));
-        this.getGoalList().addAll(goalList);
-    }
-
-    public void removeFromGoalList(Goal goal) {
+    public void addToGoals(Goal goal) {
         if (goal == null) {
             return;
         }
-        this.goalList.remove(goal);
+
+        goal.setCycle(this);
+        this.goals.add(goal);
     }
 }

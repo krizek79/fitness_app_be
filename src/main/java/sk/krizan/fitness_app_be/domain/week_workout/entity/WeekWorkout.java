@@ -2,6 +2,8 @@ package sk.krizan.fitness_app_be.domain.week_workout.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,9 +19,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
+import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
+
+import java.time.DayOfWeek;
 
 @Entity
 @Getter
@@ -36,7 +39,7 @@ public class WeekWorkout extends AuditableEntity {
     private Long id;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "workout_id", referencedColumnName = Workout.Fields.id, nullable = false)
     private Workout workout;
 
@@ -45,12 +48,17 @@ public class WeekWorkout extends AuditableEntity {
     @JoinColumn(name = "week_id", referencedColumnName = Week.Fields.id, nullable = false)
     private Week week;
 
-    @Min(1)
-    @Max(7)
     @NotNull
-    private Integer dayOfTheWeek;
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
+
+    @NotNull
+    @Min(1)
+    @Builder.Default
+    private Integer orderInTheDay = 1;
 
     @NotNull
     @Builder.Default
     private Boolean completed = false;
+
 }

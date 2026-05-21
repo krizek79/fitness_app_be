@@ -12,14 +12,14 @@ public record WorkoutExerciseSetResponse(
         Long id,
         Long workoutExerciseId,
         Integer order,
-        ReferenceDataResponse workoutExerciseSetTypeResponse,
+        ReferenceDataResponse workoutExerciseSetType,
         Integer goalRepetitions,
         Integer actualRepetitions,
         BigDecimal goalWeight,
         BigDecimal actualWeight,
-        String goalTime,
-        String actualTime,
-        String restDuration,
+        Long goalTimeSeconds,
+        Long actualTimeSeconds,
+        Long restDurationSeconds,
         Boolean completed,
         String note
 ) {

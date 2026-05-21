@@ -27,13 +27,14 @@ public class ProfileController implements sk.krizan.fitness_app_be.domain.profil
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Long deleteProfile(Long id) {
-        return profileService.deleteProfile(id);
+    public void deleteProfile(Long id) {
+        profileService.deleteProfile(id);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String uploadProfilePicture(MultipartFile multipartFile) {
         return profileService.uploadProfilePicture(multipartFile);
     }
+
 }
 

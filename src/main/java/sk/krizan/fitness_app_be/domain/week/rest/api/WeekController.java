@@ -6,26 +6,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.wrapper.WeekPageResponse;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.wrapper.WeekSimpleListResponse;
-import sk.krizan.fitness_app_be.common.rest.dto.request.BatchUpdateRequest;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekCreateRequest;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekFilterRequest;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekUpdateRequest;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.common.rest.dto.response.SimpleListResponse;
+import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekFilterRequest;
 import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekResponse;
+import sk.krizan.fitness_app_be.domain.week.rest.dto.wrapper.WeekPageResponse;
 
 @Tag(
         name = "Week",
@@ -80,126 +70,4 @@ public interface WeekController {
     @GetMapping("{id}")
     WeekResponse getWeekById(@PathVariable Long id);
 
-    @Operation(
-            summary = "Create new week",
-            description = "Creates a new week with the provided data.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "Week created successfully",
-                            content = @Content(schema = @Schema(implementation = WeekResponse.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    WeekResponse createWeek(@Valid @RequestBody WeekCreateRequest request);
-
-    @Operation(
-            summary = "Update week",
-            description = """
-                    Updates an existing week with the provided data.
-                    
-                    ⚠️ **Deprecated:** This endpoint should not be used for bulk updates.
-                    For batch updates, please use the `batchUpdateWeeks` endpoint instead.
-                    """,
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Week updated successfully",
-                            content = @Content(schema = @Schema(implementation = WeekResponse.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Week not found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PutMapping
-    WeekResponse updateWeek(@Valid @RequestBody WeekUpdateRequest request);
-
-    @Operation(
-            summary = "Batch update weeks",
-            description = "Batch updates multiple weeks with the provided data.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Weeks batch updated successfully",
-                            content = @Content(schema = @Schema(implementation = WeekSimpleListResponse.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PutMapping("batch-update")
-    SimpleListResponse<WeekResponse> batchUpdateWeeks(@Valid @RequestBody BatchUpdateRequest<WeekUpdateRequest> request);
-
-    @Operation(
-            summary = "Delete week",
-            description = "Deletes a week by its ID and returns the ID of the deleted week.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Week deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Week not found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @DeleteMapping("{id}")
-    Long deleteWeek(@PathVariable Long id);
-
-    @Operation(
-            summary = "Toggle completed status of week",
-            description = "Toggles the completed status of the week identified by the given ID. The method flips the current completed state to its opposite.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Week completed status toggled successfully",
-                            content = @Content(schema = @Schema(implementation = WeekResponse.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Week not found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PatchMapping("{id}/trigger-completed")
-    WeekResponse triggerCompleted(@PathVariable Long id);
 }

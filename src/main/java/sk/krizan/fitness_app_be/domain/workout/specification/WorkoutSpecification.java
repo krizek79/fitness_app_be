@@ -28,7 +28,7 @@ public class WorkoutSpecification {
             }
 
             if (request.tagIdList() != null && !request.tagIdList().isEmpty()) {
-                Join<Workout, Tag> tagJoin = root.join(Workout.Fields.tagSet);
+                Join<Workout, Tag> tagJoin = root.join(Workout.Fields.tags);
                 Predicate tagPredicate = tagJoin.get(Tag.Fields.id).in(request.tagIdList());
                 predicate = criteriaBuilder.and(predicate, tagPredicate);
             }

@@ -4,24 +4,22 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import sk.krizan.fitness_app_be.domain.draft.entity.Draft;
+import sk.krizan.fitness_app_be.domain.draft.entity.DraftEntityType;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.request.DraftCreateRequest;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.request.DraftFilterRequest;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.request.DraftUpdateRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.response.DraftResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-import sk.krizan.fitness_app_be.domain.draft.entity.Draft;
-import sk.krizan.fitness_app_be.domain.draft.entity.DraftEntityType;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DraftHelper {
+public final class DraftHelper {
 
-    public static Draft createMockDraft(
+    public static Draft createDraft(
             Profile profile,
             DraftEntityType entityType,
             String title,
@@ -37,10 +35,10 @@ public class DraftHelper {
     }
 
     public static DraftFilterRequest createFilterRequest(
-            @NotNull Integer page,
-            @NotNull Integer size,
-            @NotNull String sortBy,
-            @NotNull String sortDirection,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortDirection,
             DraftEntityType entityType,
             String title
     ) {
@@ -55,8 +53,8 @@ public class DraftHelper {
     }
 
     public static DraftCreateRequest createCreateRequest(
-            @NotNull DraftEntityType entityType,
-            @NotNull java.util.Map<String, Object> content
+            DraftEntityType entityType,
+            java.util.Map<String, Object> content
     ) {
         return DraftCreateRequest.builder()
                 .entityType(entityType)
@@ -95,31 +93,6 @@ public class DraftHelper {
         assertResponse(draft, response);
     }
 
-    public static void assertFilter(
-            List<Draft> draftList,
-            DraftFilterRequest request,
-            PageResponse<DraftResponse> response
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getPageNumber());
-        Assertions.assertNotNull(response.getPageSize());
-        Assertions.assertNotNull(response.getTotalElements());
-        Assertions.assertNotNull(response.getTotalPages());
-        Assertions.assertNotNull(response.getResults());
-        Assertions.assertFalse(response.getResults().isEmpty());
-        Assertions.assertEquals(request.page(), response.getPageNumber());
-        Assertions.assertEquals(request.size(), response.getResults().size());
-
-        List<DraftResponse> results = response.getResults();
-        results.sort(Comparator.comparingLong(DraftResponse::id));
-        draftList.sort(Comparator.comparingLong(Draft::getId));
-        for (int i = 0; i < results.size(); i++) {
-            DraftResponse draftResponse = results.get(i);
-            Draft draft = draftList.get(i);
-            assertResponse(draft, draftResponse);
-        }
-    }
-
     public static void assertResponse(Draft draft, DraftResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(draft.getId(), response.id());
@@ -145,12 +118,12 @@ public class DraftHelper {
      * @return list of mock Draft instances for filtering tests
      */
     public static List<Draft> createMockDraftListForFilter(Profile profile1, Profile profile2) {
-        Draft draft1 = createMockDraft(profile1, DraftEntityType.CYCLE, "Cycle A", createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}"));
-        Draft draft2 = createMockDraft(profile1, DraftEntityType.WORKOUT, "Workout Plan A", createMockContent("Workout Plan A", "{\"someAttribute\":\"someValue2\"}"));
-        Draft draft3 = createMockDraft(profile2, DraftEntityType.CYCLE, "Cycle A", createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}"));
-        Draft draft4 = createMockDraft(profile2, DraftEntityType.WORKOUT, "Workout Plan A", createMockContent("Workout Plan A", "{\"someAttribute\":\"someValue2\"}"));
-        Draft draft5 = createMockDraft(profile2, DraftEntityType.WORKOUT, "Workout Plan B", createMockContent("Workout Plan B", "{\"someAttribute\":\"someValue3\"}"));
-        Draft draft6 = createMockDraft(profile2, DraftEntityType.WORKOUT_TEMPLATE, "Workout template A", createMockContent("Workout template A", "{\"someAttribute\":\"someValue4\"}"));
+        Draft draft1 = createDraft(profile1, DraftEntityType.CYCLE, "Cycle A", createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}"));
+        Draft draft2 = createDraft(profile1, DraftEntityType.WORKOUT, "Workout Plan A", createMockContent("Workout Plan A", "{\"someAttribute\":\"someValue2\"}"));
+        Draft draft3 = createDraft(profile2, DraftEntityType.CYCLE, "Cycle A", createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}"));
+        Draft draft4 = createDraft(profile2, DraftEntityType.WORKOUT, "Workout Plan A", createMockContent("Workout Plan A", "{\"someAttribute\":\"someValue2\"}"));
+        Draft draft5 = createDraft(profile2, DraftEntityType.WORKOUT, "Workout Plan B", createMockContent("Workout Plan B", "{\"someAttribute\":\"someValue3\"}"));
+        Draft draft6 = createDraft(profile2, DraftEntityType.WORKOUT_TEMPLATE, "Workout template A", createMockContent("Workout template A", "{\"someAttribute\":\"someValue4\"}"));
 
         return new ArrayList<>(List.of(draft1, draft2, draft3, draft4, draft5, draft6));
     }

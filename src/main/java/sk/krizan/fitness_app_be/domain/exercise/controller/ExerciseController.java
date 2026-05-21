@@ -36,7 +36,8 @@ public class ExerciseController implements sk.krizan.fitness_app_be.domain.exerc
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
-    public Long deleteExercise(Long id) {
-        return exerciseService.deleteExercise(id);
+    public void deleteExercise(Long id) {
+        exerciseService.deleteExercise(id);
     }
+
 }

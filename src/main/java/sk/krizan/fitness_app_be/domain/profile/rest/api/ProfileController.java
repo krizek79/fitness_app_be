@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,7 +77,7 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Profile deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))),
+                            content = @Content(schema = @Schema())),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -92,7 +93,8 @@ public interface ProfileController {
             }
     )
     @DeleteMapping("{id}")
-    Long deleteProfile(@PathVariable Long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteProfile(@PathVariable Long id);
 
     @Operation(
             summary = "Upload profile picture",
@@ -129,4 +131,5 @@ public interface ProfileController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     String uploadProfilePicture(@RequestParam @NotNull MultipartFile multipartFile);
+
 }

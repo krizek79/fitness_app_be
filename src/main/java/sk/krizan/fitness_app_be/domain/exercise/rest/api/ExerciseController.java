@@ -96,6 +96,8 @@ public interface ExerciseController {
     @ResponseStatus(HttpStatus.CREATED)
     ExerciseResponse createExercise(@Valid @RequestBody ExerciseCreateRequest request);
 
+    //  TODO: add update endpoint
+
     @Operation(
             summary = "Delete an exercise",
             description = "Deletes an exercise by its ID and returns the ID of the deleted exercise.",
@@ -103,7 +105,7 @@ public interface ExerciseController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Exercise deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))),
+                            content = @Content(schema = @Schema())),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -119,6 +121,8 @@ public interface ExerciseController {
             }
     )
     @DeleteMapping("{id}")
-    Long deleteExercise(@PathVariable Long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteExercise(@PathVariable Long id);
+
 }
 

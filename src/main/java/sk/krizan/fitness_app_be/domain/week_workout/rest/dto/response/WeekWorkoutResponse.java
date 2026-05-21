@@ -2,19 +2,18 @@ package sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response;
 
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.domain.tag.rest.dto.response.TagResponse;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutSimpleResponse;
 
-import java.util.List;
+import java.time.DayOfWeek;
 
 @Builder
 @FieldNameConstants
 public record WeekWorkoutResponse(
         Long id,
         Long weekId,
-        Long workoutId,
-        String workoutName,
-        List<TagResponse> workoutTagResponseList,
-        Integer dayOfTheWeek,
+        WorkoutSimpleResponse workout,
+        DayOfWeek dayOfWeek,
+        Integer orderInTheDay,
         Boolean completed
 ) {
 }

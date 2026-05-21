@@ -3,32 +3,105 @@ package sk.krizan.fitness_app_be.domain.workout.helper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutCreateRequest;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutFilterRequest;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.tag.rest.dto.response.TagResponse;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
-import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
-import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
+import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
+import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
+import sk.krizan.fitness_app_be.domain.tag.helper.TagHelper;
+import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
+import sk.krizan.fitness_app_be.domain.tag.rest.dto.response.TagResponse;
+import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutFilterRequest;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutInputRequest;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutDetailResponse;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutSimpleResponse;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.domain.workout_exercise.helper.WorkoutExerciseHelper;
+import sk.krizan.fitness_app_be.domain.workout_exercise.rest.dto.request.WorkoutExerciseInputRequest;
+import sk.krizan.fitness_app_be.domain.workout_exercise.rest.dto.response.WorkoutExerciseResponse;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sk.krizan.fitness_app_be.common.util.DefaultValues.DEFAULT_UPDATE_VALUE;
-import static sk.krizan.fitness_app_be.common.util.DefaultValues.DEFAULT_VALUE;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class WorkoutHelper {
+public final class WorkoutHelper {
+
+    public static Workout createWorkout(
+            Profile profile,
+            Set<Tag> tags,
+            List<WorkoutExercise> workoutExercises,
+            String title,
+            Boolean isTemplate
+    ) {
+        Workout workout = new Workout();
+        workout.setTitle(title);
+        workout.setWeightUnit(WeightUnit.KG);
+        workout.setNote(UUID.randomUUID().toString());
+        workout.addToTags(tags);
+        workout.setIsTemplate(isTemplate);
+
+        profile.addToAuthoredWorkouts(workout);
+
+        if (!isTemplate) {
+            profile.addToAssignedWorkouts(workout);
+        }
+
+        workoutExercises.forEach(workout::addToWorkoutExercises);
+
+        return workout;
+    }
+
+    /**
+     * Each main list represents one workout. For example, if we need 3 workouts,
+     * we should call this method with 3 Profile objects, 3 WorkoutExercise lists and 3 Tag lists.
+     */
+    public static List<Workout> createWorkoutList(
+            List<Profile> profileList,
+            List<List<WorkoutExercise>> workoutExerciseList,
+            List<Set<Tag>> tagSetList
+    ) throws Exception {
+        if (profileList.size() != workoutExerciseList.size() || profileList.size() != tagSetList.size()) {
+            throw new Exception("Collections must have the same size.");
+        }
+
+        List<Workout> result = new ArrayList<>();
+
+        for (int i = 0; i < profileList.size(); i++) {
+            Profile profile = profileList.get(i);
+            List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
+            Set<Tag> tagSet = tagSetList.get(i);
+            Workout mockWorkout = createWorkout(profile, tagSet, workoutExercises, UUID.randomUUID().toString(), false);
+            if (i == profileList.size() - 1) {
+                mockWorkout.setIsTemplate(true);
+            }
+            workoutExercises.forEach(mockWorkout::addToWorkoutExercises);
+            result.add(mockWorkout);
+        }
+
+        return result;
+    }
+
+    public static WorkoutInputRequest createInputRequest(
+            Long traineeId,
+            Boolean isTemplate,
+            Set<TagCreateRequest> tags,
+            List<WorkoutExerciseInputRequest> workoutExercises
+    ) {
+        return WorkoutInputRequest.builder()
+                .traineeId(traineeId)
+                .title(UUID.randomUUID().toString())
+                .description(UUID.randomUUID().toString())
+                .isTemplate(isTemplate)
+                .note(UUID.randomUUID().toString())
+                .weightUnit(WeightUnit.KG)
+                .tags(tags)
+                .workoutExercises(workoutExercises)
+                .build();
+    }
 
     public static WorkoutFilterRequest createFilterRequest(
             Integer page,
@@ -51,166 +124,143 @@ public class WorkoutHelper {
                 .build();
     }
 
-    public static Workout createMockWorkout(
-            Profile profile,
-            Set<Tag> tagSet,
-            String title
-    ) {
-        Workout workout = new Workout();
-        workout.setTitle(title);
-        workout.setWeightUnit(WeightUnit.KG);
-        workout.setNote(UUID.randomUUID().toString());
-        workout.addToTagSet(tagSet);
-
-        profile.addToAuthoredWorkoutList(List.of(workout));
-        profile.addToAssignedWorkoutList(List.of(workout));
-
-        return workout;
-    }
-
-    /**
-     * Each main list represents one workout. For example, if we need 3 workouts,
-     * we should call this method with 3 Profile objects, 3 WorkoutExercise lists and 3 Tag lists.
-     */
-    public static List<Workout> createMockWorkoutList(
-            List<Profile> profileList,
-            List<List<WorkoutExercise>> workoutExerciseList,
-            List<Set<Tag>> tagSetList
-    ) throws Exception {
-        if (profileList.size() != workoutExerciseList.size() || profileList.size() != tagSetList.size()) {
-            throw new Exception("Collections must have the same size.");
-        }
-
-        List<Workout> result = new ArrayList<>();
-
-        for (int i = 0; i < profileList.size(); i++) {
-            Profile profile = profileList.get(i);
-            List<WorkoutExercise> workoutExercises = workoutExerciseList.get(i);
-            Set<Tag> tagSet = tagSetList.get(i);
-            String name = UUID.randomUUID().toString();
-            Workout mockWorkout = createMockWorkout(profile, tagSet, name);
-            if (i == profileList.size() - 1) {
-                mockWorkout.setIsTemplate(true);
-            }
-            mockWorkout.addToWorkoutExerciseList(workoutExercises);
-            result.add(mockWorkout);
-        }
-
-        return result;
-    }
-
-    public static WorkoutCreateRequest createCreateRequest() {
-        return WorkoutCreateRequest.builder()
-                .title(DEFAULT_VALUE)
-                .isTemplate(true)
-                .weightUnit(WeightUnit.KG)
-                .note(UUID.randomUUID().toString())
-                .description(UUID.randomUUID().toString())
-                .tagNames(Set.of(UUID.randomUUID().toString(), UUID.randomUUID().toString()))
-                .build();
-    }
-
-    public static WorkoutUpdateRequest createUpdateRequest(Long traineeId) {
-        return WorkoutUpdateRequest.builder()
-                .traineeId(traineeId)
-                .title(DEFAULT_UPDATE_VALUE)
-                .description(DEFAULT_UPDATE_VALUE)
-                .note(UUID.randomUUID().toString())
-                .weightUnit(WeightUnit.LB)
-                .tagNames(Set.of(DEFAULT_UPDATE_VALUE))
-                .build();
-    }
-
-    public static void assertWorkoutResponse_get(Workout workout, WorkoutResponse response) {
+    public static void assertWorkoutDetailResponse(Workout workout, WorkoutDetailResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(workout.getId(), response.id());
-        Assertions.assertEquals(workout.getAuthor().getId(), response.authorId());
-        Assertions.assertEquals(workout.getAuthor().getName(), response.authorName());
-        Assertions.assertEquals(workout.getTrainee().getId(), response.traineeId());
-        Assertions.assertEquals(workout.getTrainee().getName(), response.traineeName());
-        ReferenceDataHelper.assertReferenceDataResponse(workout.getWeightUnit(), response.weightUnitResponse());
-        Assertions.assertEquals(workout.getIsTemplate(), response.isTemplate());
+        ProfileHelper.assertProfileSimpleResponse(workout.getAuthor(), response.author());
+        ProfileHelper.assertProfileSimpleResponse(workout.getTrainee(), response.trainee());
+        Assertions.assertEquals(workout.getTitle(), response.title());
+        Assertions.assertEquals(workout.getDescription(), response.description());
+        ReferenceDataHelper.assertReferenceDataResponse(workout.getWeightUnit(), response.weightUnit());
         Assertions.assertEquals(workout.getNote(), response.note());
-        Assertions.assertTrue(response.tagResponseList().isEmpty());
+        Assertions.assertEquals(workout.getIsTemplate(), response.isTemplate());
+        assertTagsToTagResponses(workout.getTags(), response.tags());
+        assertWorkoutExercises(workout, response);
     }
 
-    public static void assertWorkoutResponse_create(
-            WorkoutCreateRequest request,
-            Profile profile,
-            WorkoutResponse response
+    private static void assertWorkoutExercises(Workout workout, WorkoutDetailResponse response) {
+        List<WorkoutExercise> sortedWorkoutExercises = workout.getWorkoutExercises().stream()
+                .sorted(Comparator.comparing(WorkoutExercise::getOrder))
+                .toList();
+        for (int i = 0; i < sortedWorkoutExercises.size(); i++) {
+            WorkoutExercise workoutExercise = sortedWorkoutExercises.get(i);
+            WorkoutExerciseResponse workoutExerciseResponse = response.workoutExercises().get(i);
+            WorkoutExerciseHelper.assertWorkoutExerciseResponse(workoutExercise, workoutExerciseResponse);
+        }
+    }
+
+    public static void assertWorkoutSimpleResponse(Workout workout, WorkoutSimpleResponse response) {
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(workout.getId(), response.id());
+        Assertions.assertEquals(workout.getTitle(), response.title());
+        ProfileHelper.assertProfileSimpleResponse(workout.getAuthor(), response.author());
+        ProfileHelper.assertProfileSimpleResponse(workout.getTrainee(), response.trainee());
+        Assertions.assertEquals(workout.getIsTemplate(), response.isTemplate());
+        assertTagsToTagResponses(workout.getTags(), response.tags());
+    }
+
+    private static void assertTagsToTagResponses(Set<Tag> tags, List<TagResponse> tagResponseList) {
+        Assertions.assertEquals(tags.size(), tagResponseList.size());
+        List<Tag> sortedTags = tags.stream()
+                .sorted(Comparator.comparing(Tag::getId))
+                .toList();
+        List<TagResponse> sortedTagResponses = tagResponseList.stream()
+                .sorted(Comparator.comparing(TagResponse::id))
+                .toList();
+        for (int i = 0; i < sortedTags.size(); i++) {
+            TagHelper.assertResponse(sortedTags.get(i), sortedTagResponses.get(i));
+        }
+    }
+
+    public static void assertInputToEntity(Workout workout, WorkoutInputRequest workoutInputRequest) {
+        Assertions.assertNotNull(workout);
+        Assertions.assertNotNull(workout.getId());
+        Assertions.assertEquals(workoutInputRequest.title(), workout.getTitle());
+        Assertions.assertEquals(workoutInputRequest.description(), workout.getDescription());
+        Assertions.assertEquals(workoutInputRequest.isTemplate(), workout.getIsTemplate());
+        Assertions.assertEquals(workoutInputRequest.note(), workout.getNote());
+        Assertions.assertEquals(workoutInputRequest.weightUnit(), workout.getWeightUnit());
+
+        if (!workoutInputRequest.isTemplate()) {
+            Assertions.assertEquals(workoutInputRequest.traineeId(), workout.getTrainee().getId());
+        }
+
+        assertTagCreateRequestsToTags(workout.getTags(), workoutInputRequest.tags());
+        assertWorkoutExerciseInputRequestsToWorkoutExercises(workout, workoutInputRequest);
+    }
+
+    private static void assertWorkoutExerciseInputRequestsToWorkoutExercises(Workout workout, WorkoutInputRequest workoutInputRequest) {
+        Assertions.assertEquals(workoutInputRequest.workoutExercises().size(), workout.getWorkoutExercises().size());
+        List<WorkoutExercise> sortedWorkoutExercises = workout.getWorkoutExercises().stream()
+                .sorted(Comparator.comparing(WorkoutExercise::getOrder))
+                .toList();
+        List<WorkoutExerciseInputRequest> sortedWorkoutExerciseInputRequests = workoutInputRequest.workoutExercises().stream()
+                .sorted(Comparator.comparing(WorkoutExerciseInputRequest::order))
+                .toList();
+
+        for (int i = 0; i < sortedWorkoutExercises.size(); i++) {
+            WorkoutExercise workoutExercise = sortedWorkoutExercises.get(i);
+            WorkoutExerciseInputRequest workoutExerciseInputRequest = sortedWorkoutExerciseInputRequests.get(i);
+            WorkoutExerciseHelper.assertInputToEntity(workoutExercise, workoutExerciseInputRequest);
+        }
+    }
+
+    private static void assertTagCreateRequestsToTags(Set<Tag> tags, Set<TagCreateRequest> tagCreateRequests) {
+        Assertions.assertEquals(tagCreateRequests.size(), tags.size());
+        List<Tag> sortedTags = tags.stream()
+                .sorted(Comparator.comparing(Tag::getName))
+                .toList();
+        List<TagCreateRequest> sortedTagCreateRequests = tagCreateRequests.stream()
+                .sorted(Comparator.comparing(TagCreateRequest::name))
+                .toList();
+
+        for (int i = 0; i < sortedTags.size(); i++) {
+            Tag tag = sortedTags.get(i);
+            TagCreateRequest tagCreateRequest = sortedTagCreateRequests.get(i);
+            TagHelper.assertCreateRequestToEntity(tag, tagCreateRequest);
+        }
+    }
+
+    public static void assertClone(Workout original, Workout clone) {
+        Assertions.assertNotNull(clone);
+        Assertions.assertNotNull(clone.getId());
+        Assertions.assertNotEquals(original.getId(), clone.getId());
+        Assertions.assertEquals(original.getTitle(), clone.getTitle());
+        Assertions.assertEquals(original.getDescription(), clone.getDescription());
+        Assertions.assertFalse(clone.getIsTemplate());
+        Assertions.assertNull(clone.getNote());
+        Assertions.assertEquals(original.getWeightUnit(), clone.getWeightUnit());
+        Assertions.assertEquals(original.getTags(), clone.getTags());
+        Assertions.assertNotNull(clone.getAuthor());
+
+        //  trainee is asserted in WeekWorkoutHelper.assertInputToEntity, because workout can be cloned only when creating or updating week workout, so we need to assert that the trainee of the cloned workout is the same as the trainee of the week workout.
+
+        assertCloneWorkoutExercises(original.getWorkoutExercises(), clone.getWorkoutExercises());
+    }
+
+    private static void assertCloneWorkoutExercises(List<WorkoutExercise> originalWorkoutExercises, List<WorkoutExercise> cloneWorkoutExercises) {
+        Assertions.assertEquals(originalWorkoutExercises.size(), cloneWorkoutExercises.size());
+        List<WorkoutExercise> sortedOriginalWorkoutExercises = originalWorkoutExercises.stream()
+                .sorted(Comparator.comparing(WorkoutExercise::getOrder))
+                .toList();
+        List<WorkoutExercise> sortedCloneWorkoutExercises = cloneWorkoutExercises.stream()
+                .sorted(Comparator.comparing(WorkoutExercise::getOrder))
+                .toList();
+
+        for (int i = 0; i < sortedOriginalWorkoutExercises.size(); i++) {
+            WorkoutExercise originalWorkoutExercise = sortedOriginalWorkoutExercises.get(i);
+            WorkoutExercise cloneWorkoutExercise = sortedCloneWorkoutExercises.get(i);
+            WorkoutExerciseHelper.assertClone(originalWorkoutExercise, cloneWorkoutExercise);
+        }
+    }
+
+    public static void assertDelete(
+            boolean workoutExists,
+            boolean workoutExerciseExists,
+            boolean workoutExerciseSetExists
     ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(profile.getId(), response.authorId());
-        Assertions.assertEquals(profile.getName(), response.authorName());
-        Assertions.assertNull(response.traineeId());
-        Assertions.assertNull(response.traineeName());
-        Assertions.assertEquals(request.title(), response.name());
-        Assertions.assertEquals(request.description(), response.description());
-        Assertions.assertFalse(profile.getAuthoredWorkoutList().isEmpty());
-        Assertions.assertEquals(request.isTemplate(), response.isTemplate());
-        Assertions.assertEquals(request.note(), response.note());
-        ReferenceDataHelper.assertReferenceDataResponse(request.weightUnit(), response.weightUnitResponse());
-        List<TagResponse> tagResponseList = response.tagResponseList();
-        Assertions.assertFalse(tagResponseList.isEmpty());
-        Set<String> tagResponseListNames = tagResponseList.stream()
-                .map(tagResponse -> tagResponse.name().toLowerCase())
-                .collect(Collectors.toSet());
-        Set<String> tagNames = request.tagNames().stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
-        Assertions.assertEquals(tagNames, tagResponseListNames);
-    }
-
-    public static void assertWorkoutResponse_update(
-            WorkoutUpdateRequest request,
-            Profile profile,
-            WorkoutResponse response
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(profile.getId(), response.authorId());
-        Assertions.assertEquals(profile.getName(), response.authorName());
-        Assertions.assertEquals(profile.getId(), response.traineeId());
-        Assertions.assertEquals(profile.getName(), response.traineeName());
-        Assertions.assertEquals(request.title(), response.name());
-        Assertions.assertNotNull(response.description());
-        Assertions.assertFalse(response.isTemplate());
-        Assertions.assertEquals(request.note(), response.note());
-        ReferenceDataHelper.assertReferenceDataResponse(request.weightUnit(), response.weightUnitResponse());
-
-        List<TagResponse> tagResponseList = response.tagResponseList();
-        Assertions.assertFalse(tagResponseList.isEmpty());
-        Set<String> tagResponseListNames = tagResponseList.stream()
-                .map(tagResponse -> tagResponse.name().toLowerCase())
-                .collect(Collectors.toSet());
-        Set<String> tagNames = request.tagNames().stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
-        Assertions.assertEquals(tagNames, tagResponseListNames);
-    }
-
-    public static void assertDelete(boolean exists, Workout savedMockWorkout, Long deletedWorkoutId) {
-        assertFalse(exists);
-        assertEquals(savedMockWorkout.getId(), deletedWorkoutId);
-    }
-
-    public static void assertFilter(PageResponse<WorkoutResponse> response, Workout expectedWorkout) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getResults());
-        Assertions.assertEquals(1, response.getResults().size());
-        WorkoutResponse workoutResponse = response.getResults().get(0);
-        Assertions.assertNotNull(workoutResponse);
-        Assertions.assertEquals(expectedWorkout.getId(), workoutResponse.id());
-        Assertions.assertEquals(expectedWorkout.getTitle(), workoutResponse.name());
-        Assertions.assertEquals(expectedWorkout.getDescription(), workoutResponse.description());
-        Assertions.assertEquals(expectedWorkout.getAuthor().getId(), workoutResponse.authorId());
-        Assertions.assertEquals(expectedWorkout.getAuthor().getName(), workoutResponse.authorName());
-        Assertions.assertEquals(expectedWorkout.getTrainee().getId(), workoutResponse.traineeId());
-        Assertions.assertEquals(expectedWorkout.getTrainee().getName(), workoutResponse.traineeName());
-        Assertions.assertEquals(expectedWorkout.getIsTemplate(), workoutResponse.isTemplate());
-        Assertions.assertEquals(expectedWorkout.getNote(), workoutResponse.note());
-        ReferenceDataHelper.assertReferenceDataResponse(expectedWorkout.getWeightUnit(), workoutResponse.weightUnitResponse());
-        Assertions.assertEquals(expectedWorkout.getTagSet().stream().map(Tag::getId).toList(), workoutResponse.tagResponseList().stream().map(TagResponse::id).toList());
+        Assertions.assertFalse(workoutExists);
+        Assertions.assertFalse(workoutExerciseExists);
+        Assertions.assertFalse(workoutExerciseSetExists);
     }
 }

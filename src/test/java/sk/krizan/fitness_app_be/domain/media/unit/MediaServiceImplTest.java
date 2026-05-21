@@ -111,4 +111,5 @@ class MediaServiceImplTest {
                 .hasFieldOrPropertyWithValue(ApplicationException.Fields.httpStatus, HttpStatus.INTERNAL_SERVER_ERROR)
                 .hasMessage("Upload failed");
     }
+
 }

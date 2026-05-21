@@ -3,73 +3,79 @@ package sk.krizan.fitness_app_be.domain.workout.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutCreateRequest;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
+import sk.krizan.fitness_app_be.domain.profile.mapper.ProfileMapper;
+import sk.krizan.fitness_app_be.domain.reference.mapper.ReferenceDataMapper;
 import sk.krizan.fitness_app_be.domain.tag.mapper.TagMapper;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
-import sk.krizan.fitness_app_be.domain.reference.mapper.ReferenceDataMapper;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutInputRequest;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutDetailResponse;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.response.WorkoutSimpleResponse;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
+import sk.krizan.fitness_app_be.domain.workout_exercise.mapper.WorkoutExerciseMapper;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Comparator;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkoutMapper {
 
-    public static Workout createRequestToEntity(
-            WorkoutCreateRequest request,
-            Profile profile,
-            Profile trainee,
-            Set<Tag> tagSet
-    ) {
-        Workout workout = new Workout();
-        workout.setAuthor(profile);
-        workout.setTrainee(trainee);
-        workout.setTitle(request.title());
-        workout.setIsTemplate(request.isTemplate());
-        workout.setWeightUnit(request.weightUnit());
-        workout.setNote(request.note());
-        workout.setDescription(request.description());
-        workout.addToTagSet(tagSet);
-        profile.addToAuthoredWorkoutList(List.of(workout));
-        return workout;
-    }
-
-    public static WorkoutResponse entityToResponse(Workout workout) {
-        return WorkoutResponse.builder()
+    public static WorkoutSimpleResponse entityToSimpleResponse(Workout workout) {
+        return WorkoutSimpleResponse.builder()
                 .id(workout.getId())
-                .name(workout.getTitle())
-                .authorId(workout.getAuthor().getId())
-                .authorName(workout.getAuthor().getName())
-                .traineeId(workout.getTrainee() != null ? workout.getTrainee().getId() : null)
-                .traineeName(workout.getTrainee() != null ? workout.getTrainee().getName() : null)
-                .tagResponseList(
-                        workout.getTagSet().stream()
-                                .map(TagMapper::entityToResponse).toList())
-                .description(workout.getDescription())
+                .title(workout.getTitle())
+                .author(ProfileMapper.entityToSimpleResponse(workout.getAuthor()))
+                .trainee(ProfileMapper.entityToSimpleResponse(workout.getTrainee()))
+                .tags(workout.getTags().stream().map(TagMapper::entityToResponse).toList())
                 .isTemplate(workout.getIsTemplate())
-                .weightUnitResponse(ReferenceDataMapper.enumToResponse(workout.getWeightUnit()))
-                .note(workout.getNote())
                 .build();
     }
 
-    public static Workout updateRequestToEntity(
-            WorkoutUpdateRequest request,
+    public static WorkoutDetailResponse entityToDetailResponse(Workout workout) {
+        return WorkoutDetailResponse.builder()
+                .id(workout.getId())
+                .title(workout.getTitle())
+                .author(ProfileMapper.entityToSimpleResponse(workout.getAuthor()))
+                .trainee(ProfileMapper.entityToSimpleResponse(workout.getTrainee()))
+                .tags(workout.getTags().stream().map(TagMapper::entityToResponse).toList())
+                .description(workout.getDescription())
+                .isTemplate(workout.getIsTemplate())
+                .weightUnit(ReferenceDataMapper.enumToResponse(workout.getWeightUnit()))
+                .note(workout.getNote())
+                .workoutExercises(workout.getWorkoutExercises().stream()
+                        .sorted(Comparator.comparing(WorkoutExercise::getOrder))
+                        .map(WorkoutExerciseMapper::entityToResponse)
+                        .toList())
+                .build();
+    }
+
+    public static void inputRequestToEntity(
+            boolean isNew,
+            WorkoutInputRequest request,
             Workout workout,
-            Profile trainee,
-            Set<Tag> tagSet
+            Profile author,
+            Profile trainee
     ) {
-        workout.setTrainee(trainee);
+        if (isNew) {
+            workout.setIsTemplate(request.isTemplate());
+            author.addToAuthoredWorkouts(workout);
+
+            if (!request.isTemplate()) {
+                trainee.addToAssignedWorkouts(workout);
+            }
+        }
+
+        //  If the workout already has a trainee, and it's different from the new trainee, we need to update the assigned workouts for both trainees
+        Profile originalTrainee = workout.getTrainee();
+        if (originalTrainee != null && !originalTrainee.equals(trainee)) {
+            originalTrainee.removeFromAssignedWorkouts(workout);
+            trainee.addToAssignedWorkouts(workout);
+        }
+
         workout.setTitle(request.title());
         workout.setDescription(request.description());
-        workout.setWeightUnit(request.weightUnit());
-        workout.getTagSet().clear();
-        workout.addToTagSet(tagSet);
-        workout.setNote(request.note());
 
-        return workout;
+        workout.setWeightUnit(request.weightUnit());
+        workout.setNote(request.note());
     }
 }

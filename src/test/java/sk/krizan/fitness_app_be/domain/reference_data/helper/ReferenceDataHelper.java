@@ -9,7 +9,7 @@ import sk.krizan.fitness_app_be.domain.reference.entity.BaseEnum;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ReferenceDataHelper {
+public final class ReferenceDataHelper {
 
     public static <E extends Enum<E> & BaseEnum> void assertReferenceDataResponsesMatch(Class<E> enumClass, List<ReferenceDataResponse> responseList) {
         Assertions.assertNotNull(responseList, "Response list is null");

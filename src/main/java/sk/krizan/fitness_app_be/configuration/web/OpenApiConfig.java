@@ -23,30 +23,32 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+
         final String bearerSchemeName = "bearerAuth";
         final String keycloakSchemeName = "keycloakAuth";
 
         return new OpenAPI()
                 .info(new Info()
                         .title("Fitness App API")
-                        .description("API for fitness app"))
+                        .description("Comprehensive API for fitness application with support for workout plans, exercises, and progress tracking. " +
+                                "API provides OAuth2 authentication via Keycloak or JWT tokens."))
                 .components(new Components()
                         .addSecuritySchemes(bearerSchemeName, new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
-                                .description("JWT token"))
+                                .description("JWT Bearer token - used for direct authentication without OAuth2"))
                         .addSecuritySchemes(keycloakSchemeName, new SecurityScheme()
                                 .type(SecurityScheme.Type.OAUTH2)
-                                .description("Prihlásenie cez Google / Keycloak")
+                                .description("OAuth2 authentication via Keycloak (supports Google and other external providers)")
                                 .flows(new OAuthFlows()
                                         .authorizationCode(new OAuthFlow()
                                                 .authorizationUrl(keycloakAuthorizationUrl)
                                                 .tokenUrl(keycloakTokenUrl)
                                                 .scopes(new Scopes()
-                                                        .addString("openid", "Základný OIDC scope")
-                                                        .addString("profile", "Prístup k menu a fotke") // Tu je schovaná fotka
-                                                        .addString("email", "Prístup k emailu"))))))
+                                                        .addString("openid", "Basic OIDC scope - user identification")
+                                                        .addString("profile", "Access to user profile data and photo")
+                                                        .addString("email", "Access to user email address"))))))
                 .addSecurityItem(new SecurityRequirement().addList(bearerSchemeName))
                 .addSecurityItem(new SecurityRequirement().addList(keycloakSchemeName));
     }

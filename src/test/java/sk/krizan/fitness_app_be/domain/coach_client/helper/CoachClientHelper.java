@@ -4,29 +4,25 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import sk.krizan.fitness_app_be.domain.coach_client.entity.CoachClient;
 import sk.krizan.fitness_app_be.domain.coach_client.rest.dto.request.CoachClientCreateRequest;
 import sk.krizan.fitness_app_be.domain.coach_client.rest.dto.request.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.domain.coach_client.rest.dto.response.CoachClientResponse;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.coach_client.entity.CoachClient;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CoachClientHelper {
+public final class CoachClientHelper {
 
-    public static CoachClient createMockCoachClient(
+    public static CoachClient createCoachClient(
             @NotNull Profile coach,
             @NotNull Profile client
     ) {
         CoachClient coachClient = new CoachClient();
         coachClient.setStartedAt(Instant.now());
-        coach.addToCoachingSet(Set.of(coachClient));
-        client.addToBeingCoachedSet(Set.of(coachClient));
+        coach.addToCoaching(coachClient);
+        client.addToCoachedBy(coachClient);
 
         return coachClient;
     }
@@ -59,34 +55,9 @@ public class CoachClientHelper {
                 .build();
     }
 
-    public static void assertFilter(
-            List<CoachClient> expectedList,
-            CoachClientFilterRequest request,
-            PageResponse<CoachClientResponse> response
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getPageNumber());
-        Assertions.assertNotNull(response.getPageSize());
-        Assertions.assertNotNull(response.getTotalElements());
-        Assertions.assertNotNull(response.getTotalPages());
-        Assertions.assertNotNull(response.getResults());
-        Assertions.assertFalse(response.getResults().isEmpty());
-        Assertions.assertEquals(request.page(), response.getPageNumber());
-        Assertions.assertEquals(expectedList.size(), response.getResults().size());
-
-        List<CoachClientResponse> results = response.getResults();
-        results.sort(Comparator.comparingLong(CoachClientResponse::id));
-        expectedList.sort(Comparator.comparingLong(CoachClient::getId));
-        for (int i = 0; i < results.size(); i++) {
-            CoachClientResponse coachClientResponse = results.get(i);
-            CoachClient coachClient = expectedList.get(i);
-            assertCoachClientResponse(coachClientResponse, coachClient);
-        }
-    }
-
     public static void assertCoachClientResponse(
-            CoachClientResponse response,
-            CoachClient coachClient
+            CoachClient coachClient,
+            CoachClientResponse response
     ) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(coachClient.getId(), response.id());
@@ -116,17 +87,17 @@ public class CoachClientHelper {
         Assertions.assertTrue(response.active());
         Assertions.assertNotNull(response.startedAt());
 
-        Assertions.assertNotNull(coach.getCoachingSet());
-        Assertions.assertFalse(coach.getCoachingSet().isEmpty());
-        Assertions.assertEquals(1, coach.getCoachingSet().size());
-        coach.getCoachingSet().stream()
+        Assertions.assertNotNull(coach.getCoaching());
+        Assertions.assertFalse(coach.getCoaching().isEmpty());
+        Assertions.assertEquals(1, coach.getCoaching().size());
+        coach.getCoaching().stream()
                 .map(CoachClient::getId)
                 .forEach(id -> Assertions.assertEquals(response.id(), id));
 
-        Assertions.assertNotNull(client.getBeingCoachedSet());
-        Assertions.assertFalse(client.getBeingCoachedSet().isEmpty());
-        Assertions.assertEquals(1, client.getBeingCoachedSet().size());
-        client.getBeingCoachedSet().stream()
+        Assertions.assertNotNull(client.getCoachedBy());
+        Assertions.assertFalse(client.getCoachedBy().isEmpty());
+        Assertions.assertEquals(1, client.getCoachedBy().size());
+        client.getCoachedBy().stream()
                 .map(CoachClient::getId)
                 .forEach(id -> Assertions.assertEquals(response.id(), id));
     }

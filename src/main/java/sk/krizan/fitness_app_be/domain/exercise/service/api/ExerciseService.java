@@ -14,5 +14,5 @@ public interface ExerciseService {
 
     Exercise createExercise(ExerciseCreateRequest request);
 
-    Long deleteExercise(Long id);
+    void deleteExercise(Long id);
 }

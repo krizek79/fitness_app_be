@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.domain.profile.ProfileHelper;
+import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.user.rest.dto.response.UserResponse;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.entity.Role;
@@ -13,11 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserHelper {
+public final class UserHelper {
 
     private static final Faker faker = new Faker();
 
-    public static User createMockUser(Set<Role> roles) {
+    public static User createUser(Set<Role> roles) {
         User user = new User();
         user.setEmail(faker.internet().emailAddress());
         user.setKeycloakId(UUID.randomUUID().toString());
@@ -33,7 +33,7 @@ public class UserHelper {
         if (user.getProfile() == null) {
             Assertions.assertNull(response.profileResponse());
         } else {
-            ProfileHelper.assertGet(user.getProfile(), response.profileResponse());
+            ProfileHelper.assertProfileResponse(user.getProfile(), response.profileResponse());
         }
     }
 

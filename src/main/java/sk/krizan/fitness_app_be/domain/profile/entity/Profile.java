@@ -64,55 +64,125 @@ public class Profile extends AuditableEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = CoachClient.Fields.coach, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private Set<CoachClient> coachingSet = new HashSet<>();
+    private Set<CoachClient> coaching = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = CoachClient.Fields.client, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private Set<CoachClient> beingCoachedSet = new HashSet<>();
+    private Set<CoachClient> coachedBy = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Workout> authoredWorkoutList = new ArrayList<>();
+    private final List<Workout> authoredWorkouts = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = Workout.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Workout> assignedWorkoutList = new ArrayList<>();
+    private final List<Workout> assignedWorkouts = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = Cycle.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Cycle> authoredCycleList = new ArrayList<>();
+    private final List<Cycle> authoredCycles = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = Cycle.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Cycle> assignedCycleList = new ArrayList<>();
+    private final List<Cycle> assignedCycles = new ArrayList<>();
 
-    public void addToCoachingSet(Set<CoachClient> coachClientSet) {
-        coachClientSet.forEach(coachClient -> coachClient.setCoach(this));
-        coachingSet.addAll(coachClientSet);
+    public void addToAuthoredWorkouts(Workout workout) {
+        if (workout == null) {
+            return;
+        }
+
+        workout.setAuthor(this);
+        this.authoredWorkouts.add(workout);
     }
 
-    public void addToBeingCoachedSet(Set<CoachClient> coachClientSet) {
-        coachClientSet.forEach(coachClient -> coachClient.setClient(this));
-        beingCoachedSet.addAll(coachClientSet);
+    public void removeFromAuthoredWorkouts(Workout workout) {
+        if (workout == null) {
+            return;
+        }
+
+        workout.setAuthor(null);
+        this.authoredWorkouts.remove(workout);
     }
 
-    public void addToAuthoredWorkoutList(List<Workout> workoutList) {
-        workoutList.forEach(workout -> workout.setAuthor(this));
-        this.getAuthoredWorkoutList().addAll(workoutList);
+    public void addToAssignedWorkouts(Workout workout) {
+        if (workout == null) {
+            return;
+        }
+
+        workout.setTrainee(this);
+        this.assignedWorkouts.add(workout);
     }
 
-    public void addToAssignedWorkoutList(List<Workout> workoutList) {
-        workoutList.forEach(workout -> workout.setTrainee(this));
-        this.getAssignedWorkoutList().addAll(workoutList);
+    public void removeFromAssignedWorkouts(Workout workout) {
+        if (workout == null) {
+            return;
+        }
+
+        workout.setTrainee(null);
+        this.assignedWorkouts.remove(workout);
     }
 
-    public void addToAuthoredCycleList(List<Cycle> cycleList) {
-        cycleList.forEach(cycle -> cycle.setAuthor(this));
-        this.getAuthoredCycleList().addAll(cycleList);
+    public void addToAuthoredCycles(Cycle cycle) {
+        if (cycle == null) {
+            return;
+        }
+
+        cycle.setAuthor(this);
+        this.authoredCycles.add(cycle);
     }
 
-    public void addToAssignedCycleList(List<Cycle> cycleList) {
-        cycleList.forEach(cycle -> cycle.setTrainee(this));
-        this.assignedCycleList.addAll(cycleList);
+    public void addToAssignedCycles(Cycle cycle) {
+        if (cycle == null) {
+            return;
+        }
+
+        cycle.setTrainee(this);
+        this.assignedCycles.add(cycle);
     }
+
+    public void removeFromAssignedCycles(Cycle cycle) {
+        if (cycle == null) {
+            return;
+        }
+
+        cycle.setTrainee(null);
+        this.assignedCycles.remove(cycle);
+    }
+
+    public void addToCoaching(CoachClient coachClient) {
+        if (coachClient == null) {
+            return;
+        }
+
+        coachClient.setCoach(this);
+        this.coaching.add(coachClient);
+    }
+
+    public void removeFromCoaching(CoachClient coachClient) {
+        if (coachClient == null) {
+            return;
+        }
+
+        coachClient.setCoach(null);
+        this.coaching.remove(coachClient);
+    }
+
+    public void addToCoachedBy(CoachClient coachClient) {
+        if (coachClient == null) {
+            return;
+        }
+
+        coachClient.setClient(this);
+        this.coachedBy.add(coachClient);
+    }
+
+    public void removeFromCoachedBy(CoachClient coachClient) {
+        if (coachClient == null) {
+            return;
+        }
+
+        coachClient.setClient(null);
+        this.coachedBy.remove(coachClient);
+    }
+
 }

@@ -78,11 +78,16 @@ public interface TagController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Tag deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))
+                            content = @Content(schema = @Schema())
                     ),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Resource not found",
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))
                     ),
                     @ApiResponse(
@@ -93,5 +98,7 @@ public interface TagController {
             }
     )
     @DeleteMapping("{id}")
-    Long deleteTag(@PathVariable Long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteTag(@PathVariable Long id);
+
 }

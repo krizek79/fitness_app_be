@@ -3,13 +3,10 @@ package sk.krizan.fitness_app_be.domain.goal.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalCreateRequest;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalUpdateRequest;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
 import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
-
-import java.util.List;
+import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
+import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,16 +21,14 @@ public class GoalMapper {
                 .build();
     }
 
-    public static Goal createRequestToEntity(GoalCreateRequest request, Cycle cycle) {
-        Goal goal = new Goal();
-        goal.setCycle(cycle);
+    public static void inputRequestToEntity(Goal goal, GoalInputRequest request, Cycle cycle) {
+        if (goal == null) {
+            goal = new Goal();
+            cycle.addToGoals(goal);
+        }
+
         goal.setText(request.text());
-        cycle.addToGoalList(List.of(goal));
-        return goal;
+        goal.setAchieved(request.achieved());
     }
 
-    public static Goal updateRequestToEntity(GoalUpdateRequest request, Goal goal) {
-        goal.setText(request.text());
-        return goal;
-    }
 }

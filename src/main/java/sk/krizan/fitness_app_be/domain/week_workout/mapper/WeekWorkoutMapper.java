@@ -3,47 +3,53 @@ package sk.krizan.fitness_app_be.domain.week_workout.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutCreateRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
-import sk.krizan.fitness_app_be.domain.tag.mapper.TagMapper;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
-
-import java.util.ArrayList;
-import java.util.List;
+import sk.krizan.fitness_app_be.domain.workout.mapper.WorkoutMapper;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WeekWorkoutMapper {
 
-    public static WeekWorkout createRequestToEntity(WeekWorkoutCreateRequest request, Week week, Workout workout) {
-        WeekWorkout weekWorkout = new WeekWorkout();
-        weekWorkout.setWeek(week);
-        weekWorkout.setWorkout(workout);
-        weekWorkout.setDayOfTheWeek(request.dayOfTheWeek());
-        week.addToWeekWorkoutList(List.of(weekWorkout));
-        return weekWorkout;
-    }
-
     public static WeekWorkoutResponse entityToResponse(WeekWorkout weekWorkout) {
         return WeekWorkoutResponse.builder()
                 .id(weekWorkout.getId())
                 .weekId(weekWorkout.getWeek() != null ? weekWorkout.getWeek().getId() : null)
-                .workoutId(weekWorkout.getWorkout() != null ? weekWorkout.getWorkout().getId() : null)
-                .workoutName(weekWorkout.getWorkout() != null ? weekWorkout.getWorkout().getTitle() : null)
-                .workoutTagResponseList(
-                        weekWorkout.getWorkout() != null && weekWorkout.getWorkout().getTagSet() != null
-                                ? weekWorkout.getWorkout().getTagSet().stream().map(TagMapper::entityToResponse).toList()
-                                : new ArrayList<>())
-                .dayOfTheWeek(weekWorkout.getDayOfTheWeek())
+                .workout(weekWorkout.getWorkout() != null ? WorkoutMapper.entityToSimpleResponse(weekWorkout.getWorkout()) : null)
+                .dayOfWeek(weekWorkout.getDayOfWeek())
+                .orderInTheDay(weekWorkout.getOrderInTheDay())
                 .completed(weekWorkout.getCompleted())
                 .build();
     }
 
-    public static WeekWorkout updateRequestToEntity(WeekWorkoutUpdateRequest request, WeekWorkout weekWorkout) {
-        weekWorkout.setDayOfTheWeek(request.dayOfTheWeek());
+    public static WeekWorkout inputRequestToEntity(
+            WeekWorkout weekWorkout,
+            WeekWorkoutInputRequest request,
+            Week newWeek,
+            Workout workout
+    ) {
+        if (weekWorkout == null) {
+            weekWorkout = new WeekWorkout();
+            newWeek.addToWeekWorkouts(weekWorkout);
+        } else {
+            //  This may never happen, but it's better to be safe than sorry. If the week workout already has a week assigned and it's different from the new week, we need to update the associations.
+            Week originalWeek = weekWorkout.getWeek();
+            if (originalWeek != null && !originalWeek.equals(newWeek)) {
+                originalWeek.removeFromWeekWorkouts(weekWorkout);
+                newWeek.addToWeekWorkouts(weekWorkout);
+            }
+        }
+
+        weekWorkout.setWorkout(workout);
+
+        weekWorkout.setDayOfWeek(request.dayOfWeek());
+        weekWorkout.setOrderInTheDay(request.orderInTheDay());
+        weekWorkout.setCompleted(request.completed());
+
         return weekWorkout;
     }
+
 }

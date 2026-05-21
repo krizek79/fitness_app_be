@@ -27,7 +27,7 @@ public class ExerciseSpecification {
             }
 
             if (request.muscleGroupList() != null && !request.muscleGroupList().isEmpty()) {
-                SetJoin<Exercise, MuscleGroup> muscleGroupJoin = root.joinSet(Exercise.Fields.muscleGroupSet);
+                SetJoin<Exercise, MuscleGroup> muscleGroupJoin = root.joinSet(Exercise.Fields.muscleGroups);
 
                 query.groupBy(root.get(Exercise.Fields.id));
                 Predicate havingPredicate = criteriaBuilder.equal(

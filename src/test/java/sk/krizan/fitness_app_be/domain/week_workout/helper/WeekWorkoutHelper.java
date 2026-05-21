@@ -1,57 +1,56 @@
 package sk.krizan.fitness_app_be.domain.week_workout.helper;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutCreateRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutUpdateRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
+import sk.krizan.fitness_app_be.domain.workout.helper.WorkoutHelper;
+import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutInputRequest;
 
-import java.util.Comparator;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.time.DayOfWeek;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class WeekWorkoutHelper {
+public final class WeekWorkoutHelper {
 
-    public static WeekWorkout createMockWeekWorkout(Week week, Workout workout, Integer dayOfTheWeek) {
+    public static WeekWorkout createWeekWorkout(Week week, Workout workout, DayOfWeek dayOfWeek) {
         WeekWorkout weekWorkout = new WeekWorkout();
-        weekWorkout.setWeek(week);
         weekWorkout.setWorkout(workout);
-        weekWorkout.setDayOfTheWeek(dayOfTheWeek);
-
-        week.addToWeekWorkoutList(List.of(weekWorkout));
+        weekWorkout.setDayOfWeek(dayOfWeek);
+        week.addToWeekWorkouts(weekWorkout);
 
         return weekWorkout;
     }
 
-    public static WeekWorkoutCreateRequest createCreateRequest(Long weekId, Long workoutId, Integer dayOfTheWeek) {
-        return WeekWorkoutCreateRequest.builder()
+    public static WeekWorkoutInputRequest createInputRequest(
+            Long weekId,
+            Long workoutToCloneId,
+            Long workoutToUpdateId,
+            WorkoutInputRequest workout,
+            DayOfWeek dayOfWeek,
+            Integer orderInTheDay,
+            Boolean completed
+    ) {
+        return WeekWorkoutInputRequest.builder()
                 .weekId(weekId)
-                .workoutId(workoutId)
-                .dayOfTheWeek(dayOfTheWeek)
-                .build();
-    }
-
-    public static WeekWorkoutUpdateRequest createUpdateRequest(Integer dayOfTheWeek) {
-        return WeekWorkoutUpdateRequest.builder()
-                .dayOfTheWeek(dayOfTheWeek)
+                .workoutToCloneId(workoutToCloneId)
+                .workoutToUpdateId(workoutToUpdateId)
+                .workout(workout)
+                .dayOfWeek(dayOfWeek)
+                .orderInTheDay(orderInTheDay)
+                .completed(completed)
                 .build();
     }
 
     public static WeekWorkoutFilterRequest createFilterRequest(
-            @NotNull Integer page,
-            @NotNull Integer size,
-            @NotNull String sortBy,
-            @NotNull String sortDirection,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortDirection,
             Long weekId
     ) {
         return WeekWorkoutFilterRequest.builder()
@@ -63,73 +62,51 @@ public class WeekWorkoutHelper {
                 .build();
     }
 
-    public static void assertFilter(
-            List<WeekWorkout> expectedList,
-            WeekWorkoutFilterRequest request,
-            PageResponse<WeekWorkoutResponse> response
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getPageNumber());
-        Assertions.assertNotNull(response.getPageSize());
-        Assertions.assertNotNull(response.getTotalElements());
-        Assertions.assertNotNull(response.getTotalPages());
-        Assertions.assertNotNull(response.getResults());
-        Assertions.assertFalse(response.getResults().isEmpty());
-        Assertions.assertEquals(request.page(), response.getPageNumber());
-        Assertions.assertEquals(expectedList.size(), response.getResults().size());
-
-        List<WeekWorkoutResponse> results = response.getResults();
-        results.sort(Comparator.comparingLong(WeekWorkoutResponse::id));
-        expectedList.sort(Comparator.comparingLong(WeekWorkout::getId));
-        for (int i = 0; i < results.size(); i++) {
-            WeekWorkoutResponse weekWorkoutResponse = results.get(i);
-            WeekWorkout weekWorkout = expectedList.get(i);
-            assertWeekWorkoutResponse_get(weekWorkout, weekWorkoutResponse);
-        }
-    }
-
-    public static void assertWeekWorkoutResponse_get(WeekWorkout weekWorkout, WeekWorkoutResponse response) {
+    public static void assertWeekWorkoutResponse(WeekWorkout weekWorkout, WeekWorkoutResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(weekWorkout.getId(), response.id());
         Assertions.assertEquals(weekWorkout.getWeek().getId(), response.weekId());
-        Assertions.assertEquals(weekWorkout.getWorkout().getId(), response.workoutId());
-        Assertions.assertEquals(weekWorkout.getWorkout().getTitle(), response.workoutName());
-        Assertions.assertEquals(weekWorkout.getDayOfTheWeek(), response.dayOfTheWeek());
+        Assertions.assertEquals(weekWorkout.getDayOfWeek(), response.dayOfWeek());
         Assertions.assertEquals(weekWorkout.getCompleted(), response.completed());
-        Assertions.assertNotNull(response.workoutTagResponseList());
+
+        WorkoutHelper.assertWorkoutSimpleResponse(weekWorkout.getWorkout(), response.workout());
     }
 
-    public static void assertWeekWorkout_create(WeekWorkoutCreateRequest request, WeekWorkoutResponse response, WeekWorkout weekWorkout) {
-        Assertions.assertNotNull(weekWorkout.getId());
-        Assertions.assertNotNull(weekWorkout.getWeek());
+    public static void assertDelete(
+            boolean weekWorkoutExists,
+            boolean workoutExists,
+            boolean workoutExerciseExists,
+            boolean workoutExerciseSetExists
+    ) {
+        Assertions.assertFalse(weekWorkoutExists);
+        Assertions.assertFalse(workoutExists);
+        Assertions.assertFalse(workoutExerciseExists);
+        Assertions.assertFalse(workoutExerciseSetExists);
+    }
+
+    public static void assertInputToEntity(
+            WeekWorkout weekWorkout,
+            WeekWorkoutInputRequest request,
+            Workout workoutToClone
+    ) {
+        Assertions.assertNotNull(weekWorkout);
         Assertions.assertEquals(request.weekId(), weekWorkout.getWeek().getId());
-        Assertions.assertNotNull(weekWorkout.getWorkout());
-        Assertions.assertEquals(request.workoutId(), weekWorkout.getWorkout().getId());
-        Assertions.assertEquals(request.dayOfTheWeek(), weekWorkout.getDayOfTheWeek());
-        Assertions.assertNotNull(weekWorkout.getCompleted());
-        Assertions.assertFalse(weekWorkout.getCompleted());
-        assertWeekWorkoutResponse_get(weekWorkout, response);
+        Assertions.assertEquals(request.dayOfWeek(), weekWorkout.getDayOfWeek());
+        Assertions.assertEquals(request.completed(), weekWorkout.getCompleted());
+
+        if ((request.workoutToUpdateId() != null && request.workout() != null)
+                || (request.workoutToUpdateId() == null && request.workout() != null)
+        ) {
+            //  If workoutToUpdateId is provided, the workout in the request should be used to update the existing workout. If workoutToUpdateId is not provided, the workout in the request should be used to create a new workout.
+            WorkoutHelper.assertInputToEntity(weekWorkout.getWorkout(), request.workout());
+        }
+
+        if (request.workoutToCloneId() != null) {
+            Assertions.assertNotNull(workoutToClone);
+            // If workoutToCloneId is provided, new workout should be created based on the workout with the id provided in workoutToCloneId.
+            WorkoutHelper.assertClone(workoutToClone, weekWorkout.getWorkout());
+            Assertions.assertEquals(weekWorkout.getWeek().getCycle().getTrainee().getId(), weekWorkout.getWorkout().getTrainee().getId());
+        }
     }
 
-    public static void assertWeekWorkout_update(WeekWorkoutUpdateRequest request, WeekWorkoutResponse response, WeekWorkout weekWorkout) {
-        Assertions.assertNotNull(weekWorkout.getId());
-        Assertions.assertNotNull(weekWorkout.getWeek());
-        Assertions.assertNotNull(weekWorkout.getWeek().getId());
-        Assertions.assertNotNull(weekWorkout.getWorkout());
-        Assertions.assertNotNull(weekWorkout.getWorkout().getId());
-        Assertions.assertEquals(request.dayOfTheWeek(), weekWorkout.getDayOfTheWeek());
-        Assertions.assertNotNull(weekWorkout.getCompleted());
-        Assertions.assertFalse(weekWorkout.getCompleted());
-        assertWeekWorkoutResponse_get(weekWorkout, response);
-    }
-
-    public static void assertTriggerCompleted(Boolean originalState, WeekWorkoutResponse response) {
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(!originalState, response.completed());
-    }
-
-    public static void assertDelete(boolean exists, WeekWorkout weekWorkout, Long deletedWeekWorkoutId) {
-        assertFalse(exists);
-        assertEquals(weekWorkout.getId(), deletedWeekWorkoutId);
-    }
 }

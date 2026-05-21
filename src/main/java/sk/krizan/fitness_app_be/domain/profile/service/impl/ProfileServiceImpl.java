@@ -73,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Long deleteProfile(Long id) {
+    public void deleteProfile(Long id) {
         User currentUser = userService.getCurrentUser();
         Profile profile = getProfileById(id);
 
@@ -83,7 +83,6 @@ public class ProfileServiceImpl implements ProfileService {
 
         profile.setDeleted(true);
         profileRepository.save(profile);
-        return profile.getId();
     }
 
     @Override

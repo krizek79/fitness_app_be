@@ -2,9 +2,11 @@ package sk.krizan.fitness_app_be.domain.workout.cloner;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.cloning.AbstractCloner;
-import sk.krizan.fitness_app_be.domain.workout_exercise.cloner.WorkoutExerciseCloner;
+import sk.krizan.fitness_app_be.common.cloning.AbstractCloner;
+import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
+import sk.krizan.fitness_app_be.domain.workout_exercise.cloner.WorkoutExerciseCloner;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class WorkoutCloner extends AbstractCloner<Workout> {
+
+    private final UserService userService;
 
     private final WorkoutExerciseCloner workoutExerciseCloner;
 
@@ -25,14 +29,18 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
         Workout clone = new Workout();
         clone.setTitle(original.getTitle());
         clone.setDescription(original.getDescription());
-        clone.addToTagSet(original.getTagSet());
+        clone.addToTags(original.getTags());
         clone.setWeightUnit(original.getWeightUnit());
-        List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExerciseList().stream()
+
+        List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExercises().stream()
                 .map(workoutExerciseCloner::clone)
                 .toList();
-        clone.addToWorkoutExerciseList(clonedWorkoutExercises);
-        original.getAuthor().addToAuthoredWorkoutList(List.of(clone));
+        clonedWorkoutExercises.forEach(clone::addToWorkoutExercises);
+
+        Profile currentUserProfile = userService.getCurrentUser().getProfile();
+        currentUserProfile.addToAuthoredWorkouts(clone);
 
         return clone;
     }
+
 }

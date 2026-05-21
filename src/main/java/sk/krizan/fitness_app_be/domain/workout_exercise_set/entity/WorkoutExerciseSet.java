@@ -5,6 +5,7 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,10 +21,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
+import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.configuration.persistence.DurationConverter;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
-import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.common.order.OrderableEntity;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -35,14 +35,14 @@ import java.time.Duration;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class WorkoutExerciseSet extends AuditableEntity implements OrderableEntity {
+public class WorkoutExerciseSet extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_exercise_id", nullable = false)
     private WorkoutExercise workoutExercise;
 
@@ -83,4 +83,5 @@ public class WorkoutExerciseSet extends AuditableEntity implements OrderableEnti
 
     @Length(max = 1024)
     private String note;
+
 }

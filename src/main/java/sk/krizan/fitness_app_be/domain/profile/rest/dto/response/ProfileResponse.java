@@ -8,7 +8,6 @@ import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceData
 @FieldNameConstants
 public record ProfileResponse(
         Long id,
-        Long userId,
         String name,
         String profilePictureUrl,
         ReferenceDataResponse preferredWeightUnitResponse

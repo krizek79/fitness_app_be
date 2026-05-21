@@ -7,21 +7,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
+import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.common.util.PageUtils;
+import sk.krizan.fitness_app_be.domain.coach_client.entity.CoachClient;
+import sk.krizan.fitness_app_be.domain.coach_client.mapper.CoachClientMapper;
+import sk.krizan.fitness_app_be.domain.coach_client.repository.CoachClientRepository;
 import sk.krizan.fitness_app_be.domain.coach_client.rest.dto.request.CoachClientCreateRequest;
 import sk.krizan.fitness_app_be.domain.coach_client.rest.dto.request.CoachClientFilterRequest;
 import sk.krizan.fitness_app_be.domain.coach_client.rest.dto.response.CoachClientResponse;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.coach_client.entity.CoachClient;
-import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
-import sk.krizan.fitness_app_be.domain.coach_client.mapper.CoachClientMapper;
-import sk.krizan.fitness_app_be.domain.coach_client.repository.CoachClientRepository;
 import sk.krizan.fitness_app_be.domain.coach_client.service.api.CoachClientService;
-import sk.krizan.fitness_app_be.domain.profile.service.api.ProfileService;
-import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 import sk.krizan.fitness_app_be.domain.coach_client.specification.CoachClientSpecification;
-import sk.krizan.fitness_app_be.common.util.PageUtils;
+import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.profile.service.api.ProfileService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,20 +27,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CoachClientServiceImpl implements CoachClientService {
 
-    private final UserService userService;
     private final ProfileService profileService;
     private final CoachClientRepository coachClientRepository;
-
-    private final static String ERROR_COACH_CLIENT_NOT_FOUND = "CoachClient with id { %s } does not exist.";
 
     private static final List<String> supportedSortFields = List.of(
             CoachClient.Fields.id
     );
 
+    /**
+     * Retrieves a paginated list of coach-client relationships based on the provided filter criteria.
+     *
+     * @param request the request containing the necessary information to filter coach-client relationships.
+     * @return a paginated response containing the filtered coach-client relationships matching the criteria specified in the request.
+     */
     @Override
     public PageResponse<CoachClientResponse> filterCoachClients(CoachClientFilterRequest request) {
-        checkAuthorization_filter(request);
-
         Specification<CoachClient> specification = CoachClientSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -65,89 +63,59 @@ public class CoachClientServiceImpl implements CoachClientService {
                 .build();
     }
 
+    /**
+     * Retrieves a coach-client relationship by its ID.
+     *
+     * @param id ID of the coach-client relationship to retrieve
+     * @return the {@link CoachClient} entity with the specified ID
+     */
     @Override
     public CoachClient getCoachClientById(Long id) {
-        CoachClient coachClient = coachClientRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_COACH_CLIENT_NOT_FOUND.formatted(id)));
-
-        checkAuthorization_get(coachClient);
-
-        return coachClient;
+        return coachClientRepository.getByIdOrThrow(id);
     }
 
+    /**
+     * Creates a new coach-client relationship based on the provided request.
+     *
+     * @param request the request containing the necessary information to create a coach-client relationship.
+     * @return the created {@link CoachClient} entity.
+     */
     @Override
     public CoachClient createCoachClient(CoachClientCreateRequest request) {
         Profile coach  = profileService.getProfileById(request.coachId());
         Profile client  = profileService.getProfileById(request.clientId());
 
-        checkAuthorization_create(coach);
+        CoachClient coachClient = CoachClientMapper.createRequestToEntity(coach, client);
 
-        return CoachClientMapper.createRequestToEntity(coach, client);
+        return coachClientRepository.save(coachClient);
     }
 
+    /**
+     * Resolves the correct trainee profile to use in a cycle or workout.
+     * <p>
+     * If {@code requestTraineeId} is {@code null}, returns the provided {@code defaultTrainee}.
+     * If {@code requestTraineeId} matches the author's ID, returns the author.
+     * Otherwise, checks whether the author is a coach of the specified trainee;
+     * throws {@link ApplicationException} with HttpStatus 403 if not.
+     *
+     * @param requestTraineeId ID of the trainee from the request (can be {@code null})
+     * @param author profile of the cycle author (typically the coach)
+     * @param defaultTrainee fallback profile used if {@code requestTraineeId} is {@code null}
+     * @return the resolved trainee profile
+     * @throws ApplicationException with HttpStatus 403 if the author is not the trainee's coach
+     */
     @Override
     public Profile resolveTrainee(Long requestTraineeId, Profile author, Profile defaultTrainee) {
-        if (requestTraineeId != null) {
-            if (requestTraineeId.equals(author.getId())) {
-                return author;
-            }
-            CoachClient coachClient = coachClientRepository.findByCoachIdAndClientIdAndActiveTrue(author.getId(), requestTraineeId)
-                    .orElseThrow(() -> new ApplicationException(HttpStatus.FORBIDDEN, ""));
-            return coachClient.getClient();
-        }
-        return defaultTrainee;
-    }
-
-    @Override
-    public Boolean areProfilesInCoachClientRelation(Profile coach, Profile client) {
-        return coachClientRepository.existsByCoachIdAndClientIdAndActiveTrue(coach.getId(), client.getId());
-    }
-
-    private void checkAuthorization_filter(CoachClientFilterRequest request) {
-        User currentUser = userService.getCurrentUser();
-        Long currentProfileId = currentUser.getProfile().getId();
-
-        boolean isAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
-        boolean isCoachFilterUsed = request.coachId() != null;
-        boolean isClientFilterUsed = request.clientId() != null;
-
-        boolean isFilteringAsCoach = isCoachFilterUsed && currentProfileId.equals(request.coachId());
-        boolean isFilteringAsClient = isClientFilterUsed && currentProfileId.equals(request.clientId());
-        boolean isUnfiltered = !isCoachFilterUsed && !isClientFilterUsed;
-
-        boolean isAuthorized = isAdmin || isFilteringAsCoach || isFilteringAsClient;
-
-        if (isUnfiltered && !isAdmin) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
+        if (requestTraineeId == null) {
+            return defaultTrainee;
         }
 
-        if (!isAuthorized) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
+        if (requestTraineeId.equals(author.getId())) {
+            return author;
         }
-    }
 
-    private void checkAuthorization_get(CoachClient coachClient) {
-        User currentUser = userService.getCurrentUser();
-        User coach = coachClient.getCoach().getUser();
-        User client = coachClient.getClient().getUser();
-
-        boolean isCurrentUserAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
-        boolean isCurrentUserCoachOfTheClient = currentUser == coach;
-        boolean isCurrentUserClient = currentUser == client;
-
-        if (!isCurrentUserCoachOfTheClient && !isCurrentUserClient && !isCurrentUserAdmin) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
-    }
-
-    //  For now, only coach will be able to create coach-client relationship
-    private void checkAuthorization_create(Profile coach) {
-        User currentUser = userService.getCurrentUser();
-
-        boolean isCurrentUserAdmin = currentUser.getRoleSet().contains(Role.ADMIN);
-
-        if (currentUser != coach.getUser() && !isCurrentUserAdmin) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
+        return coachClientRepository.findByCoachIdAndClientIdAndActiveTrue(author.getId(), requestTraineeId)
+                .map(CoachClient::getClient)
+                .orElseThrow(() -> new ApplicationException(HttpStatus.FORBIDDEN, ""));
     }
 }

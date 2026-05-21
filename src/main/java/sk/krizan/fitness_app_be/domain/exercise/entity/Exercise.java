@@ -44,9 +44,10 @@ public class Exercise extends AuditableEntity {
         joinColumns = @JoinColumn(name = "exercise_id")
     )
     @Column(name = "muscle_group")
-    private final Set<MuscleGroup> muscleGroupSet = new HashSet<>();
+    private final Set<MuscleGroup> muscleGroups = new HashSet<>();
 
-    public void addToMuscleGroupSet(Set<MuscleGroup> muscleGroupSet) {
-        this.getMuscleGroupSet().addAll(muscleGroupSet);
+    public void addToMuscleGroups(Set<MuscleGroup> muscleGroupSet) {
+        this.getMuscleGroups().addAll(muscleGroupSet);
     }
+
 }

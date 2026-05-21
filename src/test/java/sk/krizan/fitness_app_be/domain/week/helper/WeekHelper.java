@@ -4,71 +4,36 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekCreateRequest;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekFilterRequest;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekUpdateRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.common.rest.dto.response.SimpleListResponse;
-import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekResponse;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
+import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekFilterRequest;
+import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekInputRequest;
+import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekResponse;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class WeekHelper {
+public final class WeekHelper {
 
-    public static Week createMockWeek(Cycle cycle, Integer order) {
+    public static Week createWeek(Integer order) {
         Week week = new Week();
-        week.setCycle(cycle);
         week.setOrder(order);
         week.setNote(UUID.randomUUID().toString());
-
-        cycle.addToWeekList(List.of(week));
 
         return week;
     }
 
-    public static WeekCreateRequest createCreateRequest(Long cycleId, Integer order) {
-        return WeekCreateRequest.builder()
-                .cycleId(cycleId)
-                .order(order)
-                .note(UUID.randomUUID().toString())
-                .build();
-    }
-
-    public static WeekUpdateRequest createUpdateRequest(Long id, Integer order) {
-        return WeekUpdateRequest.builder()
+    public static WeekInputRequest createInputRequest(
+            Long id,
+            Integer order,
+            String note,
+            Boolean completed
+    ) {
+        return WeekInputRequest.builder()
                 .id(id)
                 .order(order)
-                .note(UUID.randomUUID().toString())
+                .note(note)
+                .completed(completed)
                 .build();
-    }
-
-    public static void assertGet(Week week, WeekResponse response) {
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(week.getId(), response.id());
-        Assertions.assertEquals(week.getCycle().getId(), response.cycleId());
-        Assertions.assertEquals(week.getOrder(), response.order());
-        Assertions.assertFalse(response.completed());
-        Assertions.assertEquals(week.getNote(), response.note());
-        Assertions.assertEquals(week.getWeekWorkoutList().size(), response.numberOfWorkouts());
-    }
-
-    public static void assertDelete(boolean exists, Week savedMockWeek, Long deletedWeekId, Week weekToUpdate) {
-        assertFalse(exists);
-        assertEquals(savedMockWeek.getId(), deletedWeekId);
-        Assertions.assertEquals(1, weekToUpdate.getOrder());
-    }
-
-    public static void assertTriggerCompleted(Boolean originalState, WeekResponse response) {
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(!originalState, response.completed());
     }
 
     public static WeekFilterRequest createFilterRequest(
@@ -87,85 +52,30 @@ public class WeekHelper {
                 .build();
     }
 
-    public static void assertFilter(
-            List<Week> expectedList,
-            WeekFilterRequest request,
-            PageResponse<WeekResponse> response
-    ) {
+    public static void assertWeekResponse(Week week, WeekResponse response) {
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getPageNumber());
-        Assertions.assertNotNull(response.getPageSize());
-        Assertions.assertNotNull(response.getTotalElements());
-        Assertions.assertNotNull(response.getTotalPages());
-        Assertions.assertNotNull(response.getResults());
-        Assertions.assertFalse(response.getResults().isEmpty());
-        Assertions.assertEquals(request.page(), response.getPageNumber());
-        Assertions.assertEquals(expectedList.size(), response.getResults().size());
-
-        List<WeekResponse> results = response.getResults();
-        results.sort(Comparator.comparingLong(WeekResponse::id));
-        expectedList.sort(Comparator.comparingLong(Week::getId));
-        for (int i = 0; i < results.size(); i++) {
-            WeekResponse weekResponse = results.get(i);
-            Week week = expectedList.get(i);
-            assertGet(week, weekResponse);
-        }
-    }
-
-    public static void assertCreateWeek(
-            WeekCreateRequest request,
-            WeekResponse response,
-            Integer expectedInsertedOrder,
-            List<Week> finalWeekList,
-            List<Integer> expectedFinalOrder
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(request.cycleId(), response.cycleId());
+        Assertions.assertEquals(week.getId(), response.id());
+        Assertions.assertEquals(week.getCycle().getId(), response.cycleId());
+        Assertions.assertEquals(week.getOrder(), response.order());
         Assertions.assertFalse(response.completed());
-        Assertions.assertEquals(expectedInsertedOrder, response.order());
-        Assertions.assertEquals(request.note(), response.note());
-        Assertions.assertEquals(0, response.numberOfWorkouts());
-
-        Assertions.assertNotNull(finalWeekList);
-        Assertions.assertFalse(finalWeekList.isEmpty());
-        List<Integer> finalWeekListOrderList = finalWeekList.stream().map(Week::getOrder).sorted().toList();
-        Assertions.assertEquals(expectedFinalOrder, finalWeekListOrderList);
+        Assertions.assertEquals(week.getNote(), response.note());
+        Assertions.assertEquals(week.getWeekWorkouts().size(), response.numberOfWorkouts());
     }
 
-    public static void assertUpdateWeek(
-            WeekUpdateRequest request,
-            WeekResponse response,
-            List<Long> idsOfExpectedElementsInOrder,
-            List<Week> finalWeekList
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(request.id(), response.id());
-        Assertions.assertNotNull(response.cycleId());
-        Assertions.assertFalse(response.completed());
-        Assertions.assertEquals(request.note(), response.note());
-        Assertions.assertEquals(0, response.numberOfWorkouts());
-        Assertions.assertNotNull(finalWeekList);
-        Assertions.assertFalse(finalWeekList.isEmpty());
-        Assertions.assertEquals(idsOfExpectedElementsInOrder.size(), finalWeekList.size());
-        List<Long> actualIdsInOrder = finalWeekList.stream()
-                .map(Week::getId)
-                .toList();
-        Assertions.assertEquals(idsOfExpectedElementsInOrder, actualIdsInOrder);
-    }
+    public static void assertInputToEntity(Week week, WeekInputRequest request) {
+        Assertions.assertNotNull(week);
 
-    public static void assertBatchUpdate(List<WeekUpdateRequest> requestList, SimpleListResponse<WeekResponse> listResponse) {
-        Assertions.assertNotNull(listResponse);
-        Assertions.assertNotNull(listResponse.getResult());
-        Assertions.assertEquals(requestList.size(), listResponse.getResult().size());
-        List<WeekUpdateRequest> sortedRequestList = requestList.stream().sorted(Comparator.comparingLong(WeekUpdateRequest::id)).toList();
-        List<WeekResponse> sortedResponseList = listResponse.getResult().stream().sorted(Comparator.comparingLong(WeekResponse::id)).toList();
-        for (int i = 0; i < sortedResponseList.size(); i++) {
-            WeekUpdateRequest request = sortedRequestList.get(i);
-            WeekResponse response = sortedResponseList.get(i);
-            Assertions.assertEquals(request.id(), response.id());
-            Assertions.assertEquals(request.order(), response.order());
-            Assertions.assertEquals(request.note(), response.note());
+        if (request.id() != null) {
+            Assertions.assertEquals(request.id(), week.getId());
+        } else {
+            Assertions.assertNotNull(week.getId());
         }
+
+        Assertions.assertEquals(request.note(), week.getNote());
+        Assertions.assertEquals(request.completed(), week.getCompleted());
+
+        //  questionable assert as order might be different due to user input and reordering in service layer
+        Assertions.assertEquals(request.order(), week.getOrder());
     }
+
 }

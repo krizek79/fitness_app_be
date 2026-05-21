@@ -4,23 +4,17 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagFilterRequest;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.response.TagResponse;
-import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TagHelper {
+public final class TagHelper {
 
-    public static Tag createMockTag() {
+    public static Tag createTag() {
         Tag tag = new Tag();
         tag.setName(UUID.randomUUID().toString());
         return tag;
@@ -48,45 +42,15 @@ public class TagHelper {
                 .build();
     }
 
-    public static void assertFilter(
-            List<Tag> expectedList,
-            TagFilterRequest request,
-            PageResponse<TagResponse> response
-    ) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getPageNumber());
-        Assertions.assertNotNull(response.getPageSize());
-        Assertions.assertNotNull(response.getTotalElements());
-        Assertions.assertNotNull(response.getTotalPages());
-        Assertions.assertNotNull(response.getResults());
-        Assertions.assertFalse(response.getResults().isEmpty());
-        Assertions.assertEquals(request.page(), response.getPageNumber());
-        Assertions.assertEquals(expectedList.size(), response.getResults().size());
-
-        List<TagResponse> results = response.getResults();
-        results.sort(Comparator.comparingLong(TagResponse::id));
-        expectedList.sort(Comparator.comparingLong(Tag::getId));
-        for (int i = 0; i < results.size(); i++) {
-            TagResponse tagResponse = results.get(i);
-            Tag tag = expectedList.get(i);
-            assertTagResponse(tag, tagResponse);
-        }
-    }
-
-    private static void assertTagResponse(Tag tag, TagResponse response) {
+    public static void assertResponse(Tag tag, TagResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(tag.getId(), response.id());
         Assertions.assertEquals(tag.getName(), response.name());
     }
 
-    public static void assertTag_create(TagCreateRequest request, TagResponse response, Tag tag) {
+    public static void assertCreateRequestToEntity(Tag tag, TagCreateRequest request) {
         Assertions.assertNotNull(tag.getId());
         Assertions.assertEquals(request.name(), tag.getName().toLowerCase());
-        assertTagResponse(tag, response);
     }
 
-    public static void assertDelete(boolean exists, Tag savedMockTag, Long deletedTagId) {
-        assertFalse(exists);
-        assertEquals(savedMockTag.getId(), deletedTagId);
-    }
 }

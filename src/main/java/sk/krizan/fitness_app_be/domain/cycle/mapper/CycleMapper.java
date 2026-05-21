@@ -3,14 +3,12 @@ package sk.krizan.fitness_app_be.domain.cycle.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleCreateRequest;
-import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleUpdateRequest;
+import sk.krizan.fitness_app_be.domain.cycle.rest.dto.request.CycleInputRequest;
 import sk.krizan.fitness_app_be.domain.cycle.rest.dto.response.CycleResponse;
 import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.profile.mapper.ProfileMapper;
 import sk.krizan.fitness_app_be.domain.reference.mapper.ReferenceDataMapper;
-
-import java.util.List;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,32 +17,31 @@ public class CycleMapper {
     public static CycleResponse entityToResponse(Cycle cycle) {
         return CycleResponse.builder()
                 .id(cycle.getId())
-                .authorId(cycle.getAuthor() != null ? cycle.getAuthor().getId() : null)
-                .authorName(cycle.getAuthor() != null ? cycle.getAuthor().getName() : null)
-                .traineeId(cycle.getTrainee() != null ? cycle.getTrainee().getId() : null)
-                .traineeName(cycle.getTrainee() != null ? cycle.getTrainee().getName() : null)
-                .name(cycle.getTitle())
+                .author(ProfileMapper.entityToSimpleResponse(cycle.getAuthor()))
+                .trainee(ProfileMapper.entityToSimpleResponse(cycle.getTrainee()))
+                .title(cycle.getTitle())
                 .description(cycle.getDescription())
-                .numberOfWeeks(cycle.getWeekList() != null ? cycle.getWeekList().size() : 0)
-                .levelResponse(cycle.getLevel() != null ? ReferenceDataMapper.enumToResponse(cycle.getLevel()) : null)
+                .numberOfWeeks(cycle.getWeeks() != null ? cycle.getWeeks().size() : 0)
+                .level(cycle.getLevel() != null ? ReferenceDataMapper.enumToResponse(cycle.getLevel()) : null)
                 .build();
     }
 
-    public static Cycle createRequestToEntity(CycleCreateRequest request, Profile currentProfile, Profile trainee) {
-        Cycle cycle = new Cycle();
-        cycle.setTitle(request.title());
-        cycle.setAuthor(currentProfile);
-        cycle.setTrainee(trainee);
-        currentProfile.addToAuthoredCycleList(List.of(cycle));
-        currentProfile.addToAssignedCycleList(List.of(cycle));
-        return cycle;
-    }
+    public static void inputRequestToEntity(boolean isNew, CycleInputRequest request, Cycle cycle, Profile author, Profile trainee) {
+        if (isNew) {
+            author.addToAuthoredCycles(cycle);
+            trainee.addToAssignedCycles(cycle);
+        }
 
-    public static Cycle updateRequestToEntity(CycleUpdateRequest request, Cycle cycle, Profile trainee) {
-        cycle.setTrainee(trainee);
+        //  If the cycle already has a trainee, and it's different from the new trainee, we need to update the assigned cycles for both trainees
+        Profile originalTrainee = cycle.getTrainee();
+        if (originalTrainee != null && !originalTrainee.equals(trainee)) {
+            originalTrainee.removeFromAssignedCycles(cycle);
+            trainee.addToAssignedCycles(cycle);
+        }
+
         cycle.setTitle(request.title());
         cycle.setDescription(request.description());
         cycle.setLevel(request.level());
-        return cycle;
     }
+
 }

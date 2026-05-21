@@ -10,10 +10,28 @@ import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 
 public interface CoachClientService {
 
+    /**
+     * Retrieves a paginated list of coach-client relationships based on the provided filter criteria.
+     *
+     * @param request the request containing the necessary information to filter coach-client relationships.
+     * @return a paginated response containing the filtered coach-client relationships matching the criteria specified in the request.
+     */
     PageResponse<CoachClientResponse> filterCoachClients(CoachClientFilterRequest request);
 
+    /**
+     * Retrieves a coach-client relationship by its ID.
+     *
+     * @param id ID of the coach-client relationship to retrieve
+     * @return the {@link CoachClient} entity with the specified ID
+     */
     CoachClient getCoachClientById(Long id);
 
+    /**
+     * Creates a new coach-client relationship based on the provided request.
+     *
+     * @param request the request containing the necessary information to create a coach-client relationship.
+     * @return the created {@link CoachClient} entity.
+     */
     CoachClient createCoachClient(CoachClientCreateRequest request);
 
     /**
@@ -32,5 +50,4 @@ public interface CoachClientService {
      */
     Profile resolveTrainee(Long requestTraineeId, Profile author, Profile defaultTrainee);
 
-    Boolean areProfilesInCoachClientRelation(Profile coach, Profile client);
 }

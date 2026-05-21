@@ -21,10 +21,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
+import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
-import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.common.order.OrderableEntity;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSet;
 
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class WorkoutExercise extends AuditableEntity implements OrderableEntity {
+public class WorkoutExercise extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,12 +48,12 @@ public class WorkoutExercise extends AuditableEntity implements OrderableEntity 
     private Integer order;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Workout workout;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Exercise exercise;
 
@@ -65,18 +64,16 @@ public class WorkoutExercise extends AuditableEntity implements OrderableEntity 
     private String note;
 
     @Builder.Default
-    @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<WorkoutExerciseSet> workoutExerciseSetList = new ArrayList<>();
+    @OneToMany(mappedBy = WorkoutExerciseSet.Fields.workoutExercise, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>();
 
-    public void addToWorkoutExerciseSetList(List<WorkoutExerciseSet> workoutExerciseSetList) {
-        this.getWorkoutExerciseSetList().addAll(workoutExerciseSetList);
-        workoutExerciseSetList.forEach(workoutExerciseSet -> workoutExerciseSet.setWorkoutExercise(this));
-    }
-
-    public void removeFromWorkoutExerciseSetList(WorkoutExerciseSet workoutExerciseSet) {
+    public void addToWorkoutExerciseSets(WorkoutExerciseSet workoutExerciseSet) {
         if (workoutExerciseSet == null) {
             return;
         }
-        this.workoutExerciseSetList.remove(workoutExerciseSet);
+
+        this.workoutExerciseSets.add(workoutExerciseSet);
+        workoutExerciseSet.setWorkoutExercise(this);
     }
+
 }

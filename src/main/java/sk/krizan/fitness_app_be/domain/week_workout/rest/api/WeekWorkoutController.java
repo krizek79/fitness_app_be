@@ -7,14 +7,22 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.wrapper.WeekWorkoutPageResponse;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutCreateRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutUpdateRequest;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
+import sk.krizan.fitness_app_be.common.validation.group.UpdateGroup;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
+import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.wrapper.WeekWorkoutPageResponse;
 
 @Tag(
         name = "WeekWorkout",
@@ -52,38 +60,10 @@ public interface WeekWorkoutController {
     @PostMapping("filter")
     PageResponse<WeekWorkoutResponse> filterWeekWorkouts(@Valid @RequestBody WeekWorkoutFilterRequest request);
 
-    @Operation(
-            summary = "Get a week workout by ID",
-            description = "Retrieves a single week workout based on its unique identifier.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Week workout found",
-                            content = @Content(schema = @Schema(implementation = WeekWorkoutResponse.class))),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Week workout not found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @GetMapping("{id}")
-    WeekWorkoutResponse getWeekWorkoutById(@PathVariable Long id);
 
     @Operation(
-            summary = "Create a new week workout",
-            description = "Creates a new week workout entity with the given request data.",
+            summary = "Create week workout",
+            description = "Creates a new week workout with its child entities.",
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -91,7 +71,7 @@ public interface WeekWorkoutController {
                             content = @Content(schema = @Schema(implementation = WeekWorkoutResponse.class))),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid request body",
+                            description = "Invalid data",
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
@@ -109,11 +89,11 @@ public interface WeekWorkoutController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    WeekWorkoutResponse createWeekWorkout(@Valid @RequestBody WeekWorkoutCreateRequest request);
+    WeekWorkoutResponse createWeekWorkout(@Valid @Validated(CreateGroup.class) @RequestBody WeekWorkoutInputRequest request);
 
     @Operation(
-            summary = "Update a week workout",
-            description = "Updates an existing week workout entity based on its ID.",
+            summary = "Update week workout",
+            description = "Updates the week workout with the specified ID, including workout and its child entities.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -121,7 +101,7 @@ public interface WeekWorkoutController {
                             content = @Content(schema = @Schema(implementation = WeekWorkoutResponse.class))),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid request body",
+                            description = "Invalid data",
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "401",
@@ -142,16 +122,16 @@ public interface WeekWorkoutController {
             }
     )
     @PutMapping("{id}")
-    WeekWorkoutResponse updateWeekWorkout(@PathVariable Long id, @Valid @RequestBody WeekWorkoutUpdateRequest request);
+    WeekWorkoutResponse updateWeekWorkout(@PathVariable Long id, @Valid @Validated(UpdateGroup.class) @RequestBody WeekWorkoutInputRequest request);
 
     @Operation(
-            summary = "Delete a week workout",
-            description = "Deletes the week workout with the specified ID.",
+            summary = "Delete week workout",
+            description = "Deletes the workout with the specified ID.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Week workout deleted successfully",
-                            content = @Content(schema = @Schema(implementation = Long.class))),
+                            content = @Content(schema = @Schema())),
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
@@ -162,7 +142,7 @@ public interface WeekWorkoutController {
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Week workout not found",
+                            description = "Workout not found",
                             content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
                     @ApiResponse(
                             responseCode = "500",
@@ -171,34 +151,7 @@ public interface WeekWorkoutController {
             }
     )
     @DeleteMapping("{id}")
-    Long deleteWeekWorkout(@PathVariable Long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteWeekWorkout(@PathVariable Long id);
 
-    @Operation(
-            summary = "Trigger completed state of a week workout",
-            description = "Toggles the 'completed' state of the week workout with the specified ID.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Week workout completed state toggled successfully",
-                            content = @Content(schema = @Schema(implementation = WeekWorkoutResponse.class))),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Week workout not found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PatchMapping("{id}/trigger-completed")
-    WeekWorkoutResponse triggerCompleted(@PathVariable Long id);
 }

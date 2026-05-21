@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
@@ -17,9 +18,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.common.order.OrderableEntity;
+import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 
 import java.util.ArrayList;
@@ -32,13 +32,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
-public class Week extends AuditableEntity implements OrderableEntity {
+public class Week extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Cycle cycle;
 
     @Min(0)
@@ -55,17 +56,23 @@ public class Week extends AuditableEntity implements OrderableEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = WeekWorkout.Fields.week, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<WeekWorkout> weekWorkoutList = new ArrayList<>();
+    private final List<WeekWorkout> weekWorkouts = new ArrayList<>();
 
-    public void addToWeekWorkoutList(List<WeekWorkout> weekWorkoutList) {
-        weekWorkoutList.forEach(weekWorkout -> weekWorkout.setWeek(this));
-        this.getWeekWorkoutList().addAll(weekWorkoutList);
-    }
-
-    public void removeFromWeekWorkoutList(WeekWorkout weekWorkout) {
+    public void addToWeekWorkouts(WeekWorkout weekWorkout) {
         if (weekWorkout == null) {
             return;
         }
-        this.weekWorkoutList.remove(weekWorkout);
+
+        weekWorkout.setWeek(this);
+        this.weekWorkouts.add(weekWorkout);
+    }
+
+    public void removeFromWeekWorkouts(WeekWorkout weekWorkout) {
+        if (weekWorkout == null) {
+            return;
+        }
+
+        weekWorkout.setWeek(null);
+        this.weekWorkouts.remove(weekWorkout);
     }
 }

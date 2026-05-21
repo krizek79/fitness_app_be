@@ -22,7 +22,7 @@ public class TagController implements sk.krizan.fitness_app_be.domain.tag.rest.a
         return tagService.filterTags(request);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public TagResponse createTag(TagCreateRequest request) {
         return TagMapper.entityToResponse(tagService.createTag(request));
@@ -30,7 +30,8 @@ public class TagController implements sk.krizan.fitness_app_be.domain.tag.rest.a
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
-    public Long deleteTag(Long id) {
-        return tagService.deleteTag(id);
+    public void deleteTag(Long id) {
+        tagService.deleteTag(id);
     }
+
 }

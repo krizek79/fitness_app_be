@@ -8,7 +8,6 @@ import sk.krizan.fitness_app_be.domain.coach_client.entity.CoachClient;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 
 import java.time.Instant;
-import java.util.Set;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -31,8 +30,8 @@ public class CoachClientMapper {
     public static CoachClient createRequestToEntity(Profile coach, Profile client) {
         CoachClient coachClient = new CoachClient();
         coachClient.setStartedAt(Instant.now());
-        coach.addToCoachingSet(Set.of(coachClient));
-        client.addToBeingCoachedSet(Set.of(coachClient));
+        coach.addToCoaching(coachClient);
+        client.addToCoachedBy(coachClient);
 
         return coachClient;
     }

@@ -19,7 +19,7 @@ public class ExerciseMapper {
             .id(exercise.getId())
             .name(exercise.getName())
             .muscleGroupResponseList(
-                exercise.getMuscleGroupSet().stream()
+                exercise.getMuscleGroups().stream()
                     .map(ReferenceDataMapper::enumToResponse)
                     .collect(Collectors.toList()))
             .build();
@@ -28,7 +28,7 @@ public class ExerciseMapper {
     public static Exercise createRequestToEntity(ExerciseCreateRequest request) {
         Exercise exercise = new Exercise();
         exercise.setName(request.name());
-        exercise.addToMuscleGroupSet(request.muscleGroupSet());
+        exercise.addToMuscleGroups(request.muscleGroupSet());
         return exercise;
     }
 }

@@ -92,7 +92,7 @@ public class DraftIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void getDraftById() throws Exception {
-        Draft draft = draftRepository.save(DraftHelper.createDraft(mockProfile, DraftEntityType.CYCLE, "Cycle Draft", DraftHelper.createMockContent("Cycle Draft", "{\"someAttribute\":\"someValue\"}")));
+        Draft draft = draftRepository.save(DraftHelper.createDraft(mockProfile, DraftEntityType.PLAN, "Plan Draft", DraftHelper.createMockContent("Plan Draft", "{\"someAttribute\":\"someValue\"}")));
 
         DraftResponse response = performGet(
                 BASE_URL + "/" + draft.getId(),
@@ -107,8 +107,8 @@ public class DraftIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     void createDraft() throws Exception {
         DraftCreateRequest request = DraftHelper.createCreateRequest(
-                DraftEntityType.CYCLE,
-                DraftHelper.createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}")
+                DraftEntityType.PLAN,
+                DraftHelper.createMockContent("Plan A", "{\"someAttribute\":\"someValue1\"}")
         );
         String expectedTitle = request.content().get("title").toString();
 
@@ -121,9 +121,9 @@ public class DraftIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateDraft() throws Exception {
-        Draft draft = draftRepository.save(DraftHelper.createDraft(mockProfile, DraftEntityType.CYCLE, "Cycle To Update", DraftHelper.createMockContent("Cycle To Update", "{\"someAttribute\":\"someValueToUpdate\"}")));
+        Draft draft = draftRepository.save(DraftHelper.createDraft(mockProfile, DraftEntityType.PLAN, "Plan To Update", DraftHelper.createMockContent("Plan To Update", "{\"someAttribute\":\"someValueToUpdate\"}")));
 
-        DraftUpdateRequest request = DraftHelper.createUpdateRequest(DraftHelper.createMockContent("Updated Cycle", "{\"someAttribute\":\"updatedValue\"}"));
+        DraftUpdateRequest request = DraftHelper.createUpdateRequest(DraftHelper.createMockContent("Updated Plan", "{\"someAttribute\":\"updatedValue\"}"));
         String expectedTitle = request.content().get("title").toString();
 
         DraftResponse response = performPut(
@@ -140,7 +140,7 @@ public class DraftIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteDraft() throws Exception {
-        Draft draft = draftRepository.save(DraftHelper.createDraft(mockProfile, DraftEntityType.CYCLE, "Cycle To Delete", DraftHelper.createMockContent("Cycle To Delete", "{\"someAttribute\":\"someValueToDelete\"}")));
+        Draft draft = draftRepository.save(DraftHelper.createDraft(mockProfile, DraftEntityType.PLAN, "Plan To Delete", DraftHelper.createMockContent("Plan To Delete", "{\"someAttribute\":\"someValueToDelete\"}")));
 
         performDeleteNoResponse(BASE_URL + "/" + draft.getId(), HttpStatus.NO_CONTENT);
 

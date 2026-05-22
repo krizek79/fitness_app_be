@@ -18,9 +18,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
-import sk.krizan.fitness_app_be.domain.coach_client.entity.CoachClient;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
@@ -63,12 +63,12 @@ public class Profile extends AuditableEntity {
     private WeightUnit preferredWeightUnit;
 
     @Builder.Default
-    @OneToMany(mappedBy = CoachClient.Fields.coach, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private Set<CoachClient> coaching = new HashSet<>();
+    @OneToMany(mappedBy = CoachingContract.Fields.coach, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private Set<CoachingContract> coaching = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = CoachClient.Fields.client, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private Set<CoachClient> coachedBy = new HashSet<>();
+    @OneToMany(mappedBy = CoachingContract.Fields.client, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private Set<CoachingContract> coachedBy = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = Workout.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
@@ -79,12 +79,12 @@ public class Profile extends AuditableEntity {
     private final List<Workout> assignedWorkouts = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Cycle.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Cycle> authoredCycles = new ArrayList<>();
+    @OneToMany(mappedBy = Plan.Fields.author, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<Plan> authoredPlans = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = Cycle.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Cycle> assignedCycles = new ArrayList<>();
+    @OneToMany(mappedBy = Plan.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<Plan> assignedPlans = new ArrayList<>();
 
     public void addToAuthoredWorkouts(Workout workout) {
         if (workout == null) {
@@ -122,67 +122,67 @@ public class Profile extends AuditableEntity {
         this.assignedWorkouts.remove(workout);
     }
 
-    public void addToAuthoredCycles(Cycle cycle) {
-        if (cycle == null) {
+    public void addToAuthoredPlans(Plan plan) {
+        if (plan == null) {
             return;
         }
 
-        cycle.setAuthor(this);
-        this.authoredCycles.add(cycle);
+        plan.setAuthor(this);
+        this.authoredPlans.add(plan);
     }
 
-    public void addToAssignedCycles(Cycle cycle) {
-        if (cycle == null) {
+    public void addToAssignedPlans(Plan plan) {
+        if (plan == null) {
             return;
         }
 
-        cycle.setTrainee(this);
-        this.assignedCycles.add(cycle);
+        plan.setTrainee(this);
+        this.assignedPlans.add(plan);
     }
 
-    public void removeFromAssignedCycles(Cycle cycle) {
-        if (cycle == null) {
+    public void removeFromAssignedPlans(Plan plan) {
+        if (plan == null) {
             return;
         }
 
-        cycle.setTrainee(null);
-        this.assignedCycles.remove(cycle);
+        plan.setTrainee(null);
+        this.assignedPlans.remove(plan);
     }
 
-    public void addToCoaching(CoachClient coachClient) {
-        if (coachClient == null) {
+    public void addToCoaching(CoachingContract coachingContract) {
+        if (coachingContract == null) {
             return;
         }
 
-        coachClient.setCoach(this);
-        this.coaching.add(coachClient);
+        coachingContract.setCoach(this);
+        this.coaching.add(coachingContract);
     }
 
-    public void removeFromCoaching(CoachClient coachClient) {
-        if (coachClient == null) {
+    public void removeFromCoaching(CoachingContract coachingContract) {
+        if (coachingContract == null) {
             return;
         }
 
-        coachClient.setCoach(null);
-        this.coaching.remove(coachClient);
+        coachingContract.setCoach(null);
+        this.coaching.remove(coachingContract);
     }
 
-    public void addToCoachedBy(CoachClient coachClient) {
-        if (coachClient == null) {
+    public void addToCoachedBy(CoachingContract coachingContract) {
+        if (coachingContract == null) {
             return;
         }
 
-        coachClient.setClient(this);
-        this.coachedBy.add(coachClient);
+        coachingContract.setClient(this);
+        this.coachedBy.add(coachingContract);
     }
 
-    public void removeFromCoachedBy(CoachClient coachClient) {
-        if (coachClient == null) {
+    public void removeFromCoachedBy(CoachingContract coachingContract) {
+        if (coachingContract == null) {
             return;
         }
 
-        coachClient.setClient(null);
-        this.coachedBy.remove(coachClient);
+        coachingContract.setClient(null);
+        this.coachedBy.remove(coachingContract);
     }
 
 }

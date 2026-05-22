@@ -5,7 +5,7 @@ import lombok.Builder;
 @Builder
 public record WeekResponse(
         Long id,
-        Long cycleId,
+        Long planId,
         Integer order,
         Boolean completed,
         String note,

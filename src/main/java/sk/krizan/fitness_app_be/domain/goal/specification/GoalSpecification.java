@@ -7,7 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalFilterRequest;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 
 public class GoalSpecification {
@@ -17,10 +17,10 @@ public class GoalSpecification {
         return (Root<Goal> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
-            if (request.cycleId() != null) {
-                Join<Goal, Cycle> cycleJoin = root.join(Goal.Fields.cycle);
-                Predicate cycleIdPredicate = criteriaBuilder.equal(cycleJoin.get(Cycle.Fields.id), request.cycleId());
-                predicate = criteriaBuilder.and(predicate, cycleIdPredicate);
+            if (request.planId() != null) {
+                Join<Goal, Plan> planJoin = root.join(Goal.Fields.plan);
+                Predicate planIdPredicate = criteriaBuilder.equal(planJoin.get(Plan.Fields.id), request.planId());
+                predicate = criteriaBuilder.and(predicate, planIdPredicate);
             }
 
             return predicate;

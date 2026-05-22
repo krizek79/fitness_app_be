@@ -19,7 +19,7 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class Week extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Cycle cycle;
+    private Plan plan;
 
     @Min(0)
     @NotNull

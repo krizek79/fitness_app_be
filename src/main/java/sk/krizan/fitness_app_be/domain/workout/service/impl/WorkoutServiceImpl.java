@@ -10,7 +10,7 @@ import sk.krizan.fitness_app_be.common.cloning.CloneOrchestrator;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.PageUtils;
-import sk.krizan.fitness_app_be.domain.coach_client.service.api.CoachClientService;
+import sk.krizan.fitness_app_be.domain.coaching_contract.service.api.CoachingContractService;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
@@ -42,7 +42,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final TagService tagService;
     private final UserService userService;
     private final CloneOrchestrator cloneOrchestrator;
-    private final CoachClientService coachClientService;
+    private final CoachingContractService coachingContractService;
     private final WorkoutExerciseService workoutExerciseService;
 
     private final WorkoutRepository workoutRepository;
@@ -121,7 +121,7 @@ public class WorkoutServiceImpl implements WorkoutService {
             author = workout.getAuthor();
         }
 
-        trainee = coachClientService.resolveTrainee(request.traineeId(), author, isNew ? author : workout.getTrainee());
+        trainee = coachingContractService.resolveTrainee(request.traineeId(), author, isNew ? author : workout.getTrainee());
 
         WorkoutMapper.inputRequestToEntity(isNew, request, workout, author, trainee);
 

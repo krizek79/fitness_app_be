@@ -13,12 +13,11 @@ import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
 import sk.krizan.fitness_app_be.common.helper.RandomHelper;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.FilterAssertionUtils;
-import sk.krizan.fitness_app_be.domain.coach_client.helper.CoachClientHelper;
-import sk.krizan.fitness_app_be.domain.coach_client.repository.CoachClientRepository;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Level;
-import sk.krizan.fitness_app_be.domain.cycle.helper.CycleHelper;
-import sk.krizan.fitness_app_be.domain.cycle.repository.CycleRepository;
+import sk.krizan.fitness_app_be.domain.coaching_contract.helper.CoachingContractHelper;
+import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
+import sk.krizan.fitness_app_be.domain.plan.helper.PlanHelper;
+import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
 import sk.krizan.fitness_app_be.domain.exercise.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.domain.exercise.repository.ExerciseRepository;
@@ -77,7 +76,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
     private WeekWorkoutRepository weekWorkoutRepository;
 
     @Autowired
-    private CoachClientRepository coachClientRepository;
+    private CoachingContractRepository coachingContractRepository;
 
     @Autowired
     private ExerciseRepository exerciseRepository;
@@ -89,7 +88,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
     private WorkoutRepository workoutRepository;
 
     @Autowired
-    private CycleRepository cycleRepository;
+    private PlanRepository planRepository;
 
 
     @Autowired
@@ -121,13 +120,13 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(2)
         ));
 
-        Cycle cycle = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks, new ArrayList<>(), Level.INTERMEDIATE));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
 
-        Week week1 = cycle.getWeeks().get(0);
+        Week week1 = plan.getWeeks().get(0);
         Workout workout1 = workoutRepository.save(WorkoutHelper.createWorkout(mockProfile, new HashSet<>(), new ArrayList<>(), DEFAULT_VALUE, false));
         WeekWorkout weekWorkout1 = weekWorkoutRepository.save(WeekWorkoutHelper.createWeekWorkout(week1, workout1, DayOfWeek.MONDAY));
 
-        Week week2 = cycle.getWeeks().get(1);
+        Week week2 = plan.getWeeks().get(1);
         Workout workout2 = workoutRepository.save(WorkoutHelper.createWorkout(mockProfile, new HashSet<>(), new ArrayList<>(), DEFAULT_VALUE, false));
         WeekWorkout weekWorkout2 = weekWorkoutRepository.save(WeekWorkoutHelper.createWeekWorkout(week2, workout2, DayOfWeek.WEDNESDAY));
 
@@ -159,8 +158,8 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        Cycle cycle = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks, new ArrayList<>(), Level.INTERMEDIATE));
-        Week week = cycle.getWeeks().get(0);
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
+        Week week = plan.getWeeks().get(0);
 
         boolean isWorkoutTemplate = false;
         List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(WorkoutExerciseSetHelper.createWorkoutExerciseSet(1, isWorkoutTemplate)));
@@ -186,9 +185,9 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        Cycle cycle = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks, new ArrayList<>(), Level.INTERMEDIATE));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
 
-        Week week = cycle.getWeeks().get(0);
+        Week week = plan.getWeeks().get(0);
 
         //  Tag create requests
         Set<TagCreateRequest> tagRequests = new HashSet<>(Set.of(
@@ -251,9 +250,9 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        Cycle cycle = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks, new ArrayList<>(), Level.INTERMEDIATE));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
 
-        Week week = cycle.getWeeks().get(0);
+        Week week = plan.getWeeks().get(0);
 
         //  Workout to clone
         Boolean isClonableWorkoutTemplate = true;
@@ -308,9 +307,9 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        Cycle cycle = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks, new ArrayList<>(), Level.INTERMEDIATE));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
 
-        Week week = cycle.getWeeks().get(0);
+        Week week = plan.getWeeks().get(0);
 
         boolean isWorkoutTemplate = false;
 
@@ -318,7 +317,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         User newTraineeUser = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
         Profile newTrainee = profileRepository.save(ProfileHelper.createProfile(newTraineeUser));
 
-        coachClientRepository.save(CoachClientHelper.createCoachClient(mockProfile, newTrainee));
+        coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, newTrainee));
 
         //  --- Original ---
 

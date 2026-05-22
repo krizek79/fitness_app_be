@@ -105,7 +105,7 @@ public final class WeekWorkoutHelper {
             Assertions.assertNotNull(workoutToClone);
             // If workoutToCloneId is provided, new workout should be created based on the workout with the id provided in workoutToCloneId.
             WorkoutHelper.assertClone(workoutToClone, weekWorkout.getWorkout());
-            Assertions.assertEquals(weekWorkout.getWeek().getCycle().getTrainee().getId(), weekWorkout.getWorkout().getTrainee().getId());
+            Assertions.assertEquals(weekWorkout.getWeek().getPlan().getTrainee().getId(), weekWorkout.getWorkout().getTrainee().getId());
         }
     }
 

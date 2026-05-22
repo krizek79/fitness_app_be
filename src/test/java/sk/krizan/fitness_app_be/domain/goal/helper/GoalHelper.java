@@ -37,20 +37,20 @@ public final class GoalHelper {
             @NotNull Integer size,
             @NotNull String sortBy,
             @NotNull String sortDirection,
-            Long cycleId
+            Long planId
     ) {
         return GoalFilterRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
-                .cycleId(cycleId)
+                .planId(planId)
                 .build();
     }
 
     public static void assertGoalResponse(Goal goal, GoalResponse response) {
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(goal.getCycle().getId(), response.cycleId());
+        Assertions.assertEquals(goal.getPlan().getId(), response.planId());
         Assertions.assertEquals(goal.getText(), response.text());
         Assertions.assertEquals(goal.getAchieved(), response.achieved());
     }

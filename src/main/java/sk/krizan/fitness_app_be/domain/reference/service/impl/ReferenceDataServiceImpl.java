@@ -2,16 +2,15 @@ package sk.krizan.fitness_app_be.domain.reference.service.impl;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import sk.krizan.fitness_app_be.common.exception.ApplicationException;
+import sk.krizan.fitness_app_be.domain.exercise.entity.MuscleGroup;
 import sk.krizan.fitness_app_be.domain.reference.entity.BaseEnum;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.reference.mapper.ReferenceDataMapper;
-import sk.krizan.fitness_app_be.domain.reference.service.api.ReferenceDataService;
-import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceDataResponse;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Level;
-import sk.krizan.fitness_app_be.domain.exercise.entity.MuscleGroup;
-import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSetType;
+import sk.krizan.fitness_app_be.domain.reference.service.api.ReferenceDataService;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseType;
+import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSetType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +23,6 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
     private static final String ERROR_ENUM_NOT_FOUND = "Enum with key { %s } does not exist.";
 
     private final Map<String, Class<? extends BaseEnum>> registry = Map.of(
-            "levels", Level.class,
             "muscle-groups", MuscleGroup.class,
             "weight-units", WeightUnit.class,
             "workout-exercise-types", WorkoutExerciseType.class,

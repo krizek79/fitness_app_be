@@ -41,21 +41,21 @@ public final class WeekHelper {
             @NotNull Integer size,
             @NotNull String sortBy,
             @NotNull String sortDirection,
-            Long cycleId
+            Long planId
     ) {
         return WeekFilterRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
-                .cycleId(cycleId)
+                .planId(planId)
                 .build();
     }
 
     public static void assertWeekResponse(Week week, WeekResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(week.getId(), response.id());
-        Assertions.assertEquals(week.getCycle().getId(), response.cycleId());
+        Assertions.assertEquals(week.getPlan().getId(), response.planId());
         Assertions.assertEquals(week.getOrder(), response.order());
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(week.getNote(), response.note());

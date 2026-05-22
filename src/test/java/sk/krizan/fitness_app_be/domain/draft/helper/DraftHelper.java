@@ -107,8 +107,8 @@ public final class DraftHelper {
      * <br>
      * Each created Draft belongs to one of two profiles:
      * <ul>
-     *     <li>profile1: contains "Cycle A" and "Workout Plan A"</li>
-     *     <li>profile2: contains "Cycle A", "Workout Plan A" and "Workout Plan B"</li>
+     *     <li>profile1: contains "Plan A" and "Workout Plan A"</li>
+     *     <li>profile2: contains "Plan A", "Workout Plan A" and "Workout Plan B"</li>
      * </ul>
      * Content is a simple map with keys `title` and `body`. Entity IDs are not set
      * by this helper (they are intended to be set by persistence in tests).
@@ -118,9 +118,9 @@ public final class DraftHelper {
      * @return list of mock Draft instances for filtering tests
      */
     public static List<Draft> createMockDraftListForFilter(Profile profile1, Profile profile2) {
-        Draft draft1 = createDraft(profile1, DraftEntityType.CYCLE, "Cycle A", createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}"));
+        Draft draft1 = createDraft(profile1, DraftEntityType.PLAN, "Plan A", createMockContent("Plan A", "{\"someAttribute\":\"someValue1\"}"));
         Draft draft2 = createDraft(profile1, DraftEntityType.WORKOUT, "Workout Plan A", createMockContent("Workout Plan A", "{\"someAttribute\":\"someValue2\"}"));
-        Draft draft3 = createDraft(profile2, DraftEntityType.CYCLE, "Cycle A", createMockContent("Cycle A", "{\"someAttribute\":\"someValue1\"}"));
+        Draft draft3 = createDraft(profile2, DraftEntityType.PLAN, "Plan A", createMockContent("Plan A", "{\"someAttribute\":\"someValue1\"}"));
         Draft draft4 = createDraft(profile2, DraftEntityType.WORKOUT, "Workout Plan A", createMockContent("Workout Plan A", "{\"someAttribute\":\"someValue2\"}"));
         Draft draft5 = createDraft(profile2, DraftEntityType.WORKOUT, "Workout Plan B", createMockContent("Workout Plan B", "{\"someAttribute\":\"someValue3\"}"));
         Draft draft6 = createDraft(profile2, DraftEntityType.WORKOUT_TEMPLATE, "Workout template A", createMockContent("Workout template A", "{\"someAttribute\":\"someValue4\"}"));

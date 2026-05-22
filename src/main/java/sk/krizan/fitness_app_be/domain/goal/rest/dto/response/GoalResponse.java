@@ -7,7 +7,7 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 public record GoalResponse(
         Long id,
-        Long cycleId,
+        Long planId,
         Boolean achieved,
         String text
 ) {

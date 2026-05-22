@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.PageUtils;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.mapper.GoalMapper;
 import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
@@ -64,24 +64,24 @@ public class GoalServiceImpl implements GoalService {
     }
 
     /**
-     * Creates a new goal or updates an existing goal for the specified cycle based on the provided request data.
+     * Creates a new goal or updates an existing goal for the specified plan based on the provided request data.
      *
-     * @param cycle the cycle for which the goal is being created or updated
+     * @param plan the plan for which the goal is being created or updated
      * @param request the request containing the data for creating or updating the goal
      */
     @Override
-    public void createUpdateGoal(Cycle cycle, GoalInputRequest request) {
+    public void createUpdateGoal(Plan plan, GoalInputRequest request) {
         Goal goal;
         if (request.id() != null) {
             //  Update existing goal
-            goal = cycle.getGoals().stream()
+            goal = plan.getGoals().stream()
                     .filter(g -> g.getId().equals(request.id()))
                     .findFirst()
-                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Goal with id %d not found in cycle with id %d.".formatted(request.id(), cycle.getId())));
-            GoalMapper.inputRequestToEntity(goal, request, cycle);
+                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Goal with id %d not found in plan with id %d.".formatted(request.id(), plan.getId())));
+            GoalMapper.inputRequestToEntity(goal, request, plan);
         } else {
             //  Create new goal
-            GoalMapper.inputRequestToEntity(null, request, cycle);
+            GoalMapper.inputRequestToEntity(null, request, plan);
         }
     }
 

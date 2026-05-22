@@ -13,8 +13,8 @@ import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
 import sk.krizan.fitness_app_be.common.helper.RandomHelper;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.FilterAssertionUtils;
-import sk.krizan.fitness_app_be.domain.coach_client.helper.CoachClientHelper;
-import sk.krizan.fitness_app_be.domain.coach_client.repository.CoachClientRepository;
+import sk.krizan.fitness_app_be.domain.coaching_contract.helper.CoachingContractHelper;
+import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
 import sk.krizan.fitness_app_be.domain.exercise.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.domain.exercise.repository.ExerciseRepository;
@@ -66,7 +66,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     private WorkoutExerciseRepository workoutExerciseRepository;
 
     @Autowired
-    private CoachClientRepository coachClientRepository;
+    private CoachingContractRepository coachingContractRepository;
 
     @Autowired
     private ExerciseRepository exerciseRepository;
@@ -283,7 +283,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
         User newTrainee = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
         Profile newTraineeProfile = profileRepository.save(ProfileHelper.createProfile(newTrainee));
 
-        coachClientRepository.save(CoachClientHelper.createCoachClient(mockProfile, newTraineeProfile));
+        coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, newTraineeProfile));
 
         Boolean isWorkoutTemplate = false;
 

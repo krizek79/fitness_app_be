@@ -3,7 +3,7 @@ package sk.krizan.fitness_app_be.domain.goal.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
@@ -15,16 +15,16 @@ public class GoalMapper {
     public static GoalResponse entityToResponse(Goal goal) {
         return GoalResponse.builder()
                 .id(goal.getId())
-                .cycleId(goal.getCycle() != null ? goal.getCycle().getId() : null)
+                .planId(goal.getPlan() != null ? goal.getPlan().getId() : null)
                 .text(goal.getText())
                 .achieved(goal.getAchieved())
                 .build();
     }
 
-    public static void inputRequestToEntity(Goal goal, GoalInputRequest request, Cycle cycle) {
+    public static void inputRequestToEntity(Goal goal, GoalInputRequest request, Plan plan) {
         if (goal == null) {
             goal = new Goal();
-            cycle.addToGoals(goal);
+            plan.addToGoals(goal);
         }
 
         goal.setText(request.text());

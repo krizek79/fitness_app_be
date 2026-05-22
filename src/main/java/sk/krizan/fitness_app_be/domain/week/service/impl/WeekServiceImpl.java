@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.PageUtils;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week.mapper.WeekMapper;
 import sk.krizan.fitness_app_be.domain.week.repository.WeekRepository;
@@ -64,18 +64,18 @@ public class WeekServiceImpl implements WeekService {
     }
 
     @Override
-    public void createUpdateWeek(Cycle cycle, WeekInputRequest weekInputRequest) {
+    public void createUpdateWeek(Plan plan, WeekInputRequest weekInputRequest) {
         Week week;
         if (weekInputRequest.id() != null) {
             //  Update existing week
-            week = cycle.getWeeks().stream()
+            week = plan.getWeeks().stream()
                     .filter(we -> we.getId().equals(weekInputRequest.id()))
                     .findFirst()
-                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Week with id %d not found in cycle with id %d.".formatted(weekInputRequest.id(), cycle.getId())));
-            WeekMapper.inputRequestToEntity(week, weekInputRequest, cycle);
+                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Week with id %d not found in plan with id %d.".formatted(weekInputRequest.id(), plan.getId())));
+            WeekMapper.inputRequestToEntity(week, weekInputRequest, plan);
         } else {
             //  Create new week
-            WeekMapper.inputRequestToEntity(null, weekInputRequest, cycle);
+            WeekMapper.inputRequestToEntity(null, weekInputRequest, plan);
         }
     }
 }

@@ -10,10 +10,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.FilterAssertionUtils;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Level;
-import sk.krizan.fitness_app_be.domain.cycle.helper.CycleHelper;
-import sk.krizan.fitness_app_be.domain.cycle.repository.CycleRepository;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
+import sk.krizan.fitness_app_be.domain.plan.helper.PlanHelper;
+import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.helper.GoalHelper;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalFilterRequest;
@@ -36,7 +35,7 @@ class GoalIntegrationTest extends BaseIntegrationTest {
     private ProfileRepository profileRepository;
 
     @Autowired
-    private CycleRepository cycleRepository;
+    private PlanRepository planRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -66,12 +65,12 @@ class GoalIntegrationTest extends BaseIntegrationTest {
                 GoalHelper.createGoal()
         ));
 
-        cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, new ArrayList<>(), goals1, Level.BEGINNER));
-        Cycle mockCycle2 = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, new ArrayList<>(), goals2, Level.BEGINNER));
+        planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, new ArrayList<>(), goals1));
+        Plan mockPlan2 = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, new ArrayList<>(), goals2));
 
-        List<Goal> expectedList = mockCycle2.getGoals();
+        List<Goal> expectedList = mockPlan2.getGoals();
 
-        GoalFilterRequest request = GoalHelper.createFilterRequest(0, expectedList.size(), Goal.Fields.id, Sort.Direction.DESC.name(), mockCycle2.getId());
+        GoalFilterRequest request = GoalHelper.createFilterRequest(0, expectedList.size(), Goal.Fields.id, Sort.Direction.DESC.name(), mockPlan2.getId());
 
         PageResponse<GoalResponse> response = performPost(
                 BASE_URL + "/filter",

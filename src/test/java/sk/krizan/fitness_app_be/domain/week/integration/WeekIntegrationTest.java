@@ -11,10 +11,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.FilterAssertionUtils;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Cycle;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Level;
-import sk.krizan.fitness_app_be.domain.cycle.helper.CycleHelper;
-import sk.krizan.fitness_app_be.domain.cycle.repository.CycleRepository;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
+import sk.krizan.fitness_app_be.domain.plan.helper.PlanHelper;
+import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
@@ -40,7 +39,7 @@ class WeekIntegrationTest extends BaseIntegrationTest {
     private ProfileRepository profileRepository;
 
     @Autowired
-    private CycleRepository cycleRepository;
+    private PlanRepository planRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -68,18 +67,18 @@ class WeekIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(2)
         ));
 
-        cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks1, new ArrayList<>(), Level.INTERMEDIATE));
+        planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks1, new ArrayList<>()));
 
         List<Week> weeks2 = new ArrayList<>(List.of(
                 WeekHelper.createWeek(1),
                 WeekHelper.createWeek(2)
         ));
 
-        Cycle cycle2 = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks2, new ArrayList<>(), Level.INTERMEDIATE));
+        Plan plan2 = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks2, new ArrayList<>()));
 
-        List<Week> expectedList = new ArrayList<>(cycle2.getWeeks());
+        List<Week> expectedList = new ArrayList<>(plan2.getWeeks());
 
-        WeekFilterRequest request = WeekHelper.createFilterRequest(0, expectedList.size(), Week.Fields.id, Sort.Direction.DESC.name(), cycle2.getId());
+        WeekFilterRequest request = WeekHelper.createFilterRequest(0, expectedList.size(), Week.Fields.id, Sort.Direction.DESC.name(), plan2.getId());
 
         PageResponse<WeekResponse> response = performPost(
                 BASE_URL + "/filter",
@@ -103,9 +102,9 @@ class WeekIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        Cycle cycle = cycleRepository.save(CycleHelper.createCycle(mockProfile, mockProfile, weeks, new ArrayList<>(), Level.INTERMEDIATE));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
 
-        Week week = cycle.getWeeks().get(0);
+        Week week = plan.getWeeks().get(0);
 
         WeekResponse response = performGet(
                 BASE_URL + "/" + week.getId(),

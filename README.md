@@ -2,13 +2,13 @@
 
 # Fitness App Backend
 
-This is the backend for a fitness management application. It provides a secure and extensible REST API for managing users, coach-client relationships, structured training cycles, weekly plans, workouts, exercises, and fitness goals. The backend is designed to power both personal fitness tracking and collaborative coaching platforms.
+This is the backend for a fitness management application. It provides a secure and extensible REST API for managing users, coaching contracts, structured weekly training plans, workouts, exercises, and fitness goals. The backend is designed to power both personal fitness tracking and collaborative coaching platforms.
 
 ## Key Features
 
 * **User Management & Authentication**: Integrated with Keycloak for secure SSO, social login (Google), and robust Role-Based Access Control.
-* **Coach-Client Relationships**: Manage connections between coaches and clients for collaborative training.
-* **Training Structure**: CRUD and filtering for cycles, weeks, workouts, and exercises to support long-term planning.
+* **Coaching contracts**: Manage connections between coaches and clients for collaborative training.
+* **Training Structure**: CRUD and filtering for plans, weeks, workouts, and exercises to support long-term planning.
 * **Goal Tracking**: Track, update, and filter fitness goals.
 * **Profile Management**: User profiles with avatars and bios.
 * **Tags & Organization**: Tagging system for categorizing workouts and exercises.

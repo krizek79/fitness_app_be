@@ -21,6 +21,6 @@ public record WeekFilterRequest(
         @Pattern(regexp = "ASC|DESC|asc|desc")
         String sortDirection,
         @NotNull
-        Long cycleId
+        Long planId
 ) {
 }

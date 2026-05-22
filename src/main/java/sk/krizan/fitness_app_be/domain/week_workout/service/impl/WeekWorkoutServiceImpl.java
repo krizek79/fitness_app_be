@@ -88,9 +88,9 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
     @Transactional
     public WeekWorkout createUpdateWeekWorkout(Long id, WeekWorkoutInputRequest request) {
         Week week = weekRepository.getByIdOrThrow(request.weekId());
-        Profile cycleTrainee = week.getCycle().getTrainee();
+        Profile planTrainee = week.getPlan().getTrainee();
 
-        Workout workout = handleWorkout(request, cycleTrainee);
+        Workout workout = handleWorkout(request, planTrainee);
 
         WeekWorkout weekWorkout = handleWeekWorkout(id, request, week, workout);
 
@@ -101,7 +101,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
         return weekWorkoutRepository.save(weekWorkout);
     }
 
-    private Workout handleWorkout(WeekWorkoutInputRequest request, Profile cycleTrainee) {
+    private Workout handleWorkout(WeekWorkoutInputRequest request, Profile planTrainee) {
         Workout workout;
 
         if (request.workoutToUpdateId() != null) {
@@ -110,7 +110,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
         } else if (request.workoutToCloneId() != null) {
             //  Clone existing workout
             workout = workoutService.cloneWorkout(request.workoutToCloneId());
-            cycleTrainee.addToAssignedWorkouts(workout);
+            planTrainee.addToAssignedWorkouts(workout);
         } else {
             //  Create new workout
             workout = workoutService.createUpdateWorkout(null, request.workout());

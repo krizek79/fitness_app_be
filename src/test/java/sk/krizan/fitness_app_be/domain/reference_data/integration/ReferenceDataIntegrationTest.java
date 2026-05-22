@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
-import sk.krizan.fitness_app_be.domain.cycle.entity.Level;
 import sk.krizan.fitness_app_be.domain.exercise.entity.MuscleGroup;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceDataResponse;
@@ -30,7 +29,6 @@ class ReferenceDataIntegrationTest extends BaseIntegrationTest {
 
         org.assertj.core.api.Assertions.assertThat(availableTypes)
                 .containsExactlyInAnyOrder(
-                        "levels",
                         "muscle-groups",
                         "weight-units",
                         "workout-exercise-types",
@@ -46,13 +44,6 @@ class ReferenceDataIntegrationTest extends BaseIntegrationTest {
                 new TypeReference<>() {
                 },
                 HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void getWorkoutLevels() throws Exception {
-        List<ReferenceDataResponse> responseList = filter("levels");
-        ReferenceDataHelper.assertReferenceDataResponsesMatch(Level.class, responseList);
     }
 
     @Test

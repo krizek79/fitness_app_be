@@ -1,7 +1,6 @@
 package sk.krizan.fitness_app_be.domain.workout_exercise_set.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,7 +21,6 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.configuration.persistence.DurationConverter;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
 
 import java.math.BigDecimal;
@@ -68,14 +66,11 @@ public class WorkoutExerciseSet extends AuditableEntity {
     @Column(precision = 10, scale = 3)
     private BigDecimal actualWeight;
 
-    @Convert(converter = DurationConverter.class)
-    private Duration goalTime;
+    private Duration goalTimeSeconds;
 
-    @Convert(converter = DurationConverter.class)
-    private Duration actualTime;
+    private Duration actualTimeSeconds;
 
-    @Convert(converter = DurationConverter.class)
-    private Duration restDuration;
+    private Duration restDurationSeconds;
 
     @NotNull
     @Builder.Default

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
@@ -43,14 +44,14 @@ public record WorkoutExerciseSetInputRequest(
         @Schema(description = "Should be set only for update. For new object, this field should be null.")
         BigDecimal actualWeight,
 
-        @Min(0)
+        @PositiveOrZero
         Long goalTimeSeconds,
 
-        @Min(0)
+        @PositiveOrZero
         @Null(groups = CreateGroup.class)
         Long actualTimeSeconds,
 
-        @Min(0)
+        @PositiveOrZero
         Long restDurationSeconds,
 
         @Length(max = 1024)

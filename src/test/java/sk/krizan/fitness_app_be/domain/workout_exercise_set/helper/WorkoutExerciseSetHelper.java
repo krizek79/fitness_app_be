@@ -27,15 +27,15 @@ public final class WorkoutExerciseSetHelper {
 
         workoutExerciseSet.setGoalRepetitions(RandomHelper.getRandomInt(1, 15));
         workoutExerciseSet.setGoalWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(0.125), BigDecimal.valueOf(150), 3));
-        workoutExerciseSet.setGoalTime(Duration.ofMinutes(45));
+        workoutExerciseSet.setGoalTimeSeconds(Duration.ofMinutes(45));
 
         if (!isWorkoutTemplate) {
             workoutExerciseSet.setActualRepetitions(RandomHelper.getRandomInt(1, 15));
             workoutExerciseSet.setActualWeight(RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(0.125), BigDecimal.valueOf(150), 3));
-            workoutExerciseSet.setActualTime(Duration.ofMinutes(41));
+            workoutExerciseSet.setActualTimeSeconds(Duration.ofMinutes(41));
         }
 
-        workoutExerciseSet.setRestDuration(Duration.ofMinutes(5));
+        workoutExerciseSet.setRestDurationSeconds(Duration.ofMinutes(5));
         workoutExerciseSet.setNote(UUID.randomUUID().toString());
 
         return workoutExerciseSet;
@@ -82,16 +82,16 @@ public final class WorkoutExerciseSetHelper {
         Assertions.assertEquals(workoutExerciseSet.getGoalRepetitions(), response.goalRepetitions());
         Assertions.assertEquals(workoutExerciseSet.getActualRepetitions(), response.actualRepetitions());
 
-        if (workoutExerciseSet.getGoalTime() != null) {
-            Assertions.assertEquals(workoutExerciseSet.getGoalTime().toSeconds(), response.goalTimeSeconds());
+        if (workoutExerciseSet.getGoalTimeSeconds() != null) {
+            Assertions.assertEquals(workoutExerciseSet.getGoalTimeSeconds().toSeconds(), response.goalTimeSeconds());
         }
 
-        if (workoutExerciseSet.getActualTime() != null) {
-            Assertions.assertEquals(workoutExerciseSet.getActualTime().toSeconds(), response.actualTimeSeconds());
+        if (workoutExerciseSet.getActualTimeSeconds() != null) {
+            Assertions.assertEquals(workoutExerciseSet.getActualTimeSeconds().toSeconds(), response.actualTimeSeconds());
         }
 
-        if (workoutExerciseSet.getRestDuration() != null) {
-            Assertions.assertEquals(workoutExerciseSet.getRestDuration().toSeconds(), response.restDurationSeconds());
+        if (workoutExerciseSet.getRestDurationSeconds() != null) {
+            Assertions.assertEquals(workoutExerciseSet.getRestDurationSeconds().toSeconds(), response.restDurationSeconds());
         }
 
         Assertions.assertEquals(workoutExerciseSet.getNote(), response.note());
@@ -122,15 +122,15 @@ public final class WorkoutExerciseSetHelper {
         Assertions.assertEquals(request.actualRepetitions(), workoutExerciseSet.getActualRepetitions());
 
         if (request.goalTimeSeconds() != null) {
-            Assertions.assertEquals(request.goalTimeSeconds(), workoutExerciseSet.getGoalTime().toSeconds());
+            Assertions.assertEquals(request.goalTimeSeconds(), workoutExerciseSet.getGoalTimeSeconds().toSeconds());
         }
 
         if (request.actualTimeSeconds() != null) {
-            Assertions.assertEquals(request.actualTimeSeconds(), workoutExerciseSet.getActualTime().toSeconds());
+            Assertions.assertEquals(request.actualTimeSeconds(), workoutExerciseSet.getActualTimeSeconds().toSeconds());
         }
 
         if (request.restDurationSeconds() != null) {
-            Assertions.assertEquals(request.restDurationSeconds(), workoutExerciseSet.getRestDuration().toSeconds());
+            Assertions.assertEquals(request.restDurationSeconds(), workoutExerciseSet.getRestDurationSeconds().toSeconds());
         }
 
         Assertions.assertEquals(request.note(), workoutExerciseSet.getNote());
@@ -145,11 +145,11 @@ public final class WorkoutExerciseSetHelper {
         Assertions.assertFalse(clone.getCompleted());
         Assertions.assertEquals(original.getGoalWeight(), clone.getGoalWeight());
         Assertions.assertEquals(original.getGoalRepetitions(), clone.getGoalRepetitions());
-        Assertions.assertEquals(original.getGoalTime(), clone.getGoalTime());
+        Assertions.assertEquals(original.getGoalTimeSeconds(), clone.getGoalTimeSeconds());
         Assertions.assertNull(clone.getActualWeight());
         Assertions.assertNull(clone.getActualRepetitions());
-        Assertions.assertNull(clone.getActualTime());
-        Assertions.assertEquals(original.getRestDuration(), clone.getRestDuration());
+        Assertions.assertNull(clone.getActualTimeSeconds());
+        Assertions.assertEquals(original.getRestDurationSeconds(), clone.getRestDurationSeconds());
         Assertions.assertNull(clone.getNote());
     }
 

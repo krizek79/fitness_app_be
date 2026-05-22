@@ -25,9 +25,9 @@ public class WorkoutExerciseSetMapper {
                 .actualRepetitions(workoutExerciseSet.getActualRepetitions())
                 .goalWeight(workoutExerciseSet.getGoalWeight())
                 .actualWeight(workoutExerciseSet.getActualWeight())
-                .goalTimeSeconds(workoutExerciseSet.getGoalTime() != null ? workoutExerciseSet.getGoalTime().toSeconds() : null)
-                .actualTimeSeconds(workoutExerciseSet.getActualTime() != null ? workoutExerciseSet.getActualTime().toSeconds() : null)
-                .restDurationSeconds(workoutExerciseSet.getRestDuration() != null ? workoutExerciseSet.getRestDuration().toSeconds() : null)
+                .goalTimeSeconds(workoutExerciseSet.getGoalTimeSeconds() != null ? workoutExerciseSet.getGoalTimeSeconds().toSeconds() : null)
+                .actualTimeSeconds(workoutExerciseSet.getActualTimeSeconds() != null ? workoutExerciseSet.getActualTimeSeconds().toSeconds() : null)
+                .restDurationSeconds(workoutExerciseSet.getRestDurationSeconds() != null ? workoutExerciseSet.getRestDurationSeconds().toSeconds() : null)
                 .completed(workoutExerciseSet.getCompleted())
                 .note(workoutExerciseSet.getNote())
                 .build();
@@ -44,9 +44,9 @@ public class WorkoutExerciseSetMapper {
         workoutExerciseSet.setActualRepetitions(request.actualRepetitions());
         workoutExerciseSet.setGoalWeight(request.goalWeight());
         workoutExerciseSet.setActualWeight(request.actualWeight());
-        workoutExerciseSet.setGoalTime(request.goalTimeSeconds() != null ? Duration.ofSeconds(request.goalTimeSeconds()) : null);
-        workoutExerciseSet.setActualTime(request.actualTimeSeconds() != null ? Duration.ofSeconds(request.actualTimeSeconds()) : null);
-        workoutExerciseSet.setRestDuration(request.restDurationSeconds() != null ? Duration.ofSeconds(request.restDurationSeconds()) : null);
+        workoutExerciseSet.setGoalTimeSeconds(request.goalTimeSeconds() != null ? Duration.ofSeconds(request.goalTimeSeconds()) : null);
+        workoutExerciseSet.setActualTimeSeconds(request.actualTimeSeconds() != null ? Duration.ofSeconds(request.actualTimeSeconds()) : null);
+        workoutExerciseSet.setRestDurationSeconds(request.restDurationSeconds() != null ? Duration.ofSeconds(request.restDurationSeconds()) : null);
         workoutExerciseSet.setNote(request.note());
         workoutExerciseSet.setCompleted(request.completed());
         workoutExerciseSet.setOrder(request.order());

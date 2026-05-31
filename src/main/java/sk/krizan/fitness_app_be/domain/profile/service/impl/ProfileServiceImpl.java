@@ -77,7 +77,7 @@ public class ProfileServiceImpl implements ProfileService {
         User currentUser = userService.getCurrentUser();
         Profile profile = getProfileById(id);
 
-        if (profile.getUser() != currentUser && !currentUser.getRoleSet().contains(Role.ADMIN)) {
+        if (profile.getUser() != currentUser && !currentUser.getRoles().contains(Role.ADMIN)) {
             throw new ApplicationException(HttpStatus.FORBIDDEN, "");
         }
 

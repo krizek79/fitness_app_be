@@ -61,9 +61,10 @@ public class User extends AuditableEntity {
         joinColumns = @JoinColumn(name = "user_id")
     )
     @Column(name = "role")
-    private final Set<Role> roleSet = new HashSet<>();
+    private final Set<Role> roles = new HashSet<>();
 
-    public void addToRoleSet(Set<Role> roleSet) {
-        this.getRoleSet().addAll(roleSet);
+    public void addToRoles(Set<Role> roles) {
+        this.getRoles().addAll(roles);
     }
+
 }

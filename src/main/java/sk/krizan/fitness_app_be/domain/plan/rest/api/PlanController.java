@@ -16,14 +16,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
-import sk.krizan.fitness_app_be.common.validation.group.UpdateGroup;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.wrapper.PlanPageResponse;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanResponse;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
+import sk.krizan.fitness_app_be.common.validation.group.UpdateGroup;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanDetailResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.wrapper.PlanPageResponse;
 
 @Tag(
         name = "Plan",
@@ -51,7 +52,7 @@ public interface PlanController {
             }
     )
     @PostMapping("filter")
-    PageResponse<PlanResponse> filterPlans(@Valid @RequestBody PlanFilterRequest request);
+    PageResponse<PlanSimpleResponse> filterPlans(@Valid @RequestBody PlanFilterRequest request);
 
     @Operation(
             summary = "Get plan by ID",
@@ -60,7 +61,7 @@ public interface PlanController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Plan found",
-                            content = @Content(schema = @Schema(implementation = PlanResponse.class))),
+                            content = @Content(schema = @Schema(implementation = PlanDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -76,7 +77,7 @@ public interface PlanController {
             }
     )
     @GetMapping("{id}")
-    PlanResponse getPlanById(@PathVariable Long id);
+    PlanDetailResponse getPlanById(@PathVariable Long id);
 
     @Operation(
             summary = "Create a new training plan",
@@ -85,7 +86,7 @@ public interface PlanController {
                     @ApiResponse(
                             responseCode = "201",
                             description = "Plan created successfully",
-                            content = @Content(schema = @Schema(implementation = PlanResponse.class))),
+                            content = @Content(schema = @Schema(implementation = PlanDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -98,7 +99,7 @@ public interface PlanController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    PlanResponse createPlan(@Valid @Validated(CreateGroup.class) @RequestBody PlanInputRequest request);
+    PlanDetailResponse createPlan(@Valid @Validated(CreateGroup.class) @RequestBody PlanInputRequest request);
 
     @Operation(
             summary = "Update an existing training plan",
@@ -107,7 +108,7 @@ public interface PlanController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Plan updated successfully",
-                            content = @Content(schema = @Schema(implementation = PlanResponse.class))),
+                            content = @Content(schema = @Schema(implementation = PlanDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -123,7 +124,7 @@ public interface PlanController {
             }
     )
     @PutMapping("{id}")
-    PlanResponse updatePlan(@PathVariable @Validated(UpdateGroup.class) Long id, @Valid @RequestBody PlanInputRequest request);
+    PlanDetailResponse updatePlan(@PathVariable @Validated(UpdateGroup.class) Long id, @Valid @RequestBody PlanInputRequest request);
 
     @Operation(
             summary = "Delete a training plan",

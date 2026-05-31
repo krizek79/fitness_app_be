@@ -21,7 +21,7 @@ public final class UserHelper {
         User user = new User();
         user.setEmail(faker.internet().emailAddress());
         user.setKeycloakId(UUID.randomUUID().toString());
-        user.addToRoleSet(roles);
+        user.addToRoles(roles);
         return user;
     }
 
@@ -29,7 +29,7 @@ public final class UserHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(user.getId(), response.id());
         Assertions.assertEquals(user.getEmail(), response.email());
-        Assertions.assertEquals(user.getRoleSet(), response.roles());
+        Assertions.assertEquals(user.getRoles(), response.roles());
         if (user.getProfile() == null) {
             Assertions.assertNull(response.profileResponse());
         } else {

@@ -18,6 +18,8 @@ public interface CoachingContractRepository extends JpaRepository<CoachingContra
 
     Optional<CoachingContract> findByCoachIdAndClientIdAndActiveTrue(Long coachId, Long clientId);
 
+    Boolean existsByCoachIdAndClientId(Long coachId, Long clientId);
+
     default CoachingContract getByIdOrThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, CoachingContract.class.getSimpleName() + " with id { %s } does not exist.".formatted(id)));
     }

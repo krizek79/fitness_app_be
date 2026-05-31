@@ -28,4 +28,6 @@ public class PredicateUtils {
             return criteriaBuilder.like(sanitizedFieldExpression, sanitizedValueExpression);
         }
     }
+
+
 }

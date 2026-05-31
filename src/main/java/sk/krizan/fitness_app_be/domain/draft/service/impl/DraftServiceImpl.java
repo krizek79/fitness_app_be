@@ -48,7 +48,7 @@ public class DraftServiceImpl implements DraftService {
         User currentUser = userService.getCurrentUser();
 
         Specification<Draft> specification;
-        if (currentUser.getRoleSet().contains(Role.ADMIN)) {
+        if (currentUser.getRoles().contains(Role.ADMIN)) {
             specification = DraftSpecification.filter(request, null);
         } else {
             Profile currentProfile = currentUser.getProfile();
@@ -116,7 +116,7 @@ public class DraftServiceImpl implements DraftService {
 
     private void checkAuthorization(Draft draft) {
         User currentUser = userService.getCurrentUser();
-        if (currentUser.getRoleSet().contains(Role.ADMIN)) {
+        if (currentUser.getRoles().contains(Role.ADMIN)) {
             return;
         }
 

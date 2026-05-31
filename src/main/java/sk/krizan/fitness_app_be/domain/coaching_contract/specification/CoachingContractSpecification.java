@@ -2,9 +2,11 @@ package sk.krizan.fitness_app_be.domain.coaching_contract.specification;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
@@ -31,4 +33,45 @@ public class CoachingContractSpecification {
             return predicate;
         };
     }
+
+    /**
+     * Creates a predicate checking if the current user has access to a resource through an active coaching contract.
+     * <p>
+     * It builds an EXISTS subquery evaluating to true if there is an active coaching contract
+     * where the current user is either the coach or the client of the resource's author.
+     *
+     * @param currentProfile   the profile of the logged-in user
+     * @param authorExpression the path or expression leading to the resource author's Profile (e.g., root.get(Plan.Fields.author))
+     * @param query            the criteria query for building the subquery
+     * @param criteriaBuilder  the criteria builder for constructing predicates
+     * @return a predicate checking the existence of an active coaching contract with the resource author
+     */
+    public static Predicate getIsCoachPredicate(
+            Profile currentProfile,
+            Expression<Profile> authorExpression,
+            CriteriaQuery<?> query,
+            CriteriaBuilder criteriaBuilder
+    ) {
+        Subquery<Long> contractSubquery = query.subquery(Long.class);
+        Root<CoachingContract> contractRoot = contractSubquery.from(CoachingContract.class);
+
+        Predicate currentProfileIsCoach = criteriaBuilder.and(
+                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.coach), currentProfile),
+                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.client), authorExpression)
+        );
+
+        Predicate currentProfileIsClient = criteriaBuilder.and(
+                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.client), currentProfile),
+                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.coach), authorExpression)
+        );
+
+        contractSubquery.select(criteriaBuilder.literal(1L))
+                .where(criteriaBuilder.and(
+                        criteriaBuilder.isTrue(contractRoot.get(CoachingContract.Fields.active)),
+                        criteriaBuilder.or(currentProfileIsCoach, currentProfileIsClient)
+                ));
+
+        return criteriaBuilder.exists(contractSubquery);
+    }
+
 }

@@ -52,7 +52,7 @@ class UserServiceImplTest {
         testUser.setId(1L);
         testUser.setKeycloakId(KEYCLOAK_ID);
         testUser.setEmail("test@example.com");
-        testUser.addToRoleSet(new HashSet<>(Set.of(Role.USER)));
+        testUser.addToRoles(new HashSet<>(Set.of(Role.USER)));
     }
 
     // --- Tests for syncUser ---
@@ -88,7 +88,7 @@ class UserServiceImplTest {
 
         User result = userService.syncUser(jwt, newRoles);
 
-        assertTrue(result.getRoleSet().contains(Role.ADMIN));
+        assertTrue(result.getRoles().contains(Role.ADMIN));
         verify(userRepository, times(1)).save(any(User.class));
     }
 

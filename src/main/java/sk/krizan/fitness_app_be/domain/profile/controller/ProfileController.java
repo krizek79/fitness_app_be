@@ -16,12 +16,10 @@ public class ProfileController implements sk.krizan.fitness_app_be.domain.profil
 
     private final ProfileService profileService;
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     public PageResponse<ProfileResponse> filterProfiles(ProfileFilterRequest request) {
         return profileService.filterProfiles(request);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ProfileResponse getProfileById(Long id) {
         return ProfileMapper.entityToResponse(profileService.getProfileById(id));
     }

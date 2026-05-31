@@ -5,18 +5,20 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.common.util.DefaultValues;
-import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanResponse;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.helper.GoalHelper;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanDetailResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week.helper.WeekHelper;
 import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekInputRequest;
+import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekSimpleResponse;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -92,13 +94,33 @@ public final class PlanHelper {
                 .build();
     }
 
-    public static void assertPlanResponse(Plan plan, PlanResponse response) {
+    public static void assertPlanSimpleResponse(Plan plan, PlanSimpleResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(plan.getId(), response.id());
         Assertions.assertEquals(plan.getTitle(), response.title());
-        Assertions.assertEquals(plan.getDescription(), response.description());
         ProfileHelper.assertProfileSimpleResponse(plan.getAuthor(), response.author());
         ProfileHelper.assertProfileSimpleResponse(plan.getTrainee(), response.trainee());
+        Assertions.assertEquals(plan.getWeeks().size(), response.numberOfWeeks());
+        Integer numberOfCompletedWeeks = Math.toIntExact(plan.getWeeks().stream()
+                .filter(Week::getCompleted)
+                .count());
+        Assertions.assertEquals(numberOfCompletedWeeks, response.numberOfCompletedWeeks());
+    }
+
+    public static void assertPlanDetailResponse(Plan plan, PlanDetailResponse response) {
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(plan.getId(), response.id());
+        Assertions.assertEquals(plan.getTitle(), response.title());
+        ProfileHelper.assertProfileSimpleResponse(plan.getAuthor(), response.author());
+        ProfileHelper.assertProfileSimpleResponse(plan.getTrainee(), response.trainee());
+
+        Assertions.assertEquals(plan.getWeeks().size(), response.weeks().size());
+        List<Week> sortedWeeks = plan.getWeeks().stream().sorted(Comparator.nullsLast(Comparator.comparing(Week::getOrder))).toList();
+        for (int i = 0; i < sortedWeeks.size(); i++) {
+            Week week = sortedWeeks.get(i);
+            WeekSimpleResponse weekSimpleResponse = response.weeks().get(i);
+            WeekHelper.assertWeekSimpleResponse(week, weekSimpleResponse);
+        }
     }
 
     public static void assertInputToEntity(Plan plan, PlanInputRequest request) {

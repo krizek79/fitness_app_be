@@ -61,7 +61,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<WorkoutSimpleResponse> filterWorkouts(WorkoutFilterRequest request) {
-        Specification<Workout> specification = WorkoutSpecification.filter(request);
+        User currentUser = userService.getCurrentUser();
+
+        Specification<Workout> specification = WorkoutSpecification.filter(request, currentUser);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
                 request.size(),

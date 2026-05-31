@@ -5,22 +5,41 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanDetailResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.mapper.ProfileMapper;
+import sk.krizan.fitness_app_be.domain.week.entity.Week;
+import sk.krizan.fitness_app_be.domain.week.mapper.WeekMapper;
+
+import java.util.Comparator;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PlanMapper {
 
-    public static PlanResponse entityToResponse(Plan plan) {
-        return PlanResponse.builder()
+    public static PlanSimpleResponse entityToSimpleResponse(Plan plan) {
+        return PlanSimpleResponse.builder()
+                .id(plan.getId())
+                .author(ProfileMapper.entityToSimpleResponse(plan.getAuthor()))
+                .trainee(ProfileMapper.entityToSimpleResponse(plan.getTrainee()))
+                .title(plan.getTitle())
+                .numberOfWeeks(plan.getWeeks() != null ? plan.getWeeks().size() : 0)
+                .numberOfCompletedWeeks(plan.getWeeks() != null ? (int) plan.getWeeks().stream().filter(Week::getCompleted).count() : 0)
+                .build();
+    }
+
+    public static PlanDetailResponse entityToDetailResponse(Plan plan) {
+        return PlanDetailResponse.builder()
                 .id(plan.getId())
                 .author(ProfileMapper.entityToSimpleResponse(plan.getAuthor()))
                 .trainee(ProfileMapper.entityToSimpleResponse(plan.getTrainee()))
                 .title(plan.getTitle())
                 .description(plan.getDescription())
-                .numberOfWeeks(plan.getWeeks() != null ? plan.getWeeks().size() : 0)
+                .weeks(plan.getWeeks().stream()
+                        .sorted(Comparator.comparing(Week::getOrder))
+                        .map(WeekMapper::entityToSimpleResponse)
+                        .toList())
                 .build();
     }
 

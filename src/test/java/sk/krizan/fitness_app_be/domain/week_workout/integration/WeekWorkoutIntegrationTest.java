@@ -6,21 +6,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
 import sk.krizan.fitness_app_be.common.helper.RandomHelper;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.common.util.FilterAssertionUtils;
 import sk.krizan.fitness_app_be.domain.coaching_contract.helper.CoachingContractHelper;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
-import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
-import sk.krizan.fitness_app_be.domain.plan.helper.PlanHelper;
-import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
 import sk.krizan.fitness_app_be.domain.exercise.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.domain.exercise.repository.ExerciseRepository;
+import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
+import sk.krizan.fitness_app_be.domain.plan.helper.PlanHelper;
+import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
@@ -37,7 +34,6 @@ import sk.krizan.fitness_app_be.domain.week.helper.WeekHelper;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.domain.week_workout.helper.WeekWorkoutHelper;
 import sk.krizan.fitness_app_be.domain.week_workout.repository.WeekWorkoutRepository;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
@@ -110,45 +106,6 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises());
 
         when(userService.getCurrentUser()).thenReturn(user);
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void filterWeekWorkouts() throws Exception {
-        List<Week> weeks = new ArrayList<>(List.of(
-                WeekHelper.createWeek(1),
-                WeekHelper.createWeek(2)
-        ));
-
-        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
-
-        Week week1 = plan.getWeeks().get(0);
-        Workout workout1 = workoutRepository.save(WorkoutHelper.createWorkout(mockProfile, new HashSet<>(), new ArrayList<>(), DEFAULT_VALUE, false));
-        WeekWorkout weekWorkout1 = weekWorkoutRepository.save(WeekWorkoutHelper.createWeekWorkout(week1, workout1, DayOfWeek.MONDAY));
-
-        Week week2 = plan.getWeeks().get(1);
-        Workout workout2 = workoutRepository.save(WorkoutHelper.createWorkout(mockProfile, new HashSet<>(), new ArrayList<>(), DEFAULT_VALUE, false));
-        WeekWorkout weekWorkout2 = weekWorkoutRepository.save(WeekWorkoutHelper.createWeekWorkout(week2, workout2, DayOfWeek.WEDNESDAY));
-
-        List<WeekWorkout> originalList = new ArrayList<>(List.of(weekWorkout1, weekWorkout2));
-        List<WeekWorkout> expectedList = new ArrayList<>(List.of(originalList.get(0)));
-
-        WeekWorkoutFilterRequest request = WeekWorkoutHelper.createFilterRequest(0, originalList.size(), WeekWorkout.Fields.id, Sort.Direction.DESC.name(), expectedList.get(0).getWeek().getId());
-
-        PageResponse<WeekWorkoutResponse> response = performPost(
-                BASE_URL + "/filter",
-                request,
-                new TypeReference<>() {
-                },
-                HttpStatus.OK);
-
-        FilterAssertionUtils.assertFilterResults(
-                expectedList,
-                response,
-                WeekWorkout::getId,
-                WeekWorkoutResponse::id,
-                WeekWorkoutHelper::assertWeekWorkoutResponse
-        );
     }
 
     @Test

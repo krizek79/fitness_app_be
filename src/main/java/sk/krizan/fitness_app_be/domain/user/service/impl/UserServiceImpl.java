@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -55,10 +55,10 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findByKeycloakId(keycloakId)
                 .map(user -> {
-                    if (!user.getRoleSet().equals(roles)) {
+                    if (!user.getRoles().equals(roles)) {
                         log.info("Updating roles for user: {}", keycloakId);
-                        user.getRoleSet().clear();
-                        user.addToRoleSet(roles);
+                        user.getRoles().clear();
+                        user.addToRoles(roles);
                         return userRepository.save(user);
                     }
                     return user;
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(email);
         user.setKeycloakId(keycloakId);
-        user.addToRoleSet(roles);
+        user.addToRoles(roles);
 
         Profile profile = new Profile();
         profile.setName(name);

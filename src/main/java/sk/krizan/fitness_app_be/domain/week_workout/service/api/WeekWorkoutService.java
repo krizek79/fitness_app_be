@@ -1,22 +1,9 @@
 package sk.krizan.fitness_app_be.domain.week_workout.service.api;
 
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 
 public interface WeekWorkoutService {
-
-    /**
-     * Filters week workouts based on the provided filter request.
-     * The filter can include criteria such as week ID, workout ID, and pagination parameters.
-     * The method returns a paginated response containing the filtered week workouts.
-     *
-     * @param request filter request for week workouts
-     * @return page response with filtered week workouts
-     */
-    PageResponse<WeekWorkoutResponse> filterWeekWorkouts(WeekWorkoutFilterRequest request);
 
     /**
      * Creates a new week workout or updates an existing one.

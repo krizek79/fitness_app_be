@@ -13,8 +13,8 @@ public class WorkoutExerciseController implements sk.krizan.fitness_app_be.domai
 
     private final WorkoutExerciseService workoutExerciseService;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
+    @PreAuthorize("hasPermission(#id, 'WORKOUT_EXERCISE', 'READ')")
     public WorkoutExerciseResponse getWorkoutExerciseById(Long id) {
         return WorkoutExerciseMapper.entityToResponse(workoutExerciseService.getWorkoutExerciseById(id));
     }

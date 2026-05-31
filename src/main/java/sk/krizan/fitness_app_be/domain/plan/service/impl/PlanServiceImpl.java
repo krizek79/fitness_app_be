@@ -14,7 +14,7 @@ import sk.krizan.fitness_app_be.domain.plan.mapper.PlanMapper;
 import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
 import sk.krizan.fitness_app_be.domain.plan.service.api.PlanService;
 import sk.krizan.fitness_app_be.domain.plan.specification.PlanSpecification;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
@@ -49,12 +49,10 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<PlanResponse> filterPlans(PlanFilterRequest request) {
+    public PageResponse<PlanSimpleResponse> filterPlans(PlanFilterRequest request) {
         User currentUser = userService.getCurrentUser();
 
-        Specification<Plan> specification;
-
-        specification = PlanSpecification.filter(request, currentUser);
+        Specification<Plan> specification = PlanSpecification.filter(request, currentUser);
 
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -66,11 +64,11 @@ public class PlanServiceImpl implements PlanService {
 
         Page<Plan> page = planRepository.findAll(specification, pageable);
 
-        List<PlanResponse> responseList = page.stream()
-                .map(PlanMapper::entityToResponse)
+        List<PlanSimpleResponse> responseList = page.stream()
+                .map(PlanMapper::entityToSimpleResponse)
                 .collect(Collectors.toList());
 
-        return PageResponse.<PlanResponse>builder()
+        return PageResponse.<PlanSimpleResponse>builder()
                 .pageNumber(page.getNumber())
                 .pageSize(page.getSize())
                 .totalElements(page.getTotalElements())

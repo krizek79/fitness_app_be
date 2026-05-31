@@ -16,13 +16,11 @@ public class TagController implements sk.krizan.fitness_app_be.domain.tag.rest.a
 
     private final TagService tagService;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Override
     public PageResponse<TagResponse> filterTags(TagFilterRequest request) {
         return tagService.filterTags(request);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public TagResponse createTag(TagCreateRequest request) {
         return TagMapper.entityToResponse(tagService.createTag(request));

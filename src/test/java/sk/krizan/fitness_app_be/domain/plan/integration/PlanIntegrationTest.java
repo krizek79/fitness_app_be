@@ -19,7 +19,8 @@ import sk.krizan.fitness_app_be.domain.plan.helper.PlanHelper;
 import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
-import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanDetailResponse;
+import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.helper.GoalHelper;
 import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
@@ -101,41 +102,41 @@ class PlanIntegrationTest extends BaseIntegrationTest {
     private void filterPlans_byAuthorId(List<Plan> originalList, Long profileId) throws Exception {
         List<Plan> expectedList = new ArrayList<>(List.of(originalList.get(0), originalList.get(1)));
         PlanFilterRequest request = PlanHelper.createFilterRequest(0, originalList.size(), Plan.Fields.id, Sort.Direction.DESC.name(), profileId, null, null);
-        PageResponse<PlanResponse> response = filter(request);
+        PageResponse<PlanSimpleResponse> response = filter(request);
         FilterAssertionUtils.assertFilterResults(
                 expectedList,
                 response,
                 Plan::getId,
-                PlanResponse::id,
-                PlanHelper::assertPlanResponse);
+                PlanSimpleResponse::id,
+                PlanHelper::assertPlanSimpleResponse);
     }
 
     private void filterPlans_byTraineeId(List<Plan> originalList, Long profileId) throws Exception {
         List<Plan> expectedList = new ArrayList<>(List.of(originalList.get(1), originalList.get(3)));
         PlanFilterRequest request = PlanHelper.createFilterRequest(0, originalList.size(), Plan.Fields.id, Sort.Direction.DESC.name(), null, profileId, null);
-        PageResponse<PlanResponse> response = filter(request);
+        PageResponse<PlanSimpleResponse> response = filter(request);
         FilterAssertionUtils.assertFilterResults(
                 expectedList,
                 response,
                 Plan::getId,
-                PlanResponse::id,
-                PlanHelper::assertPlanResponse);
+                PlanSimpleResponse::id,
+                PlanHelper::assertPlanSimpleResponse);
     }
 
     private void filterPlans_byName(List<Plan> originalList) throws Exception {
         List<Plan> expectedList = new ArrayList<>(List.of(originalList.get(2)));
         String title = expectedList.get(0).getTitle().substring(0, 5);
         PlanFilterRequest request = PlanHelper.createFilterRequest(0, originalList.size(), Plan.Fields.id, Sort.Direction.DESC.name(), null, null, title);
-        PageResponse<PlanResponse> response = filter(request);
+        PageResponse<PlanSimpleResponse> response = filter(request);
         FilterAssertionUtils.assertFilterResults(
                 expectedList,
                 response,
                 Plan::getId,
-                PlanResponse::id,
-                PlanHelper::assertPlanResponse);
+                PlanSimpleResponse::id,
+                PlanHelper::assertPlanSimpleResponse);
     }
 
-    private PageResponse<PlanResponse> filter(PlanFilterRequest request) throws Exception {
+    private PageResponse<PlanSimpleResponse> filter(PlanFilterRequest request) throws Exception {
         return performPost(
                 BASE_URL + "/filter",
                 request,
@@ -153,13 +154,13 @@ class PlanIntegrationTest extends BaseIntegrationTest {
         Plan plan = PlanHelper.createPlan(mockProfile, mockProfile, weeks, goals);
         plan = planRepository.save(plan);
 
-        PlanResponse response = performGet(
+        PlanDetailResponse response = performGet(
                 BASE_URL + "/" + plan.getId(),
                 new TypeReference<>() {
                 },
                 HttpStatus.OK);
 
-        PlanHelper.assertPlanResponse(plan, response);
+        PlanHelper.assertPlanDetailResponse(plan, response);
     }
 
     @Test
@@ -202,7 +203,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
                 weeks
         );
 
-        PlanResponse response = performPost(
+        PlanDetailResponse response = performPost(
                 BASE_URL,
                 request,
                 new TypeReference<>() {
@@ -214,6 +215,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
         Plan savedPlan = planRepository.getByIdOrThrow(response.id());
         PlanHelper.assertInputToEntity(savedPlan, request);
         Assertions.assertEquals(traineeProfile.getId(), savedPlan.getTrainee().getId());
+        PlanHelper.assertPlanDetailResponse(savedPlan, response);
     }
 
     @Test
@@ -258,7 +260,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
                 updatedWeeks
         );
 
-        PlanResponse response = performPut(
+        PlanDetailResponse response = performPut(
                 BASE_URL + "/" + plan.getId(),
                 request,
                 new TypeReference<>() {
@@ -269,7 +271,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
         Assertions.assertNotNull(response.id());
         Plan updatedPlan = planRepository.getByIdOrThrow(response.id());
         PlanHelper.assertInputToEntity(updatedPlan, request);
-        PlanHelper.assertPlanResponse(updatedPlan, response);
+        PlanHelper.assertPlanDetailResponse(updatedPlan, response);
     }
 
 }

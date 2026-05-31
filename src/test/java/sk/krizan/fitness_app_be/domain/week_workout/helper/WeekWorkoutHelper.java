@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
@@ -43,22 +42,6 @@ public final class WeekWorkoutHelper {
                 .dayOfWeek(dayOfWeek)
                 .orderInTheDay(orderInTheDay)
                 .completed(completed)
-                .build();
-    }
-
-    public static WeekWorkoutFilterRequest createFilterRequest(
-            Integer page,
-            Integer size,
-            String sortBy,
-            String sortDirection,
-            Long weekId
-    ) {
-        return WeekWorkoutFilterRequest.builder()
-                .page(page)
-                .size(size)
-                .sortBy(sortBy)
-                .sortDirection(sortDirection)
-                .weekId(weekId)
                 .build();
     }
 

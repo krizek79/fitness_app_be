@@ -16,13 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
 import sk.krizan.fitness_app_be.common.validation.group.UpdateGroup;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.wrapper.WeekWorkoutPageResponse;
 
 @Tag(
         name = "WeekWorkout",
@@ -30,36 +27,6 @@ import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.wrapper.WeekWorkout
 )
 @RequestMapping("week-workouts")
 public interface WeekWorkoutController {
-
-    @Operation(
-            summary = "Filter week workouts",
-            description = "Returns a paginated list of week workouts matching the provided filter criteria.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully filtered week workouts",
-                            content = @Content(schema = @Schema(implementation = WeekWorkoutPageResponse.class))),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid request body",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PostMapping("filter")
-    PageResponse<WeekWorkoutResponse> filterWeekWorkouts(@Valid @RequestBody WeekWorkoutFilterRequest request);
-
 
     @Operation(
             summary = "Create week workout",

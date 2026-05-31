@@ -1,31 +1,22 @@
 package sk.krizan.fitness_app_be.domain.week_workout.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.common.util.PageUtils;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week.repository.WeekRepository;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.domain.week_workout.mapper.WeekWorkoutMapper;
 import sk.krizan.fitness_app_be.domain.week_workout.repository.WeekWorkoutRepository;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutFilterRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
-import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.week_workout.service.api.WeekWorkoutService;
-import sk.krizan.fitness_app_be.domain.week_workout.specification.WeekWorkoutSpecification;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
 import sk.krizan.fitness_app_be.domain.workout.service.api.WorkoutService;
 
 import java.time.DayOfWeek;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,44 +26,6 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
 
     private final WeekRepository weekRepository;
     private final WeekWorkoutRepository weekWorkoutRepository;
-
-    private static final List<String> supportedSortFields = List.of(
-            WeekWorkout.Fields.id,
-            WeekWorkout.Fields.dayOfWeek
-    );
-
-    /**
-     * Filters week workouts based on the provided filter request.
-     * The filter can include criteria such as week ID, workout ID, and pagination parameters.
-     * The method returns a paginated response containing the filtered week workouts.
-     *
-     * @param request filter request for week workouts
-     * @return page response with filtered week workouts
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public PageResponse<WeekWorkoutResponse> filterWeekWorkouts(WeekWorkoutFilterRequest request) {
-        Specification<WeekWorkout> specification = WeekWorkoutSpecification.filter(request);
-        Pageable pageable = PageUtils.createPageable(
-                request.page(),
-                request.size(),
-                request.sortBy(),
-                request.sortDirection(),
-                supportedSortFields
-        );
-        Page<WeekWorkout> page = weekWorkoutRepository.findAll(specification, pageable);
-        List<WeekWorkoutResponse> responseList = page.stream()
-                .map(WeekWorkoutMapper::entityToResponse)
-                .collect(Collectors.toList());
-
-        return PageResponse.<WeekWorkoutResponse>builder()
-                .pageNumber(page.getNumber())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .results(responseList)
-                .build();
-    }
 
     /**
      * Creates a new week workout or updates an existing one.

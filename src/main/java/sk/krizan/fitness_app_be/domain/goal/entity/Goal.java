@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
+import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 
 @Entity
 @Getter
@@ -34,7 +34,7 @@ public class Goal extends AuditableEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Plan plan;
+    private Profile profile;
 
     @NotNull
     @Builder.Default
@@ -43,4 +43,5 @@ public class Goal extends AuditableEntity {
     @NotEmpty
     @Size(max = 1000)
     private String text;
+
 }

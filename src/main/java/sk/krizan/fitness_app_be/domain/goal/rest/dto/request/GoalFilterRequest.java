@@ -21,6 +21,7 @@ public record GoalFilterRequest(
         @Pattern(regexp = "ASC|DESC|asc|desc")
         String sortDirection,
         @NotNull
-        Long planId
+        Long profileId,
+        Boolean achieved
 ) {
 }

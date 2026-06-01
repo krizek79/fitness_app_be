@@ -21,10 +21,6 @@ import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanDetailResponse;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
-import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
-import sk.krizan.fitness_app_be.domain.goal.helper.GoalHelper;
-import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
@@ -57,9 +53,6 @@ class PlanIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private WeekRepository weekRepository;
-
-    @Autowired
-    private GoalRepository goalRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -149,9 +142,8 @@ class PlanIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     void getPlanById() throws Exception {
         List<Week> weeks = new ArrayList<>();
-        List<Goal> goals = new ArrayList<>();
 
-        Plan plan = PlanHelper.createPlan(mockProfile, mockProfile, weeks, goals);
+        Plan plan = PlanHelper.createPlan(mockProfile, mockProfile, weeks);
         plan = planRepository.save(plan);
 
         PlanDetailResponse response = performGet(
@@ -170,11 +162,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        List<Goal> goals = new ArrayList<>(List.of(
-                GoalHelper.createGoal()
-        ));
-
-        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, goals));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks));
 
         performDeleteNoResponse(
                 BASE_URL + "/" + plan.getId(),
@@ -182,9 +170,8 @@ class PlanIntegrationTest extends BaseIntegrationTest {
 
         boolean planExists = planRepository.existsById(plan.getId());
         boolean weekExists = weekRepository.existsById(weeks.get(0).getId());
-        boolean goalExists = goalRepository.existsById(goals.get(0).getId());
 
-        PlanHelper.assertDelete(planExists, weekExists, goalExists);
+        PlanHelper.assertDelete(planExists, weekExists);
     }
 
     @Test
@@ -195,11 +182,9 @@ class PlanIntegrationTest extends BaseIntegrationTest {
 
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, traineeProfile));
 
-        List<GoalInputRequest> goals = List.of(GoalHelper.createInputRequest(null, false));
         List<WeekInputRequest> weeks = List.of(WeekHelper.createInputRequest(null, 1, "Note", false));
         PlanInputRequest request = PlanHelper.createInputRequest(
                 traineeProfile.getId(),
-                goals,
                 weeks
         );
 
@@ -229,34 +214,24 @@ class PlanIntegrationTest extends BaseIntegrationTest {
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, traineeProfile1));
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, traineeProfile2));
 
-        // Create plan with initial goals and weeks
-        List<Goal> goals = new ArrayList<>(List.of(
-                GoalHelper.createGoal(),
-                GoalHelper.createGoal()
-        ));
+        // Create plan with initial weeks
 
         List<Week> weeks = new ArrayList<>(List.of(
                 WeekHelper.createWeek(1),
                 WeekHelper.createWeek(2)
         ));
 
-        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, traineeProfile1, weeks, goals));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, traineeProfile1, weeks));
 
-        Long firstGoalId = plan.getGoals().get(0).getId();
         Long firstWeekId = plan.getWeeks().get(0).getId();
 
-        // Update: keep first goal and first week, remove second goal and second week, add new goal and new week
-        List<GoalInputRequest> updatedGoals = List.of(
-                GoalHelper.createInputRequest(firstGoalId, true),
-                GoalHelper.createInputRequest(null, false)
-        );
+        // Update: keep first week, remove second week, add new week
         List<WeekInputRequest> updatedWeeks = List.of(
                 WeekHelper.createInputRequest(firstWeekId, 1, "Week 1 Updated", false),
                 WeekHelper.createInputRequest(null, 2, "Week 2 New", false)
         );
         PlanInputRequest request = PlanHelper.createInputRequest(
                 traineeProfile2.getId(),
-                updatedGoals,
                 updatedWeeks
         );
 

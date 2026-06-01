@@ -5,9 +5,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.common.util.DefaultValues;
-import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
-import sk.krizan.fitness_app_be.domain.goal.helper.GoalHelper;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
 import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
@@ -28,7 +25,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PlanHelper {
 
-    public static Plan createPlan(Profile author, Profile trainee, List<Week> weeks, List<Goal> goals) {
+    public static Plan createPlan(Profile author, Profile trainee, List<Week> weeks) {
         Plan plan = new Plan();
         plan.setAuthor(author);
         plan.setTrainee(trainee);
@@ -36,7 +33,6 @@ public final class PlanHelper {
         plan.setDescription(DefaultValues.DEFAULT_VALUE);
 
         weeks.forEach(plan::addToWeeks);
-        goals.forEach(plan::addToGoals);
 
         return plan;
     }
@@ -53,23 +49,21 @@ public final class PlanHelper {
      */
     public static List<Plan> createMockPlanListForFilter(Profile profile1, Profile profile2) {
         return new ArrayList<>(List.of(
-                createPlan(profile1, profile1, new ArrayList<>(), new ArrayList<>()),
-                createPlan(profile1, profile2, new ArrayList<>(), new ArrayList<>()),
-                createPlan(profile2, profile1, new ArrayList<>(), new ArrayList<>()),
-                createPlan(profile2, profile2, new ArrayList<>(), new ArrayList<>())
+                createPlan(profile1, profile1, new ArrayList<>()),
+                createPlan(profile1, profile2, new ArrayList<>()),
+                createPlan(profile2, profile1, new ArrayList<>()),
+                createPlan(profile2, profile2, new ArrayList<>())
         ));
     }
 
     public static PlanInputRequest createInputRequest(
             Long traineeId,
-            List<GoalInputRequest> goals,
             List<WeekInputRequest> weeks
     ) {
         return PlanInputRequest.builder()
                 .traineeId(traineeId)
                 .title(UUID.randomUUID().toString())
                 .description(UUID.randomUUID().toString())
-                .goals(goals)
                 .weeks(weeks)
                 .build();
     }
@@ -133,7 +127,6 @@ public final class PlanHelper {
             Assertions.assertEquals(request.traineeId(), plan.getTrainee().getId());
         }
 
-        assertGoalInputRequestsToGoals(plan.getGoals(), request.goals());
         assertWeekInputRequestsToWeeks(plan.getWeeks(), request.weeks());
     }
 
@@ -153,28 +146,9 @@ public final class PlanHelper {
         }
     }
 
-    private static void assertGoalInputRequestsToGoals(List<Goal> goals, List<GoalInputRequest> goalInputRequests) {
-        Assertions.assertEquals(goalInputRequests.size(), goals.size());
-        List<Goal> sortedGoals = goals.stream()
-                .sorted(Comparator.nullsLast(Comparator.comparing(Goal::getId)))
-                .toList();
-        List<GoalInputRequest> sortedGoalInputRequests = goalInputRequests.stream()
-                .sorted(Comparator.comparing(
-                        GoalInputRequest::id,
-                        Comparator.nullsLast(Long::compareTo)
-                ))
-                .toList();
-
-        for (int i = 0; i < sortedGoals.size(); i++) {
-            Goal goal = sortedGoals.get(i);
-            GoalInputRequest goalInputRequest = sortedGoalInputRequests.get(i);
-            GoalHelper.assertInputToEntity(goal, goalInputRequest);
-        }
-    }
-
-    public static void assertDelete(boolean planExists, boolean weekExists, boolean goalExists) {
+    public static void assertDelete(boolean planExists, boolean weekExists) {
         Assertions.assertFalse(planExists);
         Assertions.assertFalse(weekExists);
-        Assertions.assertFalse(goalExists);
     }
+
 }

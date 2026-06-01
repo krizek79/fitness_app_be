@@ -4,13 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.PageUtils;
-import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.mapper.GoalMapper;
 import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
@@ -19,6 +16,9 @@ import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
 import sk.krizan.fitness_app_be.domain.goal.service.api.GoalService;
 import sk.krizan.fitness_app_be.domain.goal.specification.GoalSpecification;
+import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.user.entity.User;
+import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,10 +27,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GoalServiceImpl implements GoalService {
 
+    private final UserService userService;
     private final GoalRepository goalRepository;
 
     private static final List<String> supportedSortFields = List.of(
-            Goal.Fields.id
+            Goal.Fields.id,
+            Goal.Fields.achieved
     );
 
     /**
@@ -42,7 +44,9 @@ public class GoalServiceImpl implements GoalService {
     @Override
     @Transactional
     public PageResponse<GoalResponse> filterGoals(GoalFilterRequest request) {
-        Specification<Goal> specification = GoalSpecification.filter(request);
+        User currentUser = userService.getCurrentUser();
+
+        Specification<Goal> specification = GoalSpecification.filter(request, currentUser);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
                 request.size(),
@@ -64,25 +68,39 @@ public class GoalServiceImpl implements GoalService {
     }
 
     /**
-     * Creates a new goal or updates an existing goal for the specified plan based on the provided request data.
+     * Creates a new goal or updates an existing goal based on the provided request data.
      *
-     * @param plan the plan for which the goal is being created or updated
+     * @param id the id of goal to update, or null if creating a new goal
      * @param request the request containing the data for creating or updating the goal
      */
     @Override
-    public void createUpdateGoal(Plan plan, GoalInputRequest request) {
+    @Transactional
+    public Goal createUpdateGoal(Long id, GoalInputRequest request) {
+        Profile profile = userService.getCurrentUser().getProfile();
+
         Goal goal;
-        if (request.id() != null) {
-            //  Update existing goal
-            goal = plan.getGoals().stream()
-                    .filter(g -> g.getId().equals(request.id()))
-                    .findFirst()
-                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "Goal with id %d not found in plan with id %d.".formatted(request.id(), plan.getId())));
-            GoalMapper.inputRequestToEntity(goal, request, plan);
+        boolean isNew = id == null;
+
+        if (isNew) {
+            goal = GoalMapper.inputRequestToEntity(null, request, profile);
         } else {
-            //  Create new goal
-            GoalMapper.inputRequestToEntity(null, request, plan);
+            goal = goalRepository.getByIdOrThrow(id);
+            goal = GoalMapper.inputRequestToEntity(goal, request, profile);
         }
+
+        return goalRepository.save(goal);
+    }
+
+    /**
+     * Deletes the goal with the specified id.
+     *
+     * @param id the id of the goal to delete
+     */
+    @Override
+    public void deleteGoal(Long id) {
+        Goal goal = goalRepository.getByIdOrThrow(id);
+        goal.getProfile().removeFromGoals(goal);
+        goalRepository.delete(goal);
     }
 
 }

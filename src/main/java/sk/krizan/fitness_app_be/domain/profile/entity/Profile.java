@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
+import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
@@ -85,6 +86,10 @@ public class Profile extends AuditableEntity {
     @Builder.Default
     @OneToMany(mappedBy = Plan.Fields.trainee, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Plan> assignedPlans = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = Goal.Fields.profile, fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Goal> goals = new ArrayList<>();
 
     public void addToAuthoredWorkouts(Workout workout) {
         if (workout == null) {
@@ -183,6 +188,24 @@ public class Profile extends AuditableEntity {
 
         coachingContract.setClient(null);
         this.coachedBy.remove(coachingContract);
+    }
+
+    public void addToGoals(Goal goal) {
+        if (goal == null) {
+            return;
+        }
+
+        goal.setProfile(this);
+        this.goals.add(goal);
+    }
+
+    public void removeFromGoals(Goal goal) {
+        if (goal == null) {
+            return;
+        }
+
+        goal.setProfile(null);
+        this.goals.remove(goal);
     }
 
 }

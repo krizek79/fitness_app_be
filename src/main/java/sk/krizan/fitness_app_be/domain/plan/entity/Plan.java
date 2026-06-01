@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 
@@ -55,10 +54,6 @@ public class Plan extends AuditableEntity {
     @OneToMany(mappedBy = Week.Fields.plan, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<Week> weeks = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = Goal.Fields.plan, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private final List<Goal> goals = new ArrayList<>();
-
     public void addToWeeks(Week week) {
         if (week == null) {
             return;
@@ -68,12 +63,4 @@ public class Plan extends AuditableEntity {
         this.weeks.add(week);
     }
 
-    public void addToGoals(Goal goal) {
-        if (goal == null) {
-            return;
-        }
-
-        goal.setPlan(this);
-        this.goals.add(goal);
-    }
 }

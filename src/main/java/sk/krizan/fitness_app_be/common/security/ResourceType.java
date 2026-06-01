@@ -6,6 +6,7 @@ public enum ResourceType {
     WEEK,
     WEEK_WORKOUT,
     WORKOUT,
-    WORKOUT_EXERCISE
+    WORKOUT_EXERCISE,
+    GOAL
 
 }

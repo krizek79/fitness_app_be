@@ -62,7 +62,7 @@ class WeekIntegrationTest extends BaseIntegrationTest {
                 WeekHelper.createWeek(1)
         ));
 
-        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks, new ArrayList<>()));
+        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks));
 
         Week week = plan.getWeeks().get(0);
 

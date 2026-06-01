@@ -46,6 +46,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             case WEEK_WORKOUT -> securityAccessValidator.canAccessWeekWorkout((Long) targetId, currentProfile.getId(), mappedPermission);
             case WORKOUT -> securityAccessValidator.canAccessWorkout((Long) targetId, currentProfile.getId(), mappedPermission);
             case WORKOUT_EXERCISE -> securityAccessValidator.canAccessWorkoutExercise((Long) targetId, currentProfile.getId(), mappedPermission);
+            case GOAL -> securityAccessValidator.canAccessGoal((Long) targetId, currentProfile.getId(), mappedPermission);
         };
     }
 }

@@ -17,8 +17,6 @@ import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanInputRequest;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse;
 import sk.krizan.fitness_app_be.domain.plan.service.api.PlanService;
 import sk.krizan.fitness_app_be.domain.plan.specification.PlanSpecification;
-import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalInputRequest;
-import sk.krizan.fitness_app_be.domain.goal.service.api.GoalService;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
@@ -36,7 +34,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PlanServiceImpl implements PlanService {
 
-    private final GoalService goalService;
     private final WeekService weekService;
     private final UserService userService;
     private final PlanRepository planRepository;
@@ -105,7 +102,6 @@ public class PlanServiceImpl implements PlanService {
         PlanMapper.inputRequestToEntity(isNew, request, plan, author, trainee);
 
         resolveWeeks(plan, request.weeks());
-        resolveGoals(plan, request.goals());
 
         return planRepository.save(plan);
     }
@@ -130,18 +126,6 @@ public class PlanServiceImpl implements PlanService {
         int currentOrder = 1;
         for (Week week : plan.getWeeks()) {
             week.setOrder(currentOrder++);
-        }
-    }
-
-    private void resolveGoals(Plan plan, List<GoalInputRequest> goals) {
-        Set<Long> incomingIds = goals.stream().map(GoalInputRequest::id).filter(Objects::nonNull).collect(Collectors.toSet());
-
-        //  Remove goals that are not in the incoming request
-        plan.getGoals().removeIf(goal -> goal.getId() != null && !incomingIds.contains(goal.getId()));
-
-        //  Add or update goals from the incoming request
-        for (GoalInputRequest goalInputRequest : goals) {
-            goalService.createUpdateGoal(plan, goalInputRequest);
         }
     }
 

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
+import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
+import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
 import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
@@ -22,6 +24,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SecurityAccessValidator {
 
+    private final GoalRepository goalRepository;
     private final PlanRepository planRepository;
     private final WeekRepository weekRepository;
     private final WorkoutRepository workoutRepository;
@@ -63,6 +66,12 @@ public class SecurityAccessValidator {
     public boolean canAccessWorkoutExercise(Long workoutExerciseId, Long profileId, Permission permission) {
         WorkoutExercise workoutExercise = workoutExerciseRepository.getByIdOrThrow(workoutExerciseId);
         return canAccessWorkout(workoutExercise.getWorkout().getId(), profileId, permission);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canAccessGoal(Long goalId, Long profileId, Permission permission) {
+        Goal goal = goalRepository.getByIdOrThrow(goalId);
+        return checkResourceAccess(goal.getProfile().getId(), goal.getProfile().getId(), profileId, permission);
     }
 
     /**

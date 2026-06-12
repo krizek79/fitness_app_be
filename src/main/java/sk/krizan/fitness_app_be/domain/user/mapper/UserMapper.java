@@ -16,7 +16,7 @@ public class UserMapper {
             .id(user.getId())
             .email(user.getEmail())
             .roles(user.getRoles())
-            .profileResponse(ProfileMapper.entityToResponse(user.getProfile()))
+            .profile(ProfileMapper.entityToResponse(user.getProfile()))
             .build();
     }
 }

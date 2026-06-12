@@ -6,14 +6,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.function.Function;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,10 +31,10 @@ public final class MockMvcHelper {
     /**
      * Perform a GET request and parse response as JSON
      *
-     * @param mockMvc MockMvc instance
-     * @param objectMapper ObjectMapper for JSON parsing
-     * @param endpoint request endpoint
-     * @param responseType response type for deserialization
+     * @param mockMvc        MockMvc instance
+     * @param objectMapper   ObjectMapper for JSON parsing
+     * @param endpoint       request endpoint
+     * @param responseType   response type for deserialization
      * @param expectedStatus expected HTTP status
      * @return parsed response object
      * @throws Exception if request fails
@@ -46,34 +47,13 @@ public final class MockMvcHelper {
             HttpStatus expectedStatus
     ) throws Exception {
         MvcResult result = mockMvc.perform(
-                get(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
+                        get(endpoint)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is(expectedStatus.value()))
+                .andReturn();
 
         return parseResponse(objectMapper, result, responseType);
-    }
-
-    /**
-     * Perform a GET request without expecting a response body (e.g., 401, 403, 204)
-     *
-     * @param mockMvc MockMvc instance
-     * @param endpoint request endpoint
-     * @param expectedStatus expected HTTP status
-     * @throws Exception if request fails
-     */
-    public static void performGetNoResponse(
-            MockMvc mockMvc,
-            String endpoint,
-            HttpStatus expectedStatus
-    ) throws Exception {
-        mockMvc.perform(
-                get(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
     }
 
     // ===== POST =====
@@ -81,11 +61,11 @@ public final class MockMvcHelper {
     /**
      * Perform a POST request and parse response as JSON
      *
-     * @param mockMvc MockMvc instance
-     * @param objectMapper ObjectMapper for JSON parsing
-     * @param endpoint request endpoint
-     * @param requestBody request body object (will be serialized to JSON)
-     * @param responseType response type for deserialization
+     * @param mockMvc        MockMvc instance
+     * @param objectMapper   ObjectMapper for JSON parsing
+     * @param endpoint       request endpoint
+     * @param requestBody    request body object (will be serialized to JSON)
+     * @param responseType   response type for deserialization
      * @param expectedStatus expected HTTP status (e.g., 200, 201, 400)
      * @return parsed response object
      * @throws Exception if request fails
@@ -99,71 +79,48 @@ public final class MockMvcHelper {
             HttpStatus expectedStatus
     ) throws Exception {
         MvcResult result = mockMvc.perform(
-                post(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(requestBody))
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
+                        post(endpoint)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(requestBody))
+                ).andExpect(status().is(expectedStatus.value()))
+                .andReturn();
 
         return parseResponse(objectMapper, result, responseType);
     }
 
     /**
-     * Perform a POST request that returns plain text (e.g., Long ID)
+     * Performs a multipart POST request and returns the parsed JSON response.
      *
-     * @param mockMvc MockMvc instance
-     * @param endpoint request endpoint
-     * @param requestBody request body object (will be serialized to JSON)
-     * @param responseParser function to parse response string
-     * @param expectedStatus expected HTTP status
-     * @return parsed response
-     * @throws Exception if request fails
+     * @param mockMvc        MockMvc instance used to execute the request
+     * @param objectMapper   ObjectMapper used for JSON serialization/deserialization
+     * @param endpoint       target endpoint path
+     * @param requestBody    request body object serialized as JSON part
+     * @param file           optional multipart file (can be null)
+     * @param responseType   expected response type for JSON deserialization
+     * @param expectedStatus expected HTTP status of the response
+     * @return deserialized response object
+     * @throws Exception if request execution or parsing fails
      */
-    public static <REQUEST, RESPONSE> RESPONSE performPostPlainText(
+    public static <REQUEST, RESPONSE> RESPONSE performMultipartPost(
             MockMvc mockMvc,
             ObjectMapper objectMapper,
             String endpoint,
             REQUEST requestBody,
-            Function<String, RESPONSE> responseParser,
+            MockMultipartFile file,
+            TypeReference<RESPONSE> responseType,
             HttpStatus expectedStatus
     ) throws Exception {
-        MvcResult result = mockMvc.perform(
-                post(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(requestBody))
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
-
-        String responseText = result.getResponse().getContentAsString();
-        return responseParser.apply(responseText);
-    }
-
-    /**
-     * Perform a POST request without expecting a response body (e.g., 401, 403, 204)
-     *
-     * @param mockMvc MockMvc instance
-     * @param objectMapper ObjectMapper for JSON parsing
-     * @param endpoint request endpoint
-     * @param requestBody request body object (will be serialized to JSON)
-     * @param expectedStatus expected HTTP status
-     * @throws Exception if request fails
-     */
-    public static <REQUEST> void performPostNoResponse(
-            MockMvc mockMvc,
-            ObjectMapper objectMapper,
-            String endpoint,
-            REQUEST requestBody,
-            HttpStatus expectedStatus
-    ) throws Exception {
-        mockMvc.perform(
-                post(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(requestBody))
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
+        return performMultipart(
+                mockMvc,
+                objectMapper,
+                "POST",
+                endpoint,
+                requestBody,
+                file,
+                responseType,
+                expectedStatus
+        );
     }
 
     // ===== PUT =====
@@ -171,11 +128,11 @@ public final class MockMvcHelper {
     /**
      * Perform a PUT request and parse response as JSON
      *
-     * @param mockMvc MockMvc instance
-     * @param objectMapper ObjectMapper for JSON parsing
-     * @param endpoint request endpoint
-     * @param requestBody request body object (will be serialized to JSON)
-     * @param responseType response type for deserialization
+     * @param mockMvc        MockMvc instance
+     * @param objectMapper   ObjectMapper for JSON parsing
+     * @param endpoint       request endpoint
+     * @param requestBody    request body object (will be serialized to JSON)
+     * @param responseType   response type for deserialization
      * @param expectedStatus expected HTTP status
      * @return parsed response object
      * @throws Exception if request fails
@@ -189,77 +146,57 @@ public final class MockMvcHelper {
             HttpStatus expectedStatus
     ) throws Exception {
         MvcResult result = mockMvc.perform(
-                put(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(requestBody))
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
+                        put(endpoint)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(requestBody))
+                ).andExpect(status().is(expectedStatus.value()))
+                .andReturn();
 
         return parseResponse(objectMapper, result, responseType);
     }
 
     /**
-     * Perform a PUT request without expecting a response body (e.g., 401, 403, 204)
+     * Performs a multipart PUT request and returns the parsed JSON response.
      *
-     * @param mockMvc MockMvc instance
-     * @param objectMapper ObjectMapper for JSON parsing
-     * @param endpoint request endpoint
-     * @param requestBody request body object (will be serialized to JSON)
-     * @param expectedStatus expected HTTP status
-     * @throws Exception if request fails
+     * @param mockMvc        MockMvc instance used to execute the request
+     * @param objectMapper   ObjectMapper used for JSON serialization/deserialization
+     * @param endpoint       target endpoint path
+     * @param requestBody    request body object serialized as JSON part
+     * @param file           optional multipart file (can be null)
+     * @param responseType   expected response type for JSON deserialization
+     * @param expectedStatus expected HTTP status of the response
+     * @return deserialized response object
+     * @throws Exception if request execution or parsing fails
      */
-    public static <REQUEST> void performPutNoResponse(
+    public static <REQUEST, RESPONSE> RESPONSE performMultipartPut(
             MockMvc mockMvc,
             ObjectMapper objectMapper,
             String endpoint,
             REQUEST requestBody,
+            MockMultipartFile file,
+            TypeReference<RESPONSE> responseType,
             HttpStatus expectedStatus
     ) throws Exception {
-        mockMvc.perform(
-                put(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(requestBody))
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
+        return performMultipart(
+                mockMvc,
+                objectMapper,
+                "PUT",
+                endpoint,
+                requestBody,
+                file,
+                responseType,
+                expectedStatus
+        );
     }
 
     // ===== DELETE =====
 
     /**
-     * Perform a DELETE request and parse response as JSON
-     *
-     * @param mockMvc MockMvc instance
-     * @param objectMapper ObjectMapper for JSON parsing
-     * @param endpoint request endpoint
-     * @param responseType response type for deserialization
-     * @param expectedStatus expected HTTP status
-     * @return parsed response object
-     * @throws Exception if request fails
-     */
-    public static <RESPONSE> RESPONSE performDelete(
-            MockMvc mockMvc,
-            ObjectMapper objectMapper,
-            String endpoint,
-            TypeReference<RESPONSE> responseType,
-            HttpStatus expectedStatus
-    ) throws Exception {
-        MvcResult result = mockMvc.perform(
-                delete(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
-
-        return parseResponse(objectMapper, result, responseType);
-    }
-
-    /**
      * Perform a DELETE request without expecting a response body (e.g., 204 No Content, 401, 403)
      *
-     * @param mockMvc MockMvc instance
-     * @param endpoint request endpoint
+     * @param mockMvc        MockMvc instance
+     * @param endpoint       request endpoint
      * @param expectedStatus expected HTTP status
      * @throws Exception if request fails
      */
@@ -269,18 +206,18 @@ public final class MockMvcHelper {
             HttpStatus expectedStatus
     ) throws Exception {
         mockMvc.perform(
-                delete(endpoint)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().is(expectedStatus.value()))
-         .andReturn();
+                        delete(endpoint)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is(expectedStatus.value()))
+                .andReturn();
     }
 
     /**
      * Parse response MvcResult to typed object
      *
      * @param objectMapper ObjectMapper for deserialization
-     * @param result MvcResult from MockMvc perform
+     * @param result       MvcResult from MockMvc perform
      * @param responseType TypeReference for response object type
      * @return parsed response
      * @throws Exception if parsing fails
@@ -292,6 +229,59 @@ public final class MockMvcHelper {
     ) throws Exception {
         String jsonResponse = result.getResponse().getContentAsString();
         return objectMapper.readValue(jsonResponse, responseType);
+    }
+
+    /**
+     * Performs a multipart HTTP request (POST, PUT, etc.) and returns the parsed JSON response.
+     *
+     * @param mockMvc        MockMvc instance used to execute the request
+     * @param objectMapper   ObjectMapper used for JSON serialization/deserialization
+     * @param method         HTTP method to use (POST, PUT, etc.)
+     * @param endpoint       target endpoint path
+     * @param requestBody    request body object serialized as JSON part
+     * @param file           optional multipart file (can be null)
+     * @param responseType   expected response type for JSON deserialization
+     * @param expectedStatus expected HTTP status of the response
+     * @return deserialized response object
+     * @throws Exception if request execution or parsing fails
+     */
+    private static <REQUEST, RESPONSE> RESPONSE performMultipart(
+            MockMvc mockMvc,
+            ObjectMapper objectMapper,
+            String method,
+            String endpoint,
+            REQUEST requestBody,
+            MockMultipartFile file,
+            TypeReference<RESPONSE> responseType,
+            HttpStatus expectedStatus
+    ) throws Exception {
+
+        MockMultipartFile requestPart = new MockMultipartFile(
+                "request",
+                "",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(requestBody)
+        );
+
+        MockMultipartHttpServletRequestBuilder builder = multipart(endpoint)
+                .file(requestPart);
+
+        if (file != null) {
+            builder.file(file);
+        }
+
+        builder.with(csrf());
+
+        builder.with(request -> {
+            request.setMethod(method);
+            return request;
+        });
+
+        MvcResult result = mockMvc.perform(builder)
+                .andExpect(status().is(expectedStatus.value()))
+                .andReturn();
+
+        return parseResponse(objectMapper, result, responseType);
     }
 
 }

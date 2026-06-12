@@ -31,9 +31,9 @@ public final class UserHelper {
         Assertions.assertEquals(user.getEmail(), response.email());
         Assertions.assertEquals(user.getRoles(), response.roles());
         if (user.getProfile() == null) {
-            Assertions.assertNull(response.profileResponse());
+            Assertions.assertNull(response.profile());
         } else {
-            ProfileHelper.assertProfileResponse(user.getProfile(), response.profileResponse());
+            ProfileHelper.assertProfileResponse(user.getProfile(), response.profile());
         }
     }
 

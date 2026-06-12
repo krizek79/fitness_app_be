@@ -9,18 +9,36 @@ import java.math.BigDecimal;
 @Builder
 @FieldNameConstants
 public record WorkoutExerciseSetResponse(
+
         Long id,
+
         Long workoutExerciseId,
+
         Integer order,
+
         ReferenceDataResponse workoutExerciseSetType,
+
         Integer goalRepetitions,
+
         Integer actualRepetitions,
+
         BigDecimal goalWeight,
+
         BigDecimal actualWeight,
+
         Long goalTimeSeconds,
+
         Long actualTimeSeconds,
+
+        BigDecimal goalDistanceMeters,
+
+        BigDecimal actualDistanceMeters,
+
         Long restDurationSeconds,
+
         Boolean completed,
+
         String note
+
 ) {
 }

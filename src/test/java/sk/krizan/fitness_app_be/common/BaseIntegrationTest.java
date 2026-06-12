@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.helper.MockMvcHelper;
@@ -58,24 +59,32 @@ public abstract class BaseIntegrationTest {
     }
 
     /**
-     * Perform a POST request without expecting response body (e.g., 401, 403)
+     * Performs a multipart POST request using MockMvc and returns the parsed response.
      *
-     * @param endpoint       request endpoint path
-     * @param requestBody    request payload
-     * @param expectedStatus expected HTTP status code
-     * @throws Exception if request fails
+     * @param endpoint       target endpoint path
+     * @param requestBody    request body object sent as JSON multipart part
+     * @param file           optional multipart file (can be null)
+     * @param responseType   expected response type for JSON deserialization
+     * @param expectedStatus expected HTTP status of the response
+     * @return deserialized response object
+     * @throws Exception if request execution or parsing fails
      */
-    protected <REQUEST> void performPostNoResponse(
+    protected <REQUEST, RESPONSE> RESPONSE performMultipartPost(
             String endpoint,
             REQUEST requestBody,
+            MockMultipartFile file,
+            TypeReference<RESPONSE> responseType,
             HttpStatus expectedStatus
     ) throws Exception {
-        MockMvcHelper.performPostNoResponse(
+        return MockMvcHelper.performMultipartPost(
                 mockMvc,
                 objectMapper,
                 endpoint,
                 requestBody,
-                expectedStatus);
+                file,
+                responseType,
+                expectedStatus
+        );
     }
 
     /**
@@ -104,24 +113,32 @@ public abstract class BaseIntegrationTest {
     }
 
     /**
-     * Perform a PUT request without expecting response body (e.g., 401, 403)
+     * Performs a multipart PUT request using MockMvc and returns the parsed response.
      *
-     * @param endpoint       request endpoint path
-     * @param requestBody    request payload
-     * @param expectedStatus expected HTTP status code
-     * @throws Exception if request fails
+     * @param endpoint       target endpoint path
+     * @param requestBody    request body object sent as JSON multipart part
+     * @param file           optional multipart file (can be null)
+     * @param responseType   expected response type for JSON deserialization
+     * @param expectedStatus expected HTTP status of the response
+     * @return deserialized response object
+     * @throws Exception if request execution or parsing fails
      */
-    protected <REQUEST> void performPutNoResponse(
+    protected <REQUEST, RESPONSE> RESPONSE performMultipartPut(
             String endpoint,
             REQUEST requestBody,
+            MockMultipartFile file,
+            TypeReference<RESPONSE> responseType,
             HttpStatus expectedStatus
     ) throws Exception {
-        MockMvcHelper.performPutNoResponse(
+        return MockMvcHelper.performMultipartPut(
                 mockMvc,
                 objectMapper,
                 endpoint,
                 requestBody,
-                expectedStatus);
+                file,
+                responseType,
+                expectedStatus
+        );
     }
 
     /**
@@ -143,23 +160,6 @@ public abstract class BaseIntegrationTest {
                 objectMapper,
                 endpoint,
                 responseType,
-                expectedStatus);
-    }
-
-    /**
-     * Perform a GET request without expecting response body (e.g., 401, 403)
-     *
-     * @param endpoint       request endpoint path
-     * @param expectedStatus expected HTTP status code
-     * @throws Exception if request fails
-     */
-    protected void performGetNoResponse(
-            String endpoint,
-            HttpStatus expectedStatus
-    ) throws Exception {
-        MockMvcHelper.performGetNoResponse(
-                mockMvc,
-                endpoint,
                 expectedStatus);
     }
 

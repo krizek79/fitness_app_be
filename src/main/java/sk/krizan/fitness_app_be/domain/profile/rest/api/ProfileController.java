@@ -15,7 +15,7 @@ import sk.krizan.fitness_app_be.domain.profile.rest.dto.wrapper.ProfilePageRespo
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
 
 @Tag(
         name = "Profile",
@@ -43,7 +43,7 @@ public interface ProfileController {
             }
     )
     @PostMapping("filter")
-    PageResponse<ProfileResponse> filterProfiles(@Valid @RequestBody ProfileFilterRequest request);
+    PageResponse<ProfileDetailResponse> filterProfiles(@Valid @RequestBody ProfileFilterRequest request);
 
     @Operation(
             summary = "Get profile by ID",
@@ -52,7 +52,7 @@ public interface ProfileController {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Profile found",
-                            content = @Content(schema = @Schema(implementation = ProfileResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ProfileDetailResponse.class))),
                     @ApiResponse(
                             responseCode = "403",
                             description = "Access denied",
@@ -68,7 +68,7 @@ public interface ProfileController {
             }
     )
     @GetMapping("{id}")
-    ProfileResponse getProfileById(@PathVariable Long id);
+    ProfileDetailResponse getProfileById(@PathVariable Long id);
 
     @Operation(
             summary = "Delete profile",

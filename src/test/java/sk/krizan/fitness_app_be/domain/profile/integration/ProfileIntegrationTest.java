@@ -15,7 +15,7 @@ import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
 import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
@@ -57,7 +57,7 @@ class ProfileIntegrationTest extends BaseIntegrationTest {
 
         ProfileFilterRequest request = ProfileHelper.createFilterRequest(0, originalList.size(), Profile.Fields.id, Sort.Direction.ASC.name(), expectedList.get(0).getName().substring(0, 5));
 
-        PageResponse<ProfileResponse> response = performPost(
+        PageResponse<ProfileDetailResponse> response = performPost(
                 BASE_URL + "/filter",
                 request,
                 new TypeReference<>() {
@@ -68,7 +68,7 @@ class ProfileIntegrationTest extends BaseIntegrationTest {
                 expectedList,
                 response,
                 Profile::getId,
-                ProfileResponse::id,
+                ProfileDetailResponse::id,
                 ProfileHelper::assertProfileResponse);
     }
 
@@ -78,7 +78,7 @@ class ProfileIntegrationTest extends BaseIntegrationTest {
         User user = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
         Profile profile = profileRepository.save(ProfileHelper.createProfile(user));
 
-        ProfileResponse response = performGet(
+        ProfileDetailResponse response = performGet(
                 BASE_URL + "/" + profile.getId(),
                 new TypeReference<>() {
                 },
@@ -99,7 +99,7 @@ class ProfileIntegrationTest extends BaseIntegrationTest {
 
         profile = profileRepository.findById(profile.getId()).orElseThrow();
 
-        Assertions.assertTrue(profile.getDeleted());
+        Assertions.assertTrue(profile.isDeleted());
     }
 
 }

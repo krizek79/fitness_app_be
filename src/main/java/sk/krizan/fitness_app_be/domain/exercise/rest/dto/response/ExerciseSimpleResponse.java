@@ -8,9 +8,17 @@ import java.util.List;
 
 @Builder
 @FieldNameConstants
-public record ExerciseResponse(
+public record ExerciseSimpleResponse(
+
         Long id,
-        String name,
-        List<ReferenceDataResponse> muscleGroupResponseList
+
+        String title,
+
+        String thumbnailUrl,
+
+        ReferenceDataResponse exerciseCategory,
+
+        List<ReferenceDataResponse> primaryMuscles
+
 ) {
 }

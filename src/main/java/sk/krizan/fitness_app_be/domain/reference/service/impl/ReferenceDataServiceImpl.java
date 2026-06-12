@@ -3,13 +3,16 @@ package sk.krizan.fitness_app_be.domain.reference.service.impl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
-import sk.krizan.fitness_app_be.domain.exercise.entity.MuscleGroup;
+import sk.krizan.fitness_app_be.domain.exercise.entity.ExerciseCategory;
+import sk.krizan.fitness_app_be.domain.exercise.entity.MovementPattern;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.entity.Muscle;
 import sk.krizan.fitness_app_be.domain.reference.entity.BaseEnum;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.reference.mapper.ReferenceDataMapper;
 import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceDataResponse;
 import sk.krizan.fitness_app_be.domain.reference.service.api.ReferenceDataService;
-import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseType;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseMetric;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSetType;
 
 import java.util.Arrays;
@@ -20,12 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class ReferenceDataServiceImpl implements ReferenceDataService {
 
-    private static final String ERROR_ENUM_NOT_FOUND = "Enum with key { %s } does not exist.";
-
     private final Map<String, Class<? extends BaseEnum>> registry = Map.of(
-            "muscle-groups", MuscleGroup.class,
+            "muscles", Muscle.class,
+            "movement-patterns", MovementPattern.class,
             "weight-units", WeightUnit.class,
-            "workout-exercise-types", WorkoutExerciseType.class,
+            "distance-units", DistanceUnit.class,
+            "exercise-category", ExerciseCategory.class,
+            "workout-exercise-types", WorkoutExerciseMetric.class,
             "workout-exercise-set-types", WorkoutExerciseSetType.class
     );
 
@@ -54,11 +58,4 @@ public class ReferenceDataServiceImpl implements ReferenceDataService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public <T extends Enum<T> & BaseEnum> T findEnumByKey(Class<T> enumClass, String key) {
-        return Arrays.stream(enumClass.getEnumConstants())
-                .filter(e -> e.getKey().equals(key))
-                .findFirst()
-                .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_ENUM_NOT_FOUND.formatted(key)));
-    }
 }

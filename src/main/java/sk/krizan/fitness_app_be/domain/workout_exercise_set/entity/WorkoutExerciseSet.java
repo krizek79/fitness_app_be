@@ -70,6 +70,10 @@ public class WorkoutExerciseSet extends AuditableEntity {
 
     private Duration actualTimeSeconds;
 
+    private BigDecimal goalDistanceMeters;
+
+    private BigDecimal actualDistanceMeters;
+
     private Duration restDurationSeconds;
 
     @NotNull

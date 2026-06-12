@@ -3,24 +3,48 @@ package sk.krizan.fitness_app_be.domain.exercise.helper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import sk.krizan.fitness_app_be.domain.equipment.entity.Equipment;
+import sk.krizan.fitness_app_be.domain.equipment.helper.EquipmentHelper;
+import sk.krizan.fitness_app_be.domain.equipment.rest.dto.response.EquipmentResponse;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
-import sk.krizan.fitness_app_be.domain.exercise.entity.MuscleGroup;
-import sk.krizan.fitness_app_be.domain.exercise.rest.dto.request.ExerciseCreateRequest;
+import sk.krizan.fitness_app_be.domain.exercise.entity.ExerciseCategory;
+import sk.krizan.fitness_app_be.domain.exercise.entity.MovementPattern;
 import sk.krizan.fitness_app_be.domain.exercise.rest.dto.request.ExerciseFilterRequest;
-import sk.krizan.fitness_app_be.domain.exercise.rest.dto.response.ExerciseResponse;
+import sk.krizan.fitness_app_be.domain.exercise.rest.dto.request.ExerciseInputRequest;
+import sk.krizan.fitness_app_be.domain.exercise.rest.dto.response.ExerciseDetailResponse;
+import sk.krizan.fitness_app_be.domain.exercise.rest.dto.response.ExerciseSimpleResponse;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.entity.ExerciseMuscleRole;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.entity.ExerciseMuscleRoleType;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.entity.Muscle;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.helper.ExerciseMuscleRoleHelper;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.rest.dto.request.ExerciseMuscleRoleInputRequest;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.rest.dto.response.ExerciseMuscleRoleResponse;
+import sk.krizan.fitness_app_be.domain.reference.entity.BaseEnum;
 import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceDataResponse;
+import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
 
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExerciseHelper {
 
-    public static Exercise createExercise(String name, Set<MuscleGroup> muscleGroups) {
+    public static Exercise createExercise(
+            String title,
+            ExerciseCategory exerciseCategory,
+            List<MovementPattern> movementPatterns,
+            List<ExerciseMuscleRole> muscles,
+            List<Equipment> equipment
+    ) {
         Exercise exercise = new Exercise();
-        exercise.setName(name);
-        exercise.addToMuscleGroups(muscleGroups);
+        exercise.setTitle(title);
+        exercise.setExerciseCategory(exerciseCategory);
+        exercise.addToMovementPatterns(new HashSet<>(movementPatterns));
+        muscles.forEach(exercise::addToMuscles);
+        equipment.forEach(exercise::addToRequiredEquipment);
+
         return exercise;
     }
 
@@ -29,99 +53,141 @@ public final class ExerciseHelper {
             Integer size,
             String sortBy,
             String sortDirection,
-            String name,
-            List<MuscleGroup> muscleGroupList
+            String title,
+            ExerciseCategory exerciseCategory,
+            List<MovementPattern> movementPatterns,
+            List<Muscle> muscles,
+            List<Long> requiredEquipmentIds
     ) {
         return ExerciseFilterRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
-                .name(name)
-                .muscleGroupList(muscleGroupList)
+                .title(title)
+                .exerciseCategory(exerciseCategory)
+                .movementPatterns(movementPatterns)
+                .muscles(muscles)
+                .requiredEquipmentIds(requiredEquipmentIds)
                 .build();
     }
 
-    public static ExerciseCreateRequest createCreateRequest(
-            String name,
-            Set<MuscleGroup> muscleGroupSet
+    public static ExerciseInputRequest createInputRequest(
+            String title,
+            ExerciseCategory exerciseCategory,
+            Set<MovementPattern> movementPatterns,
+            List<ExerciseMuscleRoleInputRequest> muscles,
+            List<Long> equipmentIds
     ) {
-        return ExerciseCreateRequest.builder()
-                .name(name)
-                .muscleGroupSet(muscleGroupSet)
+        return ExerciseInputRequest.builder()
+                .title(title)
+                .exerciseCategory(exerciseCategory)
+                .muscles(muscles)
+                .movementPatterns(movementPatterns)
+                .requiredEquipmentIds(equipmentIds)
                 .build();
-    }
-
-    public static void assertExerciseResponse_create(ExerciseCreateRequest request, ExerciseResponse response) {
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        Assertions.assertNotNull(response.name());
-        Assertions.assertEquals(request.name(), response.name());
-        Assertions.assertNotNull(response.muscleGroupResponseList());
-        Assertions.assertFalse(response.muscleGroupResponseList().isEmpty());
-        Assertions.assertEquals(request.muscleGroupSet().size(), response.muscleGroupResponseList().size());
-        Set<String> responseKeys = response.muscleGroupResponseList()
-                .stream()
-                .map(ReferenceDataResponse::key)
-                .collect(Collectors.toSet());
-        Set<String> expectedKeys = request.muscleGroupSet()
-                .stream()
-                .map(MuscleGroup::getKey)
-                .collect(Collectors.toSet());
-        Assertions.assertEquals(expectedKeys, responseKeys);
     }
 
     /**
-     * Contains:
-     * <ul>
-     * <li>title: 'Bench press', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
-     * <li>title: 'Push ups', muscle groups: [CHEST, SHOULDERS, TRICEPS]</li>
-     * <li>title: 'Pull ups', muscle groups: [BACK, BICEPS]</li>
-     * <li>title: 'Biceps curls', muscle groups: [BICEPS]</li>
-     * <li>title: 'Squats', muscle groups: [LEGS]</li>
-     * </ul>
-     * <br>
-     *
-     * @return List of sample exercises
+     * @return List of 6 sample exercises
      */
-    public static List<Exercise> createOriginalExercises() {
-        Exercise benchPress = ExerciseHelper.createExercise("Bench press", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
-        Exercise pushUps = ExerciseHelper.createExercise("Push ups", Set.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS));
-        Exercise pullUps = ExerciseHelper.createExercise("Pull ups", Set.of(MuscleGroup.BACK, MuscleGroup.BICEPS));
-        Exercise bicepsCurls = ExerciseHelper.createExercise("Biceps curls", Set.of(MuscleGroup.BICEPS));
-        Exercise squats = ExerciseHelper.createExercise("Squats", Set.of(MuscleGroup.LEGS));
+    public static List<Exercise> createOriginalExercises(List<Equipment> equipment) {
+        Exercise benchPress = ExerciseHelper.createExercise("Bench press", ExerciseCategory.STRENGTH, List.of(MovementPattern.HORIZONTAL_PUSH), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.CHEST, ExerciseMuscleRoleType.PRIMARY), ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.SHOULDERS, ExerciseMuscleRoleType.SECONDARY)), List.of(equipment.iterator().next()));
+        Exercise pushUps = ExerciseHelper.createExercise("Push ups", ExerciseCategory.STRENGTH, List.of(MovementPattern.HORIZONTAL_PUSH), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.CHEST, ExerciseMuscleRoleType.PRIMARY)), List.of(equipment.iterator().next()));
+        Exercise pullUps = ExerciseHelper.createExercise("Pull ups", ExerciseCategory.STRENGTH, List.of(MovementPattern.VERTICAL_PULL), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.BACK, ExerciseMuscleRoleType.PRIMARY)), List.of(equipment.iterator().next()));
+        Exercise bicepsCurls = ExerciseHelper.createExercise("Biceps curls", ExerciseCategory.STRENGTH, List.of(), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.BICEPS, ExerciseMuscleRoleType.PRIMARY)), List.of(equipment.iterator().next()));
+        Exercise squats = ExerciseHelper.createExercise("Squats", ExerciseCategory.STRENGTH, List.of(MovementPattern.SQUAT), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.QUADS, ExerciseMuscleRoleType.PRIMARY)), List.of(equipment.iterator().next()));
+        Exercise sprint = ExerciseHelper.createExercise("Sprint", ExerciseCategory.CARDIO, List.of(MovementPattern.LOCOMOTION), List.of(), List.of());
 
-        return List.of(benchPress, pushUps, pullUps, bicepsCurls, squats);
+        return List.of(benchPress, pushUps, pullUps, bicepsCurls, squats, sprint);
     }
 
-    public static void assertExerciseResponse(Exercise exercise, ExerciseResponse response) {
+    public static void assertExerciseDetailResponse(Exercise exercise, ExerciseDetailResponse response) {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        Assertions.assertEquals(exercise.getId(), response.id());
-        Assertions.assertNotNull(response.name());
-        Assertions.assertEquals(exercise.getName(), response.name());
-        Assertions.assertNotNull(response.muscleGroupResponseList());
-        Assertions.assertFalse(response.muscleGroupResponseList().isEmpty());
-        Assertions.assertEquals(exercise.getMuscleGroups().size(), response.muscleGroupResponseList().size());
-        Set<String> expectedKeys = exercise.getMuscleGroups()
-                .stream()
-                .map(MuscleGroup::getKey)
-                .collect(Collectors.toSet());
-        Set<String> expectedValues = exercise.getMuscleGroups()
-                .stream()
-                .map(MuscleGroup::getValue)
-                .collect(Collectors.toSet());
-        Set<String> responseKeys = response.muscleGroupResponseList()
-                .stream()
-                .map(ReferenceDataResponse::key)
-                .collect(Collectors.toSet());
-        Set<String> responseValues = response.muscleGroupResponseList()
-                .stream()
-                .map(ReferenceDataResponse::value)
-                .collect(Collectors.toSet());
+        Assertions.assertNotNull(response.title());
+        ReferenceDataHelper.assertReferenceDataResponse(exercise.getExerciseCategory(), response.exerciseCategory());
+        if (exercise.getThumbnailUrl() != null) {
+            Assertions.assertEquals(exercise.getThumbnailUrl(), response.thumbnailUrl());
+        } else {
+            Assertions.assertNull(response.thumbnailUrl());
+        }
 
-        Assertions.assertEquals(expectedKeys, responseKeys);
-        Assertions.assertEquals(expectedValues, responseValues);
+        Assertions.assertEquals(exercise.getMovementPatterns().size(), response.movementPatterns().size());
+        List<MovementPattern> sortedExerciseMovementPatterns = exercise.getMovementPatterns().stream().sorted(Comparator.comparing(BaseEnum::getKey)).toList();
+        List<ReferenceDataResponse> sortedResponseMovementPatterns = response.movementPatterns().stream().sorted(Comparator.comparing(ReferenceDataResponse::key)).toList();
+        for (int i = 0; i < sortedExerciseMovementPatterns.size(); i++) {
+            MovementPattern movementPattern = sortedExerciseMovementPatterns.get(i);
+            ReferenceDataResponse referenceDataResponse = sortedResponseMovementPatterns.get(i);
+            ReferenceDataHelper.assertReferenceDataResponse(movementPattern, referenceDataResponse);
+        }
+
+        Assertions.assertEquals(exercise.getMuscles().size(), response.muscles().size());
+        List<ExerciseMuscleRole> sortedExerciseMuscles = exercise.getMuscles().stream().sorted(Comparator.comparing(ExerciseMuscleRole::getId)).toList();
+        List<ExerciseMuscleRoleResponse> sortedResponseMuscles = response.muscles().stream().sorted(Comparator.comparing(ExerciseMuscleRoleResponse::id)).toList();
+        for (int i = 0; i < sortedExerciseMuscles.size(); i++) {
+            ExerciseMuscleRole exerciseMuscle = sortedExerciseMuscles.get(i);
+            ExerciseMuscleRoleResponse responseMuscle = sortedResponseMuscles.get(i);
+            ExerciseMuscleRoleHelper.assertExerciseMuscleRoleResponse(exerciseMuscle, responseMuscle);
+        }
+
+        Assertions.assertEquals(exercise.getRequiredEquipment().size(), response.requiredEquipment().size());
+        List<Equipment> sortedExerciseEquipment = exercise.getRequiredEquipment().stream().sorted(Comparator.comparing(Equipment::getId)).toList();
+        List<EquipmentResponse> sortedResponseEquipment = response.requiredEquipment().stream().sorted(Comparator.comparing(EquipmentResponse::id)).toList();
+        for (int i = 0; i < sortedExerciseEquipment.size(); i++) {
+            Equipment equipment = sortedExerciseEquipment.get(i);
+            EquipmentResponse responseEquipment = sortedResponseEquipment.get(i);
+            EquipmentHelper.assertEquipmentResponse(equipment, responseEquipment);
+        }
+    }
+
+    public static void assertExerciseSimpleResponse(Exercise exercise, ExerciseSimpleResponse response) {
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(exercise.getId(), response.id());
+        Assertions.assertEquals(exercise.getTitle(), response.title());
+        Assertions.assertEquals(exercise.getThumbnailUrl(), response.thumbnailUrl());
+        ReferenceDataHelper.assertReferenceDataResponse(exercise.getExerciseCategory(), response.exerciseCategory());
+
+        List<ExerciseMuscleRole> originalPrimaryMuscles = exercise.getMuscles().stream().filter(muscle -> ExerciseMuscleRoleType.PRIMARY.equals(muscle.getType())).sorted(Comparator.comparing(muscle -> muscle.getMuscle().getKey())).toList();
+        Assertions.assertEquals(originalPrimaryMuscles.size(), response.primaryMuscles().size());
+        List<ReferenceDataResponse> sortedResponsePrimaryMuscles = response.primaryMuscles().stream().sorted(Comparator.comparing(ReferenceDataResponse::key)).toList();
+        for (int i = 0; i < originalPrimaryMuscles.size(); i++) {
+            Muscle originalMuscle = originalPrimaryMuscles.get(i).getMuscle();
+            ReferenceDataResponse responseMuscle = sortedResponsePrimaryMuscles.get(i);
+            ReferenceDataHelper.assertReferenceDataResponse(originalMuscle, responseMuscle);
+        }
+    }
+
+    public static void assertInputToEntity(ExerciseInputRequest request, Exercise exercise) {
+        Assertions.assertNotNull(exercise);
+        Assertions.assertEquals(request.title(), exercise.getTitle());
+        Assertions.assertEquals(request.exerciseCategory(), exercise.getExerciseCategory());
+        Assertions.assertEquals(request.movementPatterns().size(), exercise.getMovementPatterns().size());
+        List<MovementPattern> sortedRequestMovementPatterns = request.movementPatterns().stream().sorted(Comparator.comparing(BaseEnum::getKey)).toList();
+        List<MovementPattern> sortedExerciseMovementPatterns = exercise.getMovementPatterns().stream().sorted(Comparator.comparing(BaseEnum::getKey)).toList();
+        for (int i = 0; i < sortedRequestMovementPatterns.size(); i++) {
+            MovementPattern requestMovementPattern = sortedRequestMovementPatterns.get(i);
+            MovementPattern exerciseMovementPattern = sortedExerciseMovementPatterns.get(i);
+            Assertions.assertEquals(requestMovementPattern, exerciseMovementPattern);
+        }
+
+        Assertions.assertEquals(request.muscles().size(), exercise.getMuscles().size());
+        List<ExerciseMuscleRoleInputRequest> sortedRequestMuscles = request.muscles().stream().sorted(Comparator.comparing(ExerciseMuscleRoleInputRequest::id, Comparator.nullsLast(Comparator.naturalOrder()))).toList();
+        List<ExerciseMuscleRole> sortedExerciseMuscles = exercise.getMuscles().stream().sorted(Comparator.comparing(ExerciseMuscleRole::getId)).toList();
+        for (int i = 0; i < sortedRequestMuscles.size(); i++) {
+            ExerciseMuscleRoleInputRequest requestMuscle = sortedRequestMuscles.get(i);
+            ExerciseMuscleRole exerciseMuscle = sortedExerciseMuscles.get(i);
+            ExerciseMuscleRoleHelper.assertInputRequest(exerciseMuscle, requestMuscle);
+        }
+
+        Assertions.assertEquals(request.requiredEquipmentIds().size(), exercise.getRequiredEquipment().size());
+        List<Long> sortedRequestEquipmentIds = request.requiredEquipmentIds().stream().sorted().toList();
+        List<Equipment> sortedExerciseEquipment = exercise.getRequiredEquipment().stream().sorted(Comparator.comparing(Equipment::getId)).toList();
+        for (int i = 0; i < sortedRequestEquipmentIds.size(); i++) {
+            Long requestEquipmentId = sortedRequestEquipmentIds.get(i);
+            Equipment exerciseEquipment = sortedExerciseEquipment.get(i);
+            Assertions.assertEquals(requestEquipmentId, exerciseEquipment.getId());
+        }
     }
 
 }

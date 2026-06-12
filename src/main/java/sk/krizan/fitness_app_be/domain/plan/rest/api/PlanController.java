@@ -124,7 +124,7 @@ public interface PlanController {
             }
     )
     @PutMapping("{id}")
-    PlanDetailResponse updatePlan(@PathVariable @Validated(UpdateGroup.class) Long id, @Valid @RequestBody PlanInputRequest request);
+    PlanDetailResponse updatePlan(@PathVariable Long id, @Valid @Validated(UpdateGroup.class) @RequestBody PlanInputRequest request);
 
     @Operation(
             summary = "Delete a training plan",

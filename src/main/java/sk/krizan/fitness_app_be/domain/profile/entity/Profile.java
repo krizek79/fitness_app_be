@@ -18,11 +18,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
-import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
 
@@ -57,11 +58,15 @@ public class Profile extends AuditableEntity {
 
     @NotNull
     @Builder.Default
-    private Boolean deleted = false;
+    private boolean deleted = false;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private WeightUnit preferredWeightUnit;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private DistanceUnit preferredDistanceUnit;
 
     @Builder.Default
     @OneToMany(mappedBy = CoachingContract.Fields.coach, cascade = CascadeType.PERSIST, orphanRemoval = true)

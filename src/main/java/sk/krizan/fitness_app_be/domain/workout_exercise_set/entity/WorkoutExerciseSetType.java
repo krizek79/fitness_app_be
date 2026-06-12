@@ -11,7 +11,8 @@ public enum WorkoutExerciseSetType implements BaseEnum {
     WARMUP("WARMUP", "Warm-up set"),
     TOP_SET("TOP_SET", "Top set"),
     BACKOFF_SET("BACKOFF_SET", "Back-off set"),
-    STRAIGHT_SET("STRAIGHT_SET", "Straight set");
+    STRAIGHT_SET("STRAIGHT_SET", "Straight set"),
+    DROP_SET("DROP_SET", "Drop set");
 
     private final String key;
     private final String value;

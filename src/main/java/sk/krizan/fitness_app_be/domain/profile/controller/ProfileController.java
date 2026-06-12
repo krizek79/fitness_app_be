@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
 import sk.krizan.fitness_app_be.domain.profile.mapper.ProfileMapper;
 import sk.krizan.fitness_app_be.domain.profile.service.api.ProfileService;
 
@@ -16,11 +16,11 @@ public class ProfileController implements sk.krizan.fitness_app_be.domain.profil
 
     private final ProfileService profileService;
 
-    public PageResponse<ProfileResponse> filterProfiles(ProfileFilterRequest request) {
+    public PageResponse<ProfileDetailResponse> filterProfiles(ProfileFilterRequest request) {
         return profileService.filterProfiles(request);
     }
 
-    public ProfileResponse getProfileById(Long id) {
+    public ProfileDetailResponse getProfileById(Long id) {
         return ProfileMapper.entityToResponse(profileService.getProfileById(id));
     }
 

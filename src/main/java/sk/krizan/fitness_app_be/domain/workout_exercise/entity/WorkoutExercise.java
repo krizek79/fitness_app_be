@@ -44,7 +44,7 @@ public class WorkoutExercise extends AuditableEntity {
 
     @Min(0)
     @NotNull
-    @Column(name = "order_number")
+    @Column(name = "order_number", nullable = false)
     private Integer order;
 
     @NotNull
@@ -57,8 +57,9 @@ public class WorkoutExercise extends AuditableEntity {
     @JoinColumn(nullable = false)
     private Exercise exercise;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private WorkoutExerciseType workoutExerciseType;
+    private WorkoutExerciseMetric workoutExerciseMetric;
 
     @Length(max = 1024)
     private String note;

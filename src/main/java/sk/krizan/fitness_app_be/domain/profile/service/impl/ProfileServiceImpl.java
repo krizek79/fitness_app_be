@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.entity.Role;
@@ -44,7 +44,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ProfileResponse> filterProfiles(ProfileFilterRequest request) {
+    public PageResponse<ProfileDetailResponse> filterProfiles(ProfileFilterRequest request) {
         Specification<Profile> specification = ProfileSpecification.filter(request);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -54,10 +54,10 @@ public class ProfileServiceImpl implements ProfileService {
                 supportedSortFields
         );
         Page<Profile> page = profileRepository.findAll(specification, pageable);
-        List<ProfileResponse> responseList = page.stream()
+        List<ProfileDetailResponse> responseList = page.stream()
                 .map(ProfileMapper::entityToResponse).collect(Collectors.toList());
 
-        return PageResponse.<ProfileResponse>builder()
+        return PageResponse.<ProfileDetailResponse>builder()
                 .pageNumber(page.getNumber())
                 .pageSize(page.getSize())
                 .totalElements(page.getTotalElements())

@@ -5,11 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
-import sk.krizan.fitness_app_be.domain.exercise.entity.MuscleGroup;
+import sk.krizan.fitness_app_be.domain.exercise.entity.ExerciseCategory;
+import sk.krizan.fitness_app_be.domain.exercise.entity.MovementPattern;
+import sk.krizan.fitness_app_be.domain.exercise_muscle_role.entity.Muscle;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceDataResponse;
 import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
-import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseType;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseMetric;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSetType;
 
 import java.util.List;
@@ -29,10 +32,13 @@ class ReferenceDataIntegrationTest extends BaseIntegrationTest {
 
         org.assertj.core.api.Assertions.assertThat(availableTypes)
                 .containsExactlyInAnyOrder(
-                        "muscle-groups",
                         "weight-units",
+                        "distance-units",
                         "workout-exercise-types",
-                        "workout-exercise-set-types"
+                        "workout-exercise-set-types",
+                        "muscles",
+                        "movement-patterns",
+                        "exercise-category"
                 );
     }
 
@@ -48,9 +54,9 @@ class ReferenceDataIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void getMuscleGroups() throws Exception {
-        List<ReferenceDataResponse> responseList = filter("muscle-groups");
-        ReferenceDataHelper.assertReferenceDataResponsesMatch(MuscleGroup.class, responseList);
+    void getMuscles() throws Exception {
+        List<ReferenceDataResponse> responseList = filter("muscles");
+        ReferenceDataHelper.assertReferenceDataResponsesMatch(Muscle.class, responseList);
     }
 
     @Test
@@ -62,9 +68,16 @@ class ReferenceDataIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
+    void getDistanceUnits() throws Exception {
+        List<ReferenceDataResponse> responseList = filter("distance-units");
+        ReferenceDataHelper.assertReferenceDataResponsesMatch(DistanceUnit.class, responseList);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void getWorkoutExerciseTypes() throws Exception {
         List<ReferenceDataResponse> responseList = filter("workout-exercise-types");
-        ReferenceDataHelper.assertReferenceDataResponsesMatch(WorkoutExerciseType.class, responseList);
+        ReferenceDataHelper.assertReferenceDataResponsesMatch(WorkoutExerciseMetric.class, responseList);
     }
 
     @Test
@@ -72,6 +85,20 @@ class ReferenceDataIntegrationTest extends BaseIntegrationTest {
     void getWorkoutExerciseSetTypes() throws Exception {
         List<ReferenceDataResponse> responseList = filter("workout-exercise-set-types");
         ReferenceDataHelper.assertReferenceDataResponsesMatch(WorkoutExerciseSetType.class, responseList);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getExerciseCategories() throws Exception {
+        List<ReferenceDataResponse> responseList = filter("exercise-category");
+        ReferenceDataHelper.assertReferenceDataResponsesMatch(ExerciseCategory.class, responseList);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getMovementPatterns() throws Exception {
+        List<ReferenceDataResponse> responseList = filter("movement-patterns");
+        ReferenceDataHelper.assertReferenceDataResponsesMatch(MovementPattern.class, responseList);
     }
 
     private List<ReferenceDataResponse> filter(String type) throws Exception {

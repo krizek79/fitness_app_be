@@ -1,7 +1,6 @@
 package sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -28,18 +27,18 @@ public record WorkoutExerciseSetInputRequest(
         @NotNull
         WorkoutExerciseSetType workoutExerciseSetType,
 
-        @Min(1)
+        @PositiveOrZero
         Integer goalRepetitions,
 
-        @Min(1)
+        @PositiveOrZero
         @Null(groups = CreateGroup.class)
         @Schema(description = "Should be set only for update. For new object, this field should be null.")
         Integer actualRepetitions,
 
-        @DecimalMin("0.125")
+        @PositiveOrZero
         BigDecimal goalWeight,
 
-        @DecimalMin("0.125")
+        @PositiveOrZero
         @Null(groups = CreateGroup.class)
         @Schema(description = "Should be set only for update. For new object, this field should be null.")
         BigDecimal actualWeight,
@@ -49,7 +48,16 @@ public record WorkoutExerciseSetInputRequest(
 
         @PositiveOrZero
         @Null(groups = CreateGroup.class)
+        @Schema(description = "Should be set only for update. For new object, this field should be null.")
         Long actualTimeSeconds,
+
+        @PositiveOrZero
+        BigDecimal goalDistanceMeters,
+
+        @PositiveOrZero
+        @Null(groups = CreateGroup.class)
+        @Schema(description = "Should be set only for update. For new object, this field should be null.")
+        BigDecimal actualDistanceMeters,
 
         @PositiveOrZero
         Long restDurationSeconds,

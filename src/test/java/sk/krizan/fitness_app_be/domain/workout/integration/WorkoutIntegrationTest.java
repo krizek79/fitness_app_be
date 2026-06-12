@@ -15,6 +15,9 @@ import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.FilterAssertionUtils;
 import sk.krizan.fitness_app_be.domain.coaching_contract.helper.CoachingContractHelper;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
+import sk.krizan.fitness_app_be.domain.equipment.entity.Equipment;
+import sk.krizan.fitness_app_be.domain.equipment.helper.EquipmentHelper;
+import sk.krizan.fitness_app_be.domain.equipment.repository.EquipmentRepository;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
 import sk.krizan.fitness_app_be.domain.exercise.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.domain.exercise.repository.ExerciseRepository;
@@ -72,6 +75,9 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     private ExerciseRepository exerciseRepository;
 
     @Autowired
+    private EquipmentRepository equipmentRepository;
+
+    @Autowired
     private WorkoutRepository workoutRepository;
 
     @Autowired
@@ -94,7 +100,14 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises());
+        List<Equipment> equipment = equipmentRepository.saveAll(List.of(
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment()
+        ));
+        exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises(equipment));
         User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
         mockProfile = profileRepository.save(ProfileHelper.createProfile(user));
         when(userService.getCurrentUser()).thenReturn(user);
@@ -179,8 +192,6 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void getWorkoutById() throws Exception {
-        List<Exercise> exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises());
-
         Boolean isClonableWorkoutTemplate = true;
 
         Set<Tag> tags = new HashSet<>(Set.of(

@@ -25,7 +25,7 @@ public class WorkoutExerciseCloner extends AbstractCloner<WorkoutExercise> {
         WorkoutExercise clone = new WorkoutExercise();
         clone.setExercise(original.getExercise());
         clone.setOrder(original.getOrder());
-        clone.setWorkoutExerciseType(original.getWorkoutExerciseType());
+        clone.setWorkoutExerciseMetric(original.getWorkoutExerciseMetric());
 
         List<WorkoutExerciseSet> clonedWorkoutExercises = original.getWorkoutExerciseSets().stream()
                 .map(workoutExerciseSetCloner::clone)

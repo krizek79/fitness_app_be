@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
-import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseType;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseMetric;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.rest.dto.request.WorkoutExerciseSetInputRequest;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public record WorkoutExerciseInputRequest(
         Integer order,
 
         @NotNull
-        WorkoutExerciseType workoutExerciseType,
+        WorkoutExerciseMetric workoutExerciseMetric,
 
         @Length(max = 1024)
         String note,

@@ -6,8 +6,9 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
@@ -25,6 +26,7 @@ public final class ProfileHelper {
         profile.setName(faker.funnyName().name());
         profile.setBio(DEFAULT_VALUE);
         profile.setPreferredWeightUnit(WeightUnit.KG);
+        profile.setPreferredDistanceUnit(DistanceUnit.KM);
         user.setProfile(profile);
         return profile;
     }
@@ -45,7 +47,7 @@ public final class ProfileHelper {
                 .build();
     }
 
-    public static void assertProfileResponse(Profile profile, ProfileResponse response) {
+    public static void assertProfileResponse(Profile profile, ProfileDetailResponse response) {
         if (profile == null) {
             return;
         }
@@ -54,7 +56,8 @@ public final class ProfileHelper {
         Assertions.assertEquals(profile.getId(), response.id());
         Assertions.assertEquals(profile.getName(), response.name());
         Assertions.assertEquals(profile.getProfilePictureUrl(), response.profilePictureUrl());
-        ReferenceDataHelper.assertReferenceDataResponse(profile.getPreferredWeightUnit(), response.preferredWeightUnitResponse());
+        ReferenceDataHelper.assertReferenceDataResponse(profile.getPreferredWeightUnit(), response.preferredWeightUnit());
+        ReferenceDataHelper.assertReferenceDataResponse(profile.getPreferredDistanceUnit(), response.preferredDistanceUnit());
     }
 
     public static void assertProfileSimpleResponse(Profile profile, ProfileSimpleResponse response) {

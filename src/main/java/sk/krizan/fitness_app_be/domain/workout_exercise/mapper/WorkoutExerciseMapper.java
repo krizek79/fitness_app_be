@@ -1,10 +1,10 @@
 package sk.krizan.fitness_app_be.domain.workout_exercise.mapper;
 
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
+import sk.krizan.fitness_app_be.domain.exercise.mapper.ExerciseMapper;
 import sk.krizan.fitness_app_be.domain.reference.mapper.ReferenceDataMapper;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
@@ -23,9 +23,9 @@ public class WorkoutExerciseMapper {
         return WorkoutExerciseResponse.builder()
                 .id(workoutExercise.getId())
                 .workoutId(workoutExercise.getWorkout().getId())
+                .exercise(ExerciseMapper.entityToDetailResponse(workoutExercise.getExercise()))
                 .order(workoutExercise.getOrder())
-                .exerciseName(workoutExercise.getExercise().getName())
-                .workoutExerciseType(ReferenceDataMapper.enumToResponse(workoutExercise.getWorkoutExerciseType()))
+                .workoutExerciseMetric(ReferenceDataMapper.enumToResponse(workoutExercise.getWorkoutExerciseMetric()))
                 .note(workoutExercise.getNote())
                 .workoutExerciseSets(
                         workoutExercise.getWorkoutExerciseSets().stream()
@@ -36,7 +36,7 @@ public class WorkoutExerciseMapper {
     }
 
     public static WorkoutExercise inputRequestToEntity(
-            @Nullable WorkoutExercise workoutExercise,
+            WorkoutExercise workoutExercise,
             WorkoutExerciseInputRequest request,
             Workout workout,
             Exercise exercise
@@ -48,7 +48,7 @@ public class WorkoutExerciseMapper {
 
         workoutExercise.setExercise(exercise);
         workoutExercise.setOrder(request.order());
-        workoutExercise.setWorkoutExerciseType(request.workoutExerciseType());
+        workoutExercise.setWorkoutExerciseMetric(request.workoutExerciseMetric());
         workoutExercise.setNote(request.note());
 
         return workoutExercise;

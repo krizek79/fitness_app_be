@@ -4,9 +4,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
+import sk.krizan.fitness_app_be.domain.exercise.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
-import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseType;
+import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExerciseMetric;
 import sk.krizan.fitness_app_be.domain.workout_exercise.rest.dto.request.WorkoutExerciseInputRequest;
 import sk.krizan.fitness_app_be.domain.workout_exercise.rest.dto.response.WorkoutExerciseResponse;
 import sk.krizan.fitness_app_be.domain.workout_exercise_set.entity.WorkoutExerciseSet;
@@ -30,7 +31,7 @@ public final class WorkoutExerciseHelper {
         workoutExercise.setExercise(exercise);
         workoutExercise.setOrder(order);
         workoutExercise.setNote(UUID.randomUUID().toString());
-        workoutExercise.setWorkoutExerciseType(WorkoutExerciseType.WEIGHT);
+        workoutExercise.setWorkoutExerciseMetric(WorkoutExerciseMetric.REPS_AND_WEIGHT);
 
         workoutExerciseSets.forEach(workoutExercise::addToWorkoutExerciseSets);
 
@@ -48,7 +49,7 @@ public final class WorkoutExerciseHelper {
                 .exerciseId(exerciseId)
                 .order(order)
                 .note(UUID.randomUUID().toString())
-                .workoutExerciseType(WorkoutExerciseType.WEIGHT)
+                .workoutExerciseMetric(WorkoutExerciseMetric.REPS_AND_WEIGHT)
                 .workoutExerciseSets(workoutExerciseSets)
                 .build();
     }
@@ -57,9 +58,9 @@ public final class WorkoutExerciseHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(workoutExercise.getId(), response.id());
         Assertions.assertEquals(workoutExercise.getWorkout().getId(), response.workoutId());
-        Assertions.assertEquals(workoutExercise.getExercise().getName(), response.exerciseName());
+        ExerciseHelper.assertExerciseDetailResponse(workoutExercise.getExercise(), response.exercise());
         Assertions.assertEquals(workoutExercise.getNote(), response.note());
-        ReferenceDataHelper.assertReferenceDataResponse(workoutExercise.getWorkoutExerciseType(), response.workoutExerciseType());
+        ReferenceDataHelper.assertReferenceDataResponse(workoutExercise.getWorkoutExerciseMetric(), response.workoutExerciseMetric());
         Assertions.assertNotNull(response.workoutExerciseSets());
 
         Assertions.assertEquals(workoutExercise.getWorkoutExerciseSets().size(), response.workoutExerciseSets().size());
@@ -84,7 +85,7 @@ public final class WorkoutExerciseHelper {
         }
 
         Assertions.assertEquals(request.note(), workoutExercise.getNote());
-        Assertions.assertEquals(request.workoutExerciseType(), workoutExercise.getWorkoutExerciseType());
+        Assertions.assertEquals(request.workoutExerciseMetric(), workoutExercise.getWorkoutExerciseMetric());
 
         //  questionable assert as order might be different due to user input and reordering in service layer
         Assertions.assertEquals(request.order(), workoutExercise.getOrder());
@@ -118,7 +119,7 @@ public final class WorkoutExerciseHelper {
         Assertions.assertEquals(original.getExercise().getId(), clone.getExercise().getId());
         Assertions.assertNull(clone.getNote());
         Assertions.assertEquals(original.getOrder(), clone.getOrder());
-        Assertions.assertEquals(original.getWorkoutExerciseType(), clone.getWorkoutExerciseType());
+        Assertions.assertEquals(original.getWorkoutExerciseMetric(), clone.getWorkoutExerciseMetric());
 
         assertCloneWorkoutExerciseSets(original.getWorkoutExerciseSets(), clone.getWorkoutExerciseSets());
     }

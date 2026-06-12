@@ -12,6 +12,9 @@ import sk.krizan.fitness_app_be.common.BaseIntegrationTest;
 import sk.krizan.fitness_app_be.common.helper.RandomHelper;
 import sk.krizan.fitness_app_be.domain.coaching_contract.helper.CoachingContractHelper;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
+import sk.krizan.fitness_app_be.domain.equipment.entity.Equipment;
+import sk.krizan.fitness_app_be.domain.equipment.helper.EquipmentHelper;
+import sk.krizan.fitness_app_be.domain.equipment.repository.EquipmentRepository;
 import sk.krizan.fitness_app_be.domain.exercise.entity.Exercise;
 import sk.krizan.fitness_app_be.domain.exercise.helper.ExerciseHelper;
 import sk.krizan.fitness_app_be.domain.exercise.repository.ExerciseRepository;
@@ -75,6 +78,9 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
     private CoachingContractRepository coachingContractRepository;
 
     @Autowired
+    private EquipmentRepository equipmentRepository;
+
+    @Autowired
     private ExerciseRepository exerciseRepository;
 
     @Autowired
@@ -103,7 +109,15 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
         mockProfile = profileRepository.save(ProfileHelper.createProfile(user));
 
-        exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises());
+        List<Equipment> equipment = equipmentRepository.saveAll(List.of(
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment(),
+                EquipmentHelper.createEquipment()
+        ));
+
+        exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises(equipment));
 
         when(userService.getCurrentUser()).thenReturn(user);
     }

@@ -172,8 +172,8 @@ public final class ExerciseHelper {
         }
 
         Assertions.assertEquals(request.muscles().size(), exercise.getMuscles().size());
-        List<ExerciseMuscleRoleInputRequest> sortedRequestMuscles = request.muscles().stream().sorted(Comparator.comparing(ExerciseMuscleRoleInputRequest::id, Comparator.nullsLast(Comparator.naturalOrder()))).toList();
-        List<ExerciseMuscleRole> sortedExerciseMuscles = exercise.getMuscles().stream().sorted(Comparator.comparing(ExerciseMuscleRole::getId)).toList();
+        List<ExerciseMuscleRoleInputRequest> sortedRequestMuscles = request.muscles().stream().sorted(Comparator.comparing(r -> r.muscle().getKey())).toList();
+        List<ExerciseMuscleRole> sortedExerciseMuscles = exercise.getMuscles().stream().sorted(Comparator.comparing(exerciseMuscleRole -> exerciseMuscleRole.getMuscle().getKey())).toList();
         for (int i = 0; i < sortedRequestMuscles.size(); i++) {
             ExerciseMuscleRoleInputRequest requestMuscle = sortedRequestMuscles.get(i);
             ExerciseMuscleRole exerciseMuscle = sortedExerciseMuscles.get(i);

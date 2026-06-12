@@ -1,5 +1,5 @@
 [![codecov](https://codecov.io/gh/krizek79/fitness_app_be/branch/master/graph/badge.svg)](https://codecov.io/gh/krizek79/fitness_app_be)
-[![FE Repository](https://img.shields.io/badge/Frontend-App-green?logo=react)](https://github.com/krizek79/fitness_app_fe)
+[![FE Repository](https://img.shields.io/badge/Frontend-Repository-blue)](https://github.com/krizek79/fitness_app_fe)
 
 # Fitness App Backend
 

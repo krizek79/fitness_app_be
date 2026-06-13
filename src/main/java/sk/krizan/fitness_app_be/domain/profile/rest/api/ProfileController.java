@@ -6,16 +6,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.wrapper.ProfilePageResponse;
-import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.wrapper.ProfilePageResponse;
 
 @Tag(
         name = "Profile",
@@ -69,67 +69,5 @@ public interface ProfileController {
     )
     @GetMapping("{id}")
     ProfileDetailResponse getProfileById(@PathVariable Long id);
-
-    @Operation(
-            summary = "Delete profile",
-            description = "Deletes a profile by its ID and returns the ID of the deleted profile.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Profile deleted successfully",
-                            content = @Content(schema = @Schema())),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Profile not found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteProfile(@PathVariable Long id);
-
-    @Operation(
-            summary = "Upload profile picture",
-            description = "Uploads a new profile picture and returns the file url.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Profile picture uploaded successfully",
-                            content = @Content(schema = @Schema(implementation = String.class))),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid file upload",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "413",
-                            description = "File too large",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "415",
-                            description = "Unsupported media type",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
-            }
-    )
-    @PostMapping(
-            value = "profile-picture",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    String uploadProfilePicture(@RequestParam @NotNull MultipartFile multipartFile);
 
 }

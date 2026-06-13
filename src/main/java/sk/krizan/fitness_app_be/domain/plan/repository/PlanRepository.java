@@ -17,4 +17,5 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     default Plan getByIdOrThrow(Long id) {
         return findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, Plan.class.getSimpleName() + " with id { %s } does not exist.".formatted(id)));
     }
+
 }

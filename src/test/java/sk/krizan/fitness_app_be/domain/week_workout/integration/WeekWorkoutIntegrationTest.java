@@ -27,7 +27,6 @@ import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.tag.helper.TagHelper;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -106,7 +105,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         mockProfile = profileRepository.save(ProfileHelper.createProfile(user));
 
         List<Equipment> equipment = equipmentRepository.saveAll(List.of(
@@ -119,7 +118,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
         exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises(equipment));
 
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.getOrCreateCurrentUser()).thenReturn(user);
     }
 
     @Test
@@ -285,7 +284,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         boolean isWorkoutTemplate = false;
 
         //  New trainee
-        User newTraineeUser = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User newTraineeUser = userRepository.save(UserHelper.createUser());
         Profile newTrainee = profileRepository.save(ProfileHelper.createProfile(newTraineeUser));
 
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, newTrainee));

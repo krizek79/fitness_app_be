@@ -61,9 +61,10 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<WorkoutSimpleResponse> filterWorkouts(WorkoutFilterRequest request) {
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
+        boolean isUserAdmin = userService.isUserAdmin(currentUser);
 
-        Specification<Workout> specification = WorkoutSpecification.filter(request, currentUser);
+        Specification<Workout> specification = WorkoutSpecification.filter(request, currentUser, isUserAdmin);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
                 request.size(),
@@ -112,7 +113,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         Profile trainee;
         Profile author;
 
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
 
         boolean isNew = id == null;
         if (isNew) {

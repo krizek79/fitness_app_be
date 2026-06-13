@@ -13,7 +13,7 @@ import sk.krizan.fitness_app_be.common.util.PredicateUtils;
 
 public class DraftSpecification {
 
-    public static Specification<Draft> filter(DraftFilterRequest request, Profile currentProfile) {
+    public static Specification<Draft> filter(DraftFilterRequest request, Profile currentProfile, boolean isUserAdmin) {
         return (Root<Draft> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             Predicate predicate = cb.conjunction();
 
@@ -28,7 +28,7 @@ public class DraftSpecification {
 
             predicate = cb.and(predicate, cb.equal(root.get(Draft.Fields.entityType), request.entityType()));
 
-            if (currentProfile != null && currentProfile.getId() != null) {
+            if (!isUserAdmin && currentProfile != null && currentProfile.getId() != null) {
                 Join<Draft, Profile> profileJoin = root.join(Draft.Fields.profile);
                 predicate = cb.and(predicate, cb.equal(profileJoin.get(Profile.Fields.id), currentProfile.getId()));
             }

@@ -24,7 +24,6 @@ import sk.krizan.fitness_app_be.domain.plan.rest.dto.response.PlanSimpleResponse
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -36,7 +35,6 @@ import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekInputRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Mockito.when;
 
@@ -66,20 +64,21 @@ class PlanIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         mockProfile = profileRepository.save(ProfileHelper.createProfile(user));
 
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.getOrCreateCurrentUser()).thenReturn(user);
+        when(userService.isUserAdmin(user)).thenReturn(true);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void filterPlans() throws Exception {
-        User user1 = UserHelper.createUser(Set.of(Role.USER));
+        User user1 = UserHelper.createUser();
         user1 = userRepository.save(user1);
         Profile profile1 = ProfileHelper.createProfile(user1);
         profile1 = profileRepository.save(profile1);
-        User user2 = UserHelper.createUser(Set.of(Role.USER));
+        User user2 = UserHelper.createUser();
         user2 = userRepository.save(user2);
         Profile profile2 = ProfileHelper.createProfile(user2);
         profile2 = profileRepository.save(profile2);
@@ -177,7 +176,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void createPlan() throws Exception {
-        User trainee = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User trainee = userRepository.save(UserHelper.createUser());
         Profile traineeProfile = profileRepository.save(ProfileHelper.createProfile(trainee));
 
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, traineeProfile));
@@ -206,9 +205,9 @@ class PlanIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updatePlan() throws Exception {
-        User trainee1 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User trainee1 = userRepository.save(UserHelper.createUser());
         Profile traineeProfile1 = profileRepository.save(ProfileHelper.createProfile(trainee1));
-        User trainee2 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User trainee2 = userRepository.save(UserHelper.createUser());
         Profile traineeProfile2 = profileRepository.save(ProfileHelper.createProfile(trainee2));
 
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, traineeProfile1));

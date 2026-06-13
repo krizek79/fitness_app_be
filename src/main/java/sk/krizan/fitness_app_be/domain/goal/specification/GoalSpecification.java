@@ -10,11 +10,10 @@ import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.rest.dto.request.GoalFilterRequest;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.specification.UserSpecification;
 
 public class GoalSpecification {
 
-    public static Specification<Goal> filter(GoalFilterRequest request, User currentUser) {
+    public static Specification<Goal> filter(GoalFilterRequest request, User currentUser, boolean isUserAdmin) {
         return (Root<Goal> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
@@ -24,13 +23,12 @@ public class GoalSpecification {
                 predicate = criteriaBuilder.and(predicate, profileIdPredicate);
             }
 
-            if (currentUser != null && currentUser.getProfile() != null) {
+            if (!isUserAdmin) {
                 Profile currentProfile = currentUser.getProfile();
 
                 Predicate authorPredicate = criteriaBuilder.equal(root.get(Goal.Fields.profile), currentProfile);
-                Predicate isAdminPredicate = UserSpecification.getIsAdminPredicate(currentUser, query, criteriaBuilder);
 
-                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, isAdminPredicate);
+                Predicate accessPredicate = criteriaBuilder.or(authorPredicate);
                 predicate = criteriaBuilder.and(predicate, accessPredicate);
             }
 

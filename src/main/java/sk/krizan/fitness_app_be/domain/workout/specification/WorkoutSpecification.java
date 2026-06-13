@@ -12,13 +12,12 @@ import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.specification.UserSpecification;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
 import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutFilterRequest;
 
 public class WorkoutSpecification {
 
-    public static Specification<Workout> filter(WorkoutFilterRequest request, User currentUser) {
+    public static Specification<Workout> filter(WorkoutFilterRequest request, User currentUser, boolean isUserAdmin) {
         return (Root<Workout> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
@@ -48,15 +47,14 @@ public class WorkoutSpecification {
                 predicate = criteriaBuilder.and(predicate, authorPredicate);
             }
 
-            if (currentUser != null && currentUser.getProfile() != null) {
+            if (!isUserAdmin) {
                 Profile currentProfile = currentUser.getProfile();
                 Predicate authorPredicate = criteriaBuilder.equal(root.get(Plan.Fields.author), currentProfile);
                 Predicate traineePredicate = criteriaBuilder.equal(root.get(Plan.Fields.trainee), currentProfile);
 
                 Predicate isCoachPredicate = CoachingContractSpecification.getIsCoachPredicate(currentProfile, root.get(Workout.Fields.author), query, criteriaBuilder);
-                Predicate isAdminPredicate = UserSpecification.getIsAdminPredicate(currentUser, query, criteriaBuilder);
 
-                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate, isAdminPredicate);
+                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate);
                 predicate = criteriaBuilder.and(predicate, accessPredicate);
             }
 

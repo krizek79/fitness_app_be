@@ -1,12 +1,8 @@
 package sk.krizan.fitness_app_be.domain.user.entity;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,11 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
-
-import java.util.HashSet;
-import java.util.Set;
+import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 
 @Builder
 @Getter
@@ -46,25 +39,11 @@ public class User extends AuditableEntity {
     private String email;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String keycloakId;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
-
-    @Builder.Default
-    @ElementCollection(targetClass = Role.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(
-        name = "user_role",
-        joinColumns = @JoinColumn(name = "user_id")
-    )
-    @Column(name = "role")
-    private final Set<Role> roles = new HashSet<>();
-
-    public void addToRoles(Set<Role> roles) {
-        this.getRoles().addAll(roles);
-    }
 
 }

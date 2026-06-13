@@ -37,7 +37,7 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
                 .toList();
         clonedWorkoutExercises.forEach(clone::addToWorkoutExercises);
 
-        Profile currentUserProfile = userService.getCurrentUser().getProfile();
+        Profile currentUserProfile = userService.getOrCreateCurrentUser().getProfile();
         currentUserProfile.addToAuthoredWorkouts(clone);
 
         return clone;

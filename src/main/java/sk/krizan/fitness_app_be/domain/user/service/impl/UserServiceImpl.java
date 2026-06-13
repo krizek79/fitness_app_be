@@ -11,13 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
+import sk.krizan.fitness_app_be.domain.user.entity.Role;
+import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
 import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
-
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -27,13 +25,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "User with id { " + id + " } does not exist."));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public User getCurrentUser() {
+    @Transactional
+    public User getOrCreateCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication instanceof JwtAuthenticationToken jwtToken) {
@@ -41,32 +34,23 @@ public class UserServiceImpl implements UserService {
             String keycloakId = jwt.getSubject();
 
             return userRepository.findByKeycloakId(keycloakId)
-                    .orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, "User with keycloakId { " + keycloakId + " } does not exist."));
+                    .orElseGet(() -> {
+                        log.info("Inserting new user into database from JWT token with keycloakId: { {} }", keycloakId);
+                        return createNewUserWithProfileFromToken(jwt, keycloakId);
+                    });
         }
 
         throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Unrecognized authentication principal");
     }
 
     @Override
-    @Transactional
-    public User syncUser(Jwt jwt, Set<Role> roles) {
-        String keycloakId = jwt.getSubject();
-        log.info("Synchronizing user from JWT token with keycloakId: { {} }", keycloakId);
-
-        return userRepository.findByKeycloakId(keycloakId)
-                .map(user -> {
-                    if (!user.getRoles().equals(roles)) {
-                        log.info("Updating roles for user: {}", keycloakId);
-                        user.getRoles().clear();
-                        user.addToRoles(roles);
-                        return userRepository.save(user);
-                    }
-                    return user;
-                })
-                .orElseGet(() -> createNewUserWithProfileFromToken(jwt, roles, keycloakId));
+    public boolean isUserAdmin(User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_" + Role.ADMIN.name()));
     }
 
-    private User createNewUserWithProfileFromToken(Jwt jwt, Set<Role> roles, String keycloakId) {
+    private User createNewUserWithProfileFromToken(Jwt jwt, String keycloakId) {
         String pictureUrl = jwt.getClaimAsString("picture");
         String email = jwt.getClaimAsString("email");
         String name = jwt.getClaimAsString("title");
@@ -74,7 +58,6 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(email);
         user.setKeycloakId(keycloakId);
-        user.addToRoles(roles);
 
         Profile profile = new Profile();
         profile.setName(name);
@@ -86,4 +69,5 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
 }

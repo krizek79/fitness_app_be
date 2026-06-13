@@ -21,7 +21,6 @@ import sk.krizan.fitness_app_be.domain.goal.rest.dto.response.GoalResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -29,7 +28,6 @@ import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Mockito.when;
 
@@ -51,15 +49,16 @@ class GoalIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         profileRepository.save(ProfileHelper.createProfile(user));
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.getOrCreateCurrentUser()).thenReturn(user);
+        when(userService.isUserAdmin(user)).thenReturn(true);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void filterGoals() throws Exception {
-        User user1 = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user1 = userRepository.save(UserHelper.createUser());
         Profile profile1 = profileRepository.save(ProfileHelper.createProfile(user1));
 
         goalRepository.saveAll(List.of(
@@ -67,7 +66,7 @@ class GoalIntegrationTest extends BaseIntegrationTest {
                 GoalHelper.createGoal(profile1, true)
         ));
 
-        User user2 = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user2 = userRepository.save(UserHelper.createUser());
         Profile profile2 = profileRepository.save(ProfileHelper.createProfile(user2));
 
         List<Goal> goals2 = goalRepository.saveAll(List.of(
@@ -108,7 +107,7 @@ class GoalIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateGoal() throws Exception {
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         Profile profile = profileRepository.save(ProfileHelper.createProfile(user));
 
         Goal goal = goalRepository.save(GoalHelper.createGoal(profile, false));
@@ -130,7 +129,7 @@ class GoalIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteGoal() throws Exception {
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         Profile profile = profileRepository.save(ProfileHelper.createProfile(user));
 
         Goal goal = goalRepository.save(GoalHelper.createGoal(profile, false));

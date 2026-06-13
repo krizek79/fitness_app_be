@@ -44,9 +44,10 @@ public class GoalServiceImpl implements GoalService {
     @Override
     @Transactional
     public PageResponse<GoalResponse> filterGoals(GoalFilterRequest request) {
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
+        boolean isUserAdmin = userService.isUserAdmin(currentUser);
 
-        Specification<Goal> specification = GoalSpecification.filter(request, currentUser);
+        Specification<Goal> specification = GoalSpecification.filter(request, currentUser, isUserAdmin);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
                 request.size(),
@@ -76,7 +77,7 @@ public class GoalServiceImpl implements GoalService {
     @Override
     @Transactional
     public Goal createUpdateGoal(Long id, GoalInputRequest request) {
-        Profile profile = userService.getCurrentUser().getProfile();
+        Profile profile = userService.getOrCreateCurrentUser().getProfile();
 
         Goal goal;
         boolean isNew = id == null;

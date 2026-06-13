@@ -4,25 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.common.exception.ApplicationException;
+import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.common.util.PageUtils;
+import sk.krizan.fitness_app_be.domain.draft.entity.Draft;
+import sk.krizan.fitness_app_be.domain.draft.mapper.DraftMapper;
+import sk.krizan.fitness_app_be.domain.draft.repository.DraftRepository;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.request.DraftCreateRequest;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.request.DraftFilterRequest;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.request.DraftUpdateRequest;
 import sk.krizan.fitness_app_be.domain.draft.rest.dto.response.DraftResponse;
-import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
-import sk.krizan.fitness_app_be.domain.draft.entity.Draft;
+import sk.krizan.fitness_app_be.domain.draft.service.api.DraftService;
+import sk.krizan.fitness_app_be.domain.draft.specification.DraftSpecification;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
-import sk.krizan.fitness_app_be.domain.draft.mapper.DraftMapper;
-import sk.krizan.fitness_app_be.domain.draft.repository.DraftRepository;
-import sk.krizan.fitness_app_be.domain.draft.service.api.DraftService;
 import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
-import sk.krizan.fitness_app_be.domain.draft.specification.DraftSpecification;
-import sk.krizan.fitness_app_be.common.util.PageUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,8 +32,6 @@ public class DraftServiceImpl implements DraftService {
 
     private final DraftRepository draftRepository;
 
-    private final static String ERROR_DRAFT_NOT_FOUND = "Draft with id { %s } does not exist.";
-
     private static final List<String> supportedSortFields = List.of(
             Draft.Fields.id,
             Draft.Fields.title
@@ -45,15 +40,11 @@ public class DraftServiceImpl implements DraftService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DraftResponse> filterDrafts(DraftFilterRequest request) {
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
+        boolean isUserAdmin = userService.isUserAdmin(currentUser);
 
-        Specification<Draft> specification;
-        if (currentUser.getRoles().contains(Role.ADMIN)) {
-            specification = DraftSpecification.filter(request, null);
-        } else {
-            Profile currentProfile = currentUser.getProfile();
-            specification = DraftSpecification.filter(request, currentProfile);
-        }
+        Profile currentProfile = currentUser.getProfile();
+        Specification<Draft> specification = DraftSpecification.filter(request, currentProfile, isUserAdmin);
 
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -80,15 +71,13 @@ public class DraftServiceImpl implements DraftService {
 
     @Override
     public Draft getDraftById(Long id) {
-        Draft draft = draftRepository.findById(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, ERROR_DRAFT_NOT_FOUND.formatted(id)));
-        checkAuthorization(draft);
-        return draft;
+        return draftRepository.getByIdOrThrow(id);
     }
 
     @Override
     @Transactional
     public Draft createDraft(DraftCreateRequest request) {
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
         Profile currentProfile = currentUser.getProfile();
 
         Draft draft = DraftMapper.createRequestToEntity(request, currentProfile);
@@ -101,7 +90,6 @@ public class DraftServiceImpl implements DraftService {
     @Transactional
     public Draft updateDraft(Long id, DraftUpdateRequest request) {
         Draft draft = getDraftById(id);
-        checkAuthorization(draft);
         DraftMapper.updateRequestToEntity(draft, request);
         return draftRepository.save(draft);
     }
@@ -110,19 +98,7 @@ public class DraftServiceImpl implements DraftService {
     @Transactional
     public void deleteDraft(Long id) {
         Draft draft = getDraftById(id);
-        checkAuthorization(draft);
         draftRepository.delete(draft);
     }
 
-    private void checkAuthorization(Draft draft) {
-        User currentUser = userService.getCurrentUser();
-        if (currentUser.getRoles().contains(Role.ADMIN)) {
-            return;
-        }
-
-        Profile currentProfile = currentUser.getProfile();
-        if (!draft.getProfile().getId().equals(currentProfile.getId())) {
-            throw new ApplicationException(HttpStatus.FORBIDDEN, "");
-        }
-    }
 }

@@ -47,9 +47,10 @@ public class PlanServiceImpl implements PlanService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<PlanSimpleResponse> filterPlans(PlanFilterRequest request) {
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
+        boolean isUserAdmin = userService.isUserAdmin(currentUser);
 
-        Specification<Plan> specification = PlanSpecification.filter(request, currentUser);
+        Specification<Plan> specification = PlanSpecification.filter(request, currentUser, isUserAdmin);
 
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
@@ -86,7 +87,7 @@ public class PlanServiceImpl implements PlanService {
         Profile trainee;
         Profile author;
 
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getOrCreateCurrentUser();
 
         boolean isNew = id == null;
         if (!isNew) {

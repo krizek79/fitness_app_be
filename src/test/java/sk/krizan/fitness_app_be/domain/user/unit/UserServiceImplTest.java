@@ -1,153 +1,180 @@
 package sk.krizan.fitness_app_be.domain.user.unit;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
-import sk.krizan.fitness_app_be.domain.user.entity.User;
+import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.user.entity.Role;
+import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
 import sk.krizan.fitness_app_be.domain.user.service.impl.UserServiceImpl;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private Jwt jwt;
-
     @InjectMocks
     private UserServiceImpl userService;
 
-    private User testUser;
-    private final String KEYCLOAK_ID = "test-kc-id";
+    private MockedStatic<SecurityContextHolder> mockedSecurityContextHolder;
+    private SecurityContext securityContext;
 
     @BeforeEach
     void setUp() {
-        testUser = new User();
-        testUser.setId(1L);
-        testUser.setKeycloakId(KEYCLOAK_ID);
-        testUser.setEmail("test@example.com");
-        testUser.addToRoles(new HashSet<>(Set.of(Role.USER)));
+        mockedSecurityContextHolder = mockStatic(SecurityContextHolder.class);
+        securityContext = mock(SecurityContext.class);
+        mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
     }
 
-    // --- Tests for syncUser ---
-
-    @Test
-    void syncUser_ShouldCreateNewUser_WhenUserDoesNotExist() {
-        when(jwt.getSubject()).thenReturn(KEYCLOAK_ID);
-
-        when(jwt.getClaimAsString("picture")).thenReturn("http://image.com/avatar.png");
-        when(jwt.getClaimAsString("email")).thenReturn("new@example.com");
-        when(jwt.getClaimAsString("title")).thenReturn("John Doe");
-
-        when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
-
-        User result = userService.syncUser(jwt, Set.of(Role.USER));
-
-        assertNotNull(result);
-        assertEquals(KEYCLOAK_ID, result.getKeycloakId());
-        assertEquals("new@example.com", result.getEmail());
-        assertNotNull(result.getProfile());
-        assertEquals("John Doe", result.getProfile().getName());
-
-        verify(userRepository).save(any(User.class));
+    @AfterEach
+    void tearDown() {
+        mockedSecurityContextHolder.close();
     }
 
-    @Test
-    void syncUser_ShouldUpdateRoles_WhenRolesHaveChanged() {
-        Set<Role> newRoles = Set.of(Role.USER, Role.ADMIN);
-        when(jwt.getSubject()).thenReturn(KEYCLOAK_ID);
-        when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.of(testUser));
-        when(userRepository.save(any(User.class))).thenReturn(testUser);
+    @Nested
+    class GetOrCreateCurrentUserTests {
 
-        User result = userService.syncUser(jwt, newRoles);
+        @Test
+        void shouldReturnExistingUser_WhenUserExistsInDb() {
+            String keycloakId = "kc-user-123";
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getSubject()).thenReturn(keycloakId);
 
-        assertTrue(result.getRoles().contains(Role.ADMIN));
-        verify(userRepository, times(1)).save(any(User.class));
+            JwtAuthenticationToken authentication = mock(JwtAuthenticationToken.class);
+            when(authentication.getToken()).thenReturn(jwt);
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+
+            User expectedUser = new User();
+            expectedUser.setKeycloakId(keycloakId);
+            expectedUser.setEmail("test@fitness.sk");
+
+            when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.of(expectedUser));
+
+            User result = userService.getOrCreateCurrentUser();
+
+            assertNotNull(result);
+            assertEquals(keycloakId, result.getKeycloakId());
+            verify(userRepository, times(1)).findByKeycloakId(keycloakId);
+            verify(userRepository, never()).save(any(User.class));
+        }
+
+        @Test
+        void shouldCreateAndReturnNewUser_WhenUserDoesNotExistInDb() {
+            String keycloakId = "kc-new-456";
+            String email = "newuser@fitness.sk";
+            String name = "Ján Novák";
+            String picture = "http://photo.com/me.png";
+
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getSubject()).thenReturn(keycloakId);
+            when(jwt.getClaimAsString("email")).thenReturn(email);
+            when(jwt.getClaimAsString("title")).thenReturn(name);
+            when(jwt.getClaimAsString("picture")).thenReturn(picture);
+
+            JwtAuthenticationToken authentication = mock(JwtAuthenticationToken.class);
+            when(authentication.getToken()).thenReturn(jwt);
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+
+            when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.empty());
+
+            when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+            User result = userService.getOrCreateCurrentUser();
+
+            assertNotNull(result);
+            assertEquals(keycloakId, result.getKeycloakId());
+            assertEquals(email, result.getEmail());
+
+            assertNotNull(result.getProfile());
+            assertEquals(name, result.getProfile().getName());
+            assertEquals(picture, result.getProfile().getProfilePictureUrl());
+            assertEquals(WeightUnit.KG, result.getProfile().getPreferredWeightUnit());
+            assertEquals(result, result.getProfile().getUser());
+
+            verify(userRepository, times(1)).findByKeycloakId(keycloakId);
+            verify(userRepository, times(1)).save(any(User.class));
+        }
+
+        @Test
+        void shouldThrowApplicationException_WhenAuthenticationIsNotJwt() {
+            Authentication wrongAuthentication = mock(Authentication.class);
+            when(securityContext.getAuthentication()).thenReturn(wrongAuthentication);
+
+            ApplicationException exception = assertThrows(ApplicationException.class, userService::getOrCreateCurrentUser);
+
+            assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
+            assertEquals("Unrecognized authentication principal", exception.getMessage());
+            verifyNoInteractions(userRepository);
+        }
     }
 
-    @Test
-    void syncUser_ShouldNotSave_WhenRolesAreSame() {
-        Set<Role> sameRoles = Set.of(Role.USER);
-        when(jwt.getSubject()).thenReturn(KEYCLOAK_ID);
-        when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.of(testUser));
+    @Nested
+    class IsUserAdminTests {
 
-        User result = userService.syncUser(jwt, sameRoles);
+        @Test
+        void shouldReturnTrue_WhenUserHasAdminRole() {
+            Authentication authentication = mock(Authentication.class);
+            GrantedAuthority adminAuthority = new SimpleGrantedAuthority("ROLE_" + Role.ADMIN.name());
 
-        verify(userRepository, never()).save(any(User.class));
-        assertEquals(testUser, result);
+            doReturn(List.of(adminAuthority)).when(authentication).getAuthorities();
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+
+            User user = new User();
+
+            boolean isAdmin = userService.isUserAdmin(user);
+
+            assertTrue(isAdmin);
+        }
+
+        @Test
+        void shouldReturnFalse_WhenUserDoesNotHaveAdminRole() {
+            Authentication authentication = mock(Authentication.class);
+            GrantedAuthority userAuthority = new SimpleGrantedAuthority("ROLE_USER");
+
+            doReturn(List.of(userAuthority)).when(authentication).getAuthorities();
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+
+            User user = new User();
+
+            boolean isAdmin = userService.isUserAdmin(user);
+
+            assertFalse(isAdmin);
+        }
     }
 
-    // --- Tests for getCurrentUser ---
-
-    @Test
-    void getCurrentUser_ShouldReturnUser_WhenAuthenticated() {
-        JwtAuthenticationToken auth = mock(JwtAuthenticationToken.class);
-        when(auth.getToken()).thenReturn(jwt);
-        when(jwt.getSubject()).thenReturn(KEYCLOAK_ID);
-        when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.of(testUser));
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        User result = userService.getCurrentUser();
-
-        assertEquals(testUser, result);
-    }
-
-    @Test
-    void getCurrentUser_ShouldThrowException_WhenUserNotFoundInDb() {
-        JwtAuthenticationToken auth = mock(JwtAuthenticationToken.class);
-        when(auth.getToken()).thenReturn(jwt);
-        when(jwt.getSubject()).thenReturn(KEYCLOAK_ID);
-        when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.empty());
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        ApplicationException ex = assertThrows(ApplicationException.class, () -> userService.getCurrentUser());
-        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
-    }
-
-    // --- Tests for getUserById ---
-
-    @Test
-    void getUserById_ShouldReturnUser_WhenExists() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-
-        User result = userService.getUserById(1L);
-
-        assertEquals(testUser, result);
-    }
-
-    @Test
-    void getUserById_ShouldThrowNotFound_WhenDoesNotExist() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(ApplicationException.class, () -> userService.getUserById(99L));
-    }
 }

@@ -9,9 +9,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.stereotype.Component;
-import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
-import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,7 +20,6 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final UserService userService;
     private final JwtGrantedAuthoritiesConverter defaultAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
     @Override
@@ -33,16 +29,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                 extractResourceRoles(jwt).stream()
         ).collect(Collectors.toSet());
 
-        Set<Role> roles = authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .filter(role -> role.startsWith("ROLE_"))
-                .map(role -> role.replace("ROLE_", ""))
-                .map(Role::valueOf)
-                .collect(Collectors.toSet());
-
-        User user = userService.syncUser(jwt, roles);
-
-        return new JwtAuthenticationToken(jwt, authorities, user.getEmail());
+        return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
     }
 
     private Collection<GrantedAuthority> extractResourceRoles(Jwt jwt) {

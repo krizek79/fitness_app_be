@@ -35,7 +35,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             return true;
         }
 
-        Profile currentProfile = userService.getCurrentUser().getProfile();
+        Profile currentProfile = userService.getOrCreateCurrentUser().getProfile();
 
         ResourceType resourceType = ResourceType.valueOf(targetType.toUpperCase());
         Permission mappedPermission = Permission.valueOf(permission.toString().toUpperCase());
@@ -47,6 +47,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             case WORKOUT -> securityAccessValidator.canAccessWorkout((Long) targetId, currentProfile.getId(), mappedPermission);
             case WORKOUT_EXERCISE -> securityAccessValidator.canAccessWorkoutExercise((Long) targetId, currentProfile.getId(), mappedPermission);
             case GOAL -> securityAccessValidator.canAccessGoal((Long) targetId, currentProfile.getId(), mappedPermission);
+            case DRAFT -> securityAccessValidator.canAccessDraft((Long) targetId, currentProfile.getId(), mappedPermission);
         };
     }
 }

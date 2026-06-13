@@ -20,7 +20,6 @@ import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.Coach
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -28,7 +27,6 @@ import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Mockito.when;
 
@@ -52,25 +50,25 @@ class CoachingContractIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        mockUser1 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        mockUser1 = userRepository.save(UserHelper.createUser());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void filterCoachingContracts_asCoach() throws Exception {
-        User mockUser2 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User mockUser2 = userRepository.save(UserHelper.createUser());
         filterCoachingContractsTest(mockUser2, mockUser1, true);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void filterCoachingContracts_asClient() throws Exception {
-        User mockUser2 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User mockUser2 = userRepository.save(UserHelper.createUser());
         filterCoachingContractsTest(mockUser2, mockUser2, false);
     }
 
     private void filterCoachingContractsTest(User mockUser2, User currentUser, boolean filterByCoach) throws Exception {
-        when(userService.getCurrentUser()).thenReturn(currentUser);
+        when(userService.getOrCreateCurrentUser()).thenReturn(currentUser);
 
         Profile profile1 = profileRepository.save(ProfileHelper.createProfile(mockUser1));
         Profile profile2 = profileRepository.save(ProfileHelper.createProfile(mockUser2));
@@ -114,10 +112,10 @@ class CoachingContractIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void getCoachingContractById() throws Exception {
-        when(userService.getCurrentUser()).thenReturn(mockUser1);
+        when(userService.getOrCreateCurrentUser()).thenReturn(mockUser1);
 
         Profile profile1 = profileRepository.save(ProfileHelper.createProfile(mockUser1));
-        User mockUser2 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User mockUser2 = userRepository.save(UserHelper.createUser());
         Profile profile2 = profileRepository.save(ProfileHelper.createProfile(mockUser2));
 
         CoachingContract coachingContract = coachingContractRepository.save(CoachingContractHelper.createCoachingContract(profile1, profile2));
@@ -134,10 +132,10 @@ class CoachingContractIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void createCoachingContract() throws Exception {
-        when(userService.getCurrentUser()).thenReturn(mockUser1);
+        when(userService.getOrCreateCurrentUser()).thenReturn(mockUser1);
 
         Profile profile1 = profileRepository.save(ProfileHelper.createProfile(mockUser1));
-        User mockUser2 = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User mockUser2 = userRepository.save(UserHelper.createUser());
         Profile profile2 = profileRepository.save(ProfileHelper.createProfile(mockUser2));
 
         CoachingContractCreateRequest request = CoachingContractHelper.createCreateRequest(profile1.getId(), profile2.getId());

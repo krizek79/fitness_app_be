@@ -28,7 +28,6 @@ import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.tag.helper.TagHelper;
 import sk.krizan.fitness_app_be.domain.tag.repository.TagRepository;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -108,9 +107,10 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
                 EquipmentHelper.createEquipment()
         ));
         exercises = exerciseRepository.saveAll(ExerciseHelper.createOriginalExercises(equipment));
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         mockProfile = profileRepository.save(ProfileHelper.createProfile(user));
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.getOrCreateCurrentUser()).thenReturn(user);
+        when(userService.isUserAdmin(user)).thenReturn(true);
     }
 
     @Test
@@ -120,7 +120,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
         List<List<WorkoutExercise>> workoutExerciseList = new ArrayList<>();
         List<Set<Tag>> tagSetList = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            User user = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+            User user = userRepository.save(UserHelper.createUser());
             Profile profile = profileRepository.save(ProfileHelper.createProfile(user));
             profileList.add(profile);
 
@@ -291,7 +291,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateWorkout() throws Exception {
-        User newTrainee = userRepository.save(UserHelper.createUser(Set.of(Role.USER)));
+        User newTrainee = userRepository.save(UserHelper.createUser());
         Profile newTraineeProfile = profileRepository.save(ProfileHelper.createProfile(newTrainee));
 
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, newTraineeProfile));

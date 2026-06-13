@@ -23,7 +23,6 @@ import sk.krizan.fitness_app_be.domain.exercise_muscle_role.helper.ExerciseMuscl
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
-import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -72,10 +71,10 @@ class WorkoutExerciseIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(UserHelper.createUser(Set.of(Role.ADMIN)));
+        User user = userRepository.save(UserHelper.createUser());
         mockProfile = profileRepository.save(ProfileHelper.createProfile(user));
 
-        when(userService.getCurrentUser()).thenReturn(user);
+        when(userService.getOrCreateCurrentUser()).thenReturn(user);
     }
 
     @Test

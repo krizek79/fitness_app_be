@@ -12,7 +12,6 @@ import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.plan.rest.dto.request.PlanFilterRequest;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
-import sk.krizan.fitness_app_be.domain.user.specification.UserSpecification;
 
 public class PlanSpecification {
 
@@ -25,9 +24,10 @@ public class PlanSpecification {
      *
      * @param request     the search criteria
      * @param currentUser the logged-in user; null means no access restrictions
+     * @param isUserAdmin is logged-in user admin
      * @return a JPA Specification for filtering plans
      */
-    public static Specification<Plan> filter(PlanFilterRequest request, User currentUser) {
+    public static Specification<Plan> filter(PlanFilterRequest request, User currentUser, boolean isUserAdmin) {
         return (Root<Plan> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
@@ -50,15 +50,14 @@ public class PlanSpecification {
                 predicate = criteriaBuilder.and(predicate, namePredicate);
             }
 
-            if (currentUser != null && currentUser.getProfile() != null) {
+            if (!isUserAdmin) {
                 Profile currentProfile = currentUser.getProfile();
                 Predicate authorPredicate = criteriaBuilder.equal(root.get(Plan.Fields.author), currentProfile);
                 Predicate traineePredicate = criteriaBuilder.equal(root.get(Plan.Fields.trainee), currentProfile);
 
                 Predicate isCoachPredicate = CoachingContractSpecification.getIsCoachPredicate(currentProfile, root.get(Plan.Fields.author), query, criteriaBuilder);
-                Predicate isAdminPredicate = UserSpecification.getIsAdminPredicate(currentUser, query, criteriaBuilder);
 
-                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate, isAdminPredicate);
+                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate);
                 predicate = criteriaBuilder.and(predicate, accessPredicate);
             }
 

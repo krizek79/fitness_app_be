@@ -1,6 +1,7 @@
 package sk.krizan.fitness_app_be.domain.draft.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.domain.draft.mapper.DraftMapper;
@@ -21,6 +22,7 @@ public class DraftController implements sk.krizan.fitness_app_be.domain.draft.re
         return draftService.filterDrafts(request);
     }
 
+    @PreAuthorize("hasPermission(#id, 'DRAFT', 'READ')")
     @Override
     public DraftResponse getDraftById(Long id) {
         return DraftMapper.entityToResponse(draftService.getDraftById(id));
@@ -31,11 +33,13 @@ public class DraftController implements sk.krizan.fitness_app_be.domain.draft.re
         return DraftMapper.entityToResponse(draftService.createDraft(request));
     }
 
+    @PreAuthorize("hasPermission(#id, 'DRAFT', 'UPDATE')")
     @Override
     public DraftResponse updateDraft(Long id, DraftUpdateRequest request) {
         return DraftMapper.entityToResponse(draftService.updateDraft(id, request));
     }
 
+    @PreAuthorize("hasPermission(#id, 'DRAFT', 'DELETE')")
     @Override
     public void deleteDraft(Long id) {
         draftService.deleteDraft(id);

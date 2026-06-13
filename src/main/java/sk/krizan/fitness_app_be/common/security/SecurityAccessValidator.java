@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
+import sk.krizan.fitness_app_be.domain.draft.entity.Draft;
+import sk.krizan.fitness_app_be.domain.draft.repository.DraftRepository;
 import sk.krizan.fitness_app_be.domain.goal.entity.Goal;
 import sk.krizan.fitness_app_be.domain.goal.repository.GoalRepository;
 import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
@@ -27,6 +29,7 @@ public class SecurityAccessValidator {
     private final GoalRepository goalRepository;
     private final PlanRepository planRepository;
     private final WeekRepository weekRepository;
+    private final DraftRepository draftRepository;
     private final WorkoutRepository workoutRepository;
     private final WeekWorkoutRepository weekWorkoutRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
@@ -72,6 +75,12 @@ public class SecurityAccessValidator {
     public boolean canAccessGoal(Long goalId, Long profileId, Permission permission) {
         Goal goal = goalRepository.getByIdOrThrow(goalId);
         return checkResourceAccess(goal.getProfile().getId(), goal.getProfile().getId(), profileId, permission);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canAccessDraft(Long draftId, Long profileId, Permission mappedPermission) {
+        Draft draft = draftRepository.getByIdOrThrow(draftId);
+        return checkResourceAccess(draft.getProfile().getId(), draft.getProfile().getId(), profileId, mappedPermission);
     }
 
     /**
@@ -133,5 +142,4 @@ public class SecurityAccessValidator {
         // No contract at all - no access
         return false;
     }
-
 }

@@ -46,7 +46,4 @@ public abstract class AuditableEntity {
     @Column(nullable = false)
     private Long version = 0L;
 
-    private Instant deletedAt;
-
-    private String deletedBy;
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
@@ -63,6 +64,7 @@ public class UserServiceImpl implements UserService {
         profile.setName(name);
         profile.setProfilePictureUrl(pictureUrl);
         profile.setPreferredWeightUnit(WeightUnit.KG);
+        profile.setPreferredDistanceUnit(DistanceUnit.KM);
 
         profile.setUser(user);
         user.setProfile(profile);

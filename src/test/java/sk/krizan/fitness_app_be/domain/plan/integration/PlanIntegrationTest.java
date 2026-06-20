@@ -181,7 +181,7 @@ class PlanIntegrationTest extends BaseIntegrationTest {
 
         coachingContractRepository.save(CoachingContractHelper.createCoachingContract(mockProfile, traineeProfile));
 
-        List<WeekInputRequest> weeks = List.of(WeekHelper.createInputRequest(null, 1, "Note", false));
+        List<WeekInputRequest> weeks = List.of(WeekHelper.createInputRequest(null, 1, "Note"));
         PlanInputRequest request = PlanHelper.createInputRequest(
                 traineeProfile.getId(),
                 weeks
@@ -226,8 +226,8 @@ class PlanIntegrationTest extends BaseIntegrationTest {
 
         // Update: keep first week, remove second week, add new week
         List<WeekInputRequest> updatedWeeks = List.of(
-                WeekHelper.createInputRequest(firstWeekId, 1, "Week 1 Updated", false),
-                WeekHelper.createInputRequest(null, 2, "Week 2 New", false)
+                WeekHelper.createInputRequest(firstWeekId, 1, "Week 1 Updated"),
+                WeekHelper.createInputRequest(null, 2, "Week 2 New")
         );
         PlanInputRequest request = PlanHelper.createInputRequest(
                 traineeProfile2.getId(),

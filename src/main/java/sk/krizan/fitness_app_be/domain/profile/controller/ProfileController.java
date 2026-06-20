@@ -23,4 +23,3 @@ public class ProfileController implements sk.krizan.fitness_app_be.domain.profil
     }
 
 }
-

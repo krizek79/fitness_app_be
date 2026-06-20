@@ -29,14 +29,12 @@ public final class WeekHelper {
     public static WeekInputRequest createInputRequest(
             Long id,
             Integer order,
-            String note,
-            Boolean completed
+            String note
     ) {
         return WeekInputRequest.builder()
                 .id(id)
                 .order(order)
                 .note(note)
-                .completed(completed)
                 .build();
     }
 
@@ -77,7 +75,6 @@ public final class WeekHelper {
         }
 
         Assertions.assertEquals(request.note(), week.getNote());
-        Assertions.assertEquals(request.completed(), week.getCompleted());
 
         //  questionable assert as order might be different due to user input and reordering in service layer
         Assertions.assertEquals(request.order(), week.getOrder());

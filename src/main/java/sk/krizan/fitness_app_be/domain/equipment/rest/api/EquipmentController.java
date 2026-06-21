@@ -9,7 +9,15 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
@@ -47,6 +55,31 @@ public interface EquipmentController {
     )
     @PostMapping("filter")
     PageResponse<EquipmentResponse> filterEquipment(@Valid @RequestBody EquipmentFilterRequest request);
+
+    @Operation(
+            summary = "Get equipment by ID",
+            description = "Retrieves a specific equipment by its unique ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Equipment found",
+                            content = @Content(schema = @Schema(implementation = EquipmentResponse.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Exercise not found",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
+            }
+    )
+    @GetMapping("{id}")
+    EquipmentResponse getEquipmentById(@PathVariable Long id);
 
     @Operation(
             summary = "Create a new equipment",

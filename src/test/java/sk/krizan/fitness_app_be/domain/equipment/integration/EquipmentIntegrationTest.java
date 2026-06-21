@@ -73,6 +73,20 @@ public class EquipmentIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
+    void getEquipmentById() throws Exception {
+        Equipment equipment = equipmentRepository.save(EquipmentHelper.createEquipment());
+
+        EquipmentResponse response = performGet(
+                BASE_URL + "/" + equipment.getId(),
+                new TypeReference<>() {
+                },
+                HttpStatus.OK);
+
+        EquipmentHelper.assertEquipmentResponse(equipment, response);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void createEquipment() throws Exception {
         EquipmentInputRequest request = EquipmentHelper.createInputRequest();
 

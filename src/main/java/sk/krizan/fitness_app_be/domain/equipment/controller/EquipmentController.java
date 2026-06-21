@@ -22,6 +22,11 @@ public class EquipmentController implements sk.krizan.fitness_app_be.domain.equi
         return equipmentService.filterEquipment(request);
     }
 
+    @Override
+    public EquipmentResponse getEquipmentById(Long id) {
+        return EquipmentMapper.entityToResponse(equipmentService.getEquipmentById(id));
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public EquipmentResponse createEquipment(EquipmentInputRequest request, MultipartFile thumbnail) {

@@ -8,19 +8,19 @@ import sk.krizan.fitness_app_be.domain.reference.entity.BaseEnum;
 @AllArgsConstructor
 public enum MovementPattern implements BaseEnum {
 
-    SQUAT("squat", "Squat"),
-    HINGE("hinge", "Hinge"),
-    LUNGE("lunge", "Lunge"),
-    HORIZONTAL_PUSH("horizontal_push", "Horizontal Push"),
-    VERTICAL_PUSH("vertical_push", "Vertical Push"),
-    HORIZONTAL_PULL("horizontal_pull", "Horizontal Pull"),
-    VERTICAL_PULL("vertical_pull", "Vertical Pull"),
-    CARRY("carry", "Carry"),
-    ROTATION("rotation", "Rotation"),
-    ANTI_ROTATION("anti_rotation", "Anti Rotation"),
-    ANTI_EXTENSION("anti_extension", "Anti Extension"),
-    ANTI_LATERAL_FLEXION("anti_lateral_flexion", "Anti Lateral Flexion"),
-    LOCOMOTION("locomotion", "Locomotion");
+    SQUAT("SQUAT", "Squat"),
+    HINGE("HINGE", "Hinge"),
+    LUNGE("LUNGE", "Lunge"),
+    HORIZONTAL_PUSH("HORIZONTAL_PUSH", "Horizontal Push"),
+    VERTICAL_PUSH("VERTICAL_PUSH", "Vertical Push"),
+    HORIZONTAL_PULL("HORIZONTAL_PULL", "Horizontal Pull"),
+    VERTICAL_PULL("VERTICAL_PULL", "Vertical Pull"),
+    CARRY("CARRY", "Carry"),
+    ROTATION("ROTATION", "Rotation"),
+    ANTI_ROTATION("ANTI_ROTATION", "Anti Rotation"),
+    ANTI_EXTENSION("ANTI_EXTENSION", "Anti Extension"),
+    ANTI_LATERAL_FLEXION("ANTI_LATERAL_FLEXION", "Anti Lateral Flexion"),
+    LOCOMOTION("LOCOMOTION", "Locomotion");
 
     private final String key;
     private final String value;

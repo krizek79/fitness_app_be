@@ -26,6 +26,7 @@ public final class UserHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(user.getId(), response.id());
         Assertions.assertEquals(user.getEmail(), response.email());
+        //  TODO: assert isAdmin and add integration test
         if (user.getProfile() == null) {
             Assertions.assertNull(response.profile());
         } else {

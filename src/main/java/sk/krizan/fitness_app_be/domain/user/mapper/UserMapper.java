@@ -11,11 +11,12 @@ import sk.krizan.fitness_app_be.domain.user.entity.User;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
 
-    public static UserResponse entityToResponse(User user) {
+    public static UserResponse entityToResponse(User user, boolean isAdmin) {
         return UserResponse.builder()
-            .id(user.getId())
-            .email(user.getEmail())
-            .profile(ProfileMapper.entityToResponse(user.getProfile()))
-            .build();
+                .id(user.getId())
+                .email(user.getEmail())
+                .isAdmin(isAdmin)
+                .profile(ProfileMapper.entityToResponse(user.getProfile()))
+                .build();
     }
 }

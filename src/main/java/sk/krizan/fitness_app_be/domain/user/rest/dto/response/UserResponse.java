@@ -9,6 +9,7 @@ import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailRe
 public record UserResponse(
         Long id,
         String email,
+        boolean isAdmin,
         ProfileDetailResponse profile
 ) {
 }

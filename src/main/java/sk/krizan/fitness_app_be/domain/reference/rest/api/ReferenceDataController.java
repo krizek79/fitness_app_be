@@ -64,4 +64,5 @@ public interface ReferenceDataController {
     )
     @GetMapping("{type}")
     List<ReferenceDataResponse> getReferenceData(@PathVariable String type);
+
 }

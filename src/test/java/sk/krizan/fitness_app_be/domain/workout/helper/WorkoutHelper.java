@@ -229,40 +229,6 @@ public final class WorkoutHelper {
         }
     }
 
-    public static void assertClone(Workout original, Workout clone) {
-        Assertions.assertNotNull(clone);
-        Assertions.assertNotNull(clone.getId());
-        Assertions.assertNotEquals(original.getId(), clone.getId());
-        Assertions.assertEquals(original.getTitle(), clone.getTitle());
-        Assertions.assertEquals(original.getDescription(), clone.getDescription());
-        Assertions.assertFalse(clone.getIsTemplate());
-        Assertions.assertNull(clone.getNote());
-        Assertions.assertEquals(original.getWeightUnit(), clone.getWeightUnit());
-        Assertions.assertEquals(original.getDistanceUnit(), clone.getDistanceUnit());
-        Assertions.assertEquals(original.getTags(), clone.getTags());
-        Assertions.assertNotNull(clone.getAuthor());
-
-        //  trainee is asserted in WeekWorkoutHelper.assertInputToEntity, because workout can be cloned only when creating or updating week workout, so we need to assert that the trainee of the cloned workout is the same as the trainee of the week workout.
-
-        assertCloneWorkoutExercises(original.getWorkoutExercises(), clone.getWorkoutExercises());
-    }
-
-    private static void assertCloneWorkoutExercises(List<WorkoutExercise> originalWorkoutExercises, List<WorkoutExercise> cloneWorkoutExercises) {
-        Assertions.assertEquals(originalWorkoutExercises.size(), cloneWorkoutExercises.size());
-        List<WorkoutExercise> sortedOriginalWorkoutExercises = originalWorkoutExercises.stream()
-                .sorted(Comparator.comparing(WorkoutExercise::getOrder))
-                .toList();
-        List<WorkoutExercise> sortedCloneWorkoutExercises = cloneWorkoutExercises.stream()
-                .sorted(Comparator.comparing(WorkoutExercise::getOrder))
-                .toList();
-
-        for (int i = 0; i < sortedOriginalWorkoutExercises.size(); i++) {
-            WorkoutExercise originalWorkoutExercise = sortedOriginalWorkoutExercises.get(i);
-            WorkoutExercise cloneWorkoutExercise = sortedCloneWorkoutExercises.get(i);
-            WorkoutExerciseHelper.assertClone(originalWorkoutExercise, cloneWorkoutExercise);
-        }
-    }
-
     public static void assertDelete(
             boolean workoutExists,
             boolean workoutExerciseExists,

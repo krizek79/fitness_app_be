@@ -20,9 +20,6 @@ public record WeekWorkoutInputRequest(
         @NotNull
         Long weekId,
 
-        @Schema(description = "Should be set only if we want to create a clone from an existing workout template. If workoutToUpdateId is provided, this field is ignored.")
-        Long workoutToCloneId,
-
         @Null(groups = CreateGroup.class)
         @Schema(description = "Should be set only if we want to update an already existing workout. (pair with " + WeekWorkoutInputRequest.Fields.workout + ")")
         Long workoutToUpdateId,

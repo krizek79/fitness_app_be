@@ -49,15 +49,4 @@ public interface WorkoutService {
     void deleteWorkout(Long id);
 
 
-    /**
-     * Creates a new workout that is a clone of an existing workout with the specified ID.
-     * The cloned workout will have a new unique ID, and all other attributes will be copied from the original workout.
-     * This allows users to easily create variations of existing workouts without having to manually recreate all the details.
-     *
-     * @param id       ID of the workout to be cloned
-     * @return a new workout that is a clone of the workout with the specified ID.
-     * @throws ApplicationException if the workout with the specified ID does not exist or the user is not authorized to clone it
-     */
-    Workout cloneWorkout(Long id);
-
 }

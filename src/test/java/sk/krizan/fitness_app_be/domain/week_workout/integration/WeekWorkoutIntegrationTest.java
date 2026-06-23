@@ -24,7 +24,6 @@ import sk.krizan.fitness_app_be.domain.plan.repository.PlanRepository;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
-import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.tag.helper.TagHelper;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
@@ -193,7 +192,6 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         WeekWorkoutInputRequest weekWorkoutInputRequest = WeekWorkoutHelper.createInputRequest(
                 week.getId(),
                 null,
-                null,
                 workoutInputRequest,
                 DayOfWeek.TUESDAY,
                 1,
@@ -210,64 +208,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
         WeekWorkout createdWeekWorkout = weekWorkoutRepository.getByIdOrThrow(response.id());
-        WeekWorkoutHelper.assertInputToEntity(createdWeekWorkout, weekWorkoutInputRequest, null);
-        WeekWorkoutHelper.assertWeekWorkoutResponse(createdWeekWorkout, response);
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void createWeekWorkout_withClonedWorkout() throws Exception {
-        List<Week> weeks = new ArrayList<>(List.of(
-                WeekHelper.createWeek(1)
-        ));
-
-        Plan plan = planRepository.save(PlanHelper.createPlan(mockProfile, mockProfile, weeks));
-
-        Week week = plan.getWeeks().get(0);
-
-        //  Workout to clone
-        Boolean isClonableWorkoutTemplate = true;
-
-        //  Tags of clonable workout
-        Set<Tag> tags = new HashSet<>(Set.of(
-                TagHelper.createTag()
-        ));
-
-        //  Workout exercise sets of clonable workout
-        List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1),
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1)
-        ));
-
-        //  Workout exercises of clonable workout
-        List<WorkoutExercise> workoutExercises = new ArrayList<>(List.of(
-                WorkoutExerciseHelper.createWorkoutExercise(exercises.get(0), workoutExerciseSets.subList(0, 1), 1),
-                WorkoutExerciseHelper.createWorkoutExercise(exercises.get(0), workoutExerciseSets.subList(1, workoutExerciseSets.size()), 1)
-        ));
-
-        Workout workout = workoutRepository.save(WorkoutHelper.createWorkout(mockProfile, tags, workoutExercises, "Original template", isClonableWorkoutTemplate));
-
-        WeekWorkoutInputRequest request = WeekWorkoutHelper.createInputRequest(
-                week.getId(),
-                workout.getId(),
-                null,
-                null,
-                DayOfWeek.MONDAY,
-                1,
-                null
-        );
-
-        WeekWorkoutResponse response = performPost(
-                BASE_URL,
-                request,
-                new TypeReference<>() {
-                },
-                HttpStatus.CREATED);
-
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.id());
-        WeekWorkout createdWeekWorkout = weekWorkoutRepository.getByIdOrThrow(response.id());
-        WeekWorkoutHelper.assertInputToEntity(createdWeekWorkout, request, workout);
+        WeekWorkoutHelper.assertInputToEntity(createdWeekWorkout, weekWorkoutInputRequest);
         WeekWorkoutHelper.assertWeekWorkoutResponse(createdWeekWorkout, response);
     }
 
@@ -346,7 +287,6 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         //  Week workout input request
         WeekWorkoutInputRequest weekWorkoutInputRequest = WeekWorkoutHelper.createInputRequest(
                 week.getId(),
-                null,
                 workout.getId(),
                 workoutInputRequest,
                 DayOfWeek.TUESDAY,
@@ -363,7 +303,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.id());
-        WeekWorkoutHelper.assertInputToEntity(weekWorkout, weekWorkoutInputRequest, workout);
+        WeekWorkoutHelper.assertInputToEntity(weekWorkout, weekWorkoutInputRequest);
         WeekWorkoutHelper.assertWeekWorkoutResponse(weekWorkout, response);
     }
 

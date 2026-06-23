@@ -28,7 +28,6 @@ public final class WeekWorkoutHelper {
 
     public static WeekWorkoutInputRequest createInputRequest(
             Long weekId,
-            Long workoutToCloneId,
             Long workoutToUpdateId,
             WorkoutInputRequest workout,
             DayOfWeek dayOfWeek,
@@ -37,7 +36,6 @@ public final class WeekWorkoutHelper {
     ) {
         return WeekWorkoutInputRequest.builder()
                 .weekId(weekId)
-                .workoutToCloneId(workoutToCloneId)
                 .workoutToUpdateId(workoutToUpdateId)
                 .workout(workout)
                 .dayOfWeek(dayOfWeek)
@@ -70,26 +68,15 @@ public final class WeekWorkoutHelper {
 
     public static void assertInputToEntity(
             WeekWorkout weekWorkout,
-            WeekWorkoutInputRequest request,
-            Workout workoutToClone
+            WeekWorkoutInputRequest request
     ) {
         Assertions.assertNotNull(weekWorkout);
         Assertions.assertEquals(request.weekId(), weekWorkout.getWeek().getId());
         Assertions.assertEquals(request.dayOfWeek(), weekWorkout.getDayOfWeek());
         Assertions.assertEquals(request.status() != null ? request.status() : WorkoutStatus.NOT_STARTED, weekWorkout.getStatus());
 
-        if ((request.workoutToUpdateId() != null && request.workout() != null)
-                || (request.workoutToUpdateId() == null && request.workout() != null)
-        ) {
-            //  If workoutToUpdateId is provided, the workout in the request should be used to update the existing workout. If workoutToUpdateId is not provided, the workout in the request should be used to create a new workout.
+        if (request.workout() != null) {
             WorkoutHelper.assertInputToEntity(weekWorkout.getWorkout(), request.workout());
-        }
-
-        if (request.workoutToCloneId() != null) {
-            Assertions.assertNotNull(workoutToClone);
-            // If workoutToCloneId is provided, new workout should be created based on the workout with the id provided in workoutToCloneId.
-            WorkoutHelper.assertClone(workoutToClone, weekWorkout.getWorkout());
-            Assertions.assertEquals(weekWorkout.getWeek().getPlan().getTrainee().getId(), weekWorkout.getWorkout().getTrainee().getId());
         }
     }
 

@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.common.cloning.CloneOrchestrator;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.common.util.PageUtils;
@@ -41,7 +40,6 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     private final TagService tagService;
     private final UserService userService;
-    private final CloneOrchestrator cloneOrchestrator;
     private final CoachingContractService coachingContractService;
     private final WorkoutExerciseService workoutExerciseService;
 
@@ -206,24 +204,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         }
 
         workoutRepository.delete(workout);
-    }
-
-    /**
-     * Creates a new workout that is a clone of an existing workout with the specified ID.
-     * The cloned workout will have a new unique ID, and all other attributes will be copied from the original workout.
-     * This allows users to easily create variations of existing workouts without having to manually recreate all the details.
-     *
-     * @param id       ID of the workout to be cloned
-     * @return a new workout that is a clone of the workout with the specified ID.
-     * @throws ApplicationException if the workout with the specified ID does not exist or the user is not authorized to clone it
-     */
-    @Override
-    @Transactional
-    public Workout cloneWorkout(Long id) {
-        Workout original = workoutRepository.getByIdOrThrow(id);
-        Workout clone = cloneOrchestrator.deepClone(original);
-
-        return workoutRepository.save(clone);
     }
 
 }

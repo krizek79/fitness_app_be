@@ -99,14 +99,4 @@ public final class WorkoutExerciseSetHelper {
         Assertions.assertEquals(request.note(), workoutExerciseSet.getNote());
     }
 
-    public static void assertClone(WorkoutExerciseSet original, WorkoutExerciseSet clone) {
-        Assertions.assertNotNull(clone);
-        Assertions.assertNotEquals(original.getWorkoutExercise(), clone.getWorkoutExercise());
-        Assertions.assertNotEquals(original.getId(), clone.getId());
-        Assertions.assertEquals(original.getOrder(), clone.getOrder());
-        Assertions.assertEquals(original.getWorkoutExerciseSetType(), clone.getWorkoutExerciseSetType());
-        Assertions.assertEquals(original.getRestDurationSeconds(), clone.getRestDurationSeconds());
-        Assertions.assertNull(clone.getNote());
-    }
-
 }

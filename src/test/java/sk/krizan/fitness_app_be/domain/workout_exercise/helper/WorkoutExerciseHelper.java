@@ -111,31 +111,4 @@ public final class WorkoutExerciseHelper {
         }
     }
 
-    public static void assertClone(WorkoutExercise original, WorkoutExercise clone) {
-        Assertions.assertNotNull(clone);
-        Assertions.assertNotEquals(original.getWorkout(), clone.getWorkout());
-        Assertions.assertNotNull(clone.getId());
-        Assertions.assertNotEquals(original.getId(), clone.getId());
-        Assertions.assertEquals(original.getExercise().getId(), clone.getExercise().getId());
-        Assertions.assertNull(clone.getNote());
-        Assertions.assertEquals(original.getOrder(), clone.getOrder());
-        Assertions.assertEquals(original.getWorkoutExerciseMetric(), clone.getWorkoutExerciseMetric());
-
-        assertCloneWorkoutExerciseSets(original.getWorkoutExerciseSets(), clone.getWorkoutExerciseSets());
-    }
-
-    private static void assertCloneWorkoutExerciseSets(List<WorkoutExerciseSet> originalSets, List<WorkoutExerciseSet> cloneSets) {
-        Assertions.assertEquals(originalSets.size(), cloneSets.size());
-        List<WorkoutExerciseSet> sortedOriginalWorkoutExerciseSets = originalSets.stream()
-                .sorted(Comparator.comparing(WorkoutExerciseSet::getOrder))
-                .toList();
-        List<WorkoutExerciseSet> sortedCloneWorkoutExerciseSets = cloneSets.stream()
-                .sorted(Comparator.comparing(WorkoutExerciseSet::getOrder))
-                .toList();
-
-        for (int i = 0; i < sortedOriginalWorkoutExerciseSets.size(); i++) {
-            WorkoutExerciseSetHelper.assertClone(sortedOriginalWorkoutExerciseSets.get(i), sortedCloneWorkoutExerciseSets.get(i));
-        }
-    }
-
 }

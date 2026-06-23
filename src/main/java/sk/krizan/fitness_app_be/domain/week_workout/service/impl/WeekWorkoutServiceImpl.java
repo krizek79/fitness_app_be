@@ -3,7 +3,6 @@ package sk.krizan.fitness_app_be.domain.week_workout.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week.repository.WeekRepository;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
@@ -42,9 +41,8 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
     @Transactional
     public WeekWorkout createUpdateWeekWorkout(Long id, WeekWorkoutInputRequest request) {
         Week week = weekRepository.getByIdOrThrow(request.weekId());
-        Profile planTrainee = week.getPlan().getTrainee();
 
-        Workout workout = handleWorkout(request, planTrainee);
+        Workout workout = handleWorkout(request);
 
         WeekWorkout weekWorkout = handleWeekWorkout(id, request, week, workout);
 
@@ -55,22 +53,12 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
         return weekWorkoutRepository.save(weekWorkout);
     }
 
-    private Workout handleWorkout(WeekWorkoutInputRequest request, Profile planTrainee) {
-        Workout workout;
-
+    private Workout handleWorkout(WeekWorkoutInputRequest request) {
         if (request.workoutToUpdateId() != null) {
-            //  Update existing workout
-            workout = workoutService.createUpdateWorkout(request.workoutToUpdateId(), request.workout());
-        } else if (request.workoutToCloneId() != null) {
-            //  Clone existing workout
-            workout = workoutService.cloneWorkout(request.workoutToCloneId());
-            planTrainee.addToAssignedWorkouts(workout);
+            return workoutService.createUpdateWorkout(request.workoutToUpdateId(), request.workout());
         } else {
-            //  Create new workout
-            workout = workoutService.createUpdateWorkout(null, request.workout());
+            return workoutService.createUpdateWorkout(null, request.workout());
         }
-
-        return workout;
     }
 
     private WeekWorkout handleWeekWorkout(Long id, WeekWorkoutInputRequest request, Week week, Workout workout) {

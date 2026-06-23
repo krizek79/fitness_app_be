@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.reference_data.helper.ReferenceDataHelper;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
@@ -40,6 +41,7 @@ public final class WorkoutHelper {
         Workout workout = new Workout();
         workout.setTitle(title);
         workout.setWeightUnit(WeightUnit.KG);
+        workout.setDistanceUnit(DistanceUnit.KM);
         workout.setNote(UUID.randomUUID().toString());
         workout.addToTags(tags);
         workout.setIsTemplate(isTemplate);
@@ -98,6 +100,7 @@ public final class WorkoutHelper {
                 .isTemplate(isTemplate)
                 .note(UUID.randomUUID().toString())
                 .weightUnit(WeightUnit.KG)
+                .distanceUnit(DistanceUnit.KM)
                 .tags(tags)
                 .workoutExercises(workoutExercises)
                 .build();
@@ -111,7 +114,9 @@ public final class WorkoutHelper {
             Long authorId,
             List<Long> tagIdList,
             String title,
-            Boolean isTemplate) {
+            Boolean isTemplate,
+            boolean isQuick
+    ) {
         return WorkoutFilterRequest.builder()
                 .page(page)
                 .size(size)
@@ -121,6 +126,7 @@ public final class WorkoutHelper {
                 .tagIdList(tagIdList)
                 .title(title)
                 .isTemplate(isTemplate)
+                .isQuick(isQuick)
                 .build();
     }
 
@@ -132,6 +138,7 @@ public final class WorkoutHelper {
         Assertions.assertEquals(workout.getTitle(), response.title());
         Assertions.assertEquals(workout.getDescription(), response.description());
         ReferenceDataHelper.assertReferenceDataResponse(workout.getWeightUnit(), response.weightUnit());
+        ReferenceDataHelper.assertReferenceDataResponse(workout.getDistanceUnit(), response.distanceUnit());
         Assertions.assertEquals(workout.getNote(), response.note());
         Assertions.assertEquals(workout.getIsTemplate(), response.isTemplate());
         assertTagsToTagResponses(workout.getTags(), response.tags());
@@ -180,6 +187,7 @@ public final class WorkoutHelper {
         Assertions.assertEquals(workoutInputRequest.isTemplate(), workout.getIsTemplate());
         Assertions.assertEquals(workoutInputRequest.note(), workout.getNote());
         Assertions.assertEquals(workoutInputRequest.weightUnit(), workout.getWeightUnit());
+        Assertions.assertEquals(workoutInputRequest.distanceUnit(), workout.getDistanceUnit());
 
         if (!workoutInputRequest.isTemplate()) {
             Assertions.assertEquals(workoutInputRequest.traineeId(), workout.getTrainee().getId());
@@ -230,6 +238,7 @@ public final class WorkoutHelper {
         Assertions.assertFalse(clone.getIsTemplate());
         Assertions.assertNull(clone.getNote());
         Assertions.assertEquals(original.getWeightUnit(), clone.getWeightUnit());
+        Assertions.assertEquals(original.getDistanceUnit(), clone.getDistanceUnit());
         Assertions.assertEquals(original.getTags(), clone.getTags());
         Assertions.assertNotNull(clone.getAuthor());
 

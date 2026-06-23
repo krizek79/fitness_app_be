@@ -15,6 +15,7 @@ import java.util.List;
 @Builder
 @FieldNameConstants
 public record WorkoutExerciseInputRequest(
+
         @Schema(description = "Should be set only for update. For new object, this field should be null.")
         Long id,
 
@@ -34,4 +35,5 @@ public record WorkoutExerciseInputRequest(
         @Valid
         @NotNull
         List<WorkoutExerciseSetInputRequest> workoutExerciseSets
+
 ) {}

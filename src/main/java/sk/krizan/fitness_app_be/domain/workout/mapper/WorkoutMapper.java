@@ -41,6 +41,7 @@ public class WorkoutMapper {
                 .description(workout.getDescription())
                 .isTemplate(workout.getIsTemplate())
                 .weightUnit(ReferenceDataMapper.enumToResponse(workout.getWeightUnit()))
+                .distanceUnit(ReferenceDataMapper.enumToResponse(workout.getDistanceUnit()))
                 .note(workout.getNote())
                 .workoutExercises(workout.getWorkoutExercises().stream()
                         .sorted(Comparator.comparing(WorkoutExercise::getOrder))
@@ -76,6 +77,7 @@ public class WorkoutMapper {
         workout.setDescription(request.description());
 
         workout.setWeightUnit(request.weightUnit());
+        workout.setDistanceUnit(request.distanceUnit());
         workout.setNote(request.note());
     }
 }

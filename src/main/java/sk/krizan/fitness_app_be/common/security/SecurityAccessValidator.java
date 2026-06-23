@@ -19,6 +19,10 @@ import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
 import sk.krizan.fitness_app_be.domain.workout.repository.WorkoutRepository;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
 import sk.krizan.fitness_app_be.domain.workout_exercise.repository.WorkoutExerciseRepository;
+import sk.krizan.fitness_app_be.domain.workout_exercise_session.entity.WorkoutExerciseSession;
+import sk.krizan.fitness_app_be.domain.workout_exercise_session.repository.WorkoutExerciseSessionRepository;
+import sk.krizan.fitness_app_be.domain.workout_session.entity.WorkoutSession;
+import sk.krizan.fitness_app_be.domain.workout_session.repository.WorkoutSessionRepository;
 
 import java.util.Optional;
 
@@ -33,6 +37,8 @@ public class SecurityAccessValidator {
     private final WorkoutRepository workoutRepository;
     private final WeekWorkoutRepository weekWorkoutRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
+    private final WorkoutSessionRepository workoutSessionRepository;
+    private final WorkoutExerciseSessionRepository workoutExerciseSessionRepository;
     private final CoachingContractRepository coachingContractRepository;
 
     @Transactional(readOnly = true)
@@ -69,6 +75,18 @@ public class SecurityAccessValidator {
     public boolean canAccessWorkoutExercise(Long workoutExerciseId, Long profileId, Permission permission) {
         WorkoutExercise workoutExercise = workoutExerciseRepository.getByIdOrThrow(workoutExerciseId);
         return canAccessWorkout(workoutExercise.getWorkout().getId(), profileId, permission);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canAccessWorkoutSession(Long workoutSessionId, Long profileId, Permission permission) {
+        WorkoutSession workoutSession = workoutSessionRepository.getByIdOrThrow(workoutSessionId);
+        return canAccessWorkout(workoutSession.getWorkout().getId(), profileId, permission);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canAccessWorkoutExerciseSession(Long workoutExerciseSessionId, Long profileId, Permission permission) {
+        WorkoutExerciseSession workoutExerciseSession = workoutExerciseSessionRepository.getByIdOrThrow(workoutExerciseSessionId);
+        return canAccessWorkoutSession(workoutExerciseSession.getWorkoutSession().getId(), profileId, permission);
     }
 
     @Transactional(readOnly = true)

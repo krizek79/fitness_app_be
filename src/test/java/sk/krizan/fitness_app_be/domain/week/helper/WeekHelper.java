@@ -8,6 +8,7 @@ import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekInputRequest;
 import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekDetailResponse;
 import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekSimpleResponse;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WorkoutStatus;
 import sk.krizan.fitness_app_be.domain.week_workout.helper.WeekWorkoutHelper;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 
@@ -45,7 +46,7 @@ public final class WeekHelper {
         Assertions.assertEquals(week.getOrder(), response.order());
         Assertions.assertFalse(response.completed());
         Assertions.assertEquals(week.getWeekWorkouts().size(), response.numberOfWorkouts());
-        Assertions.assertEquals(Math.toIntExact(week.getWeekWorkouts().stream().filter(WeekWorkout::getCompleted).count()), response.numberOfCompletedWorkouts());
+        Assertions.assertEquals(Math.toIntExact(week.getWeekWorkouts().stream().filter(ww -> ww.getStatus() == WorkoutStatus.COMPLETED || ww.getStatus() == WorkoutStatus.SKIPPED).count()), response.numberOfCompletedWorkouts());
     }
 
     public static void assertWeekDetailResponse(Week week, WeekDetailResponse response) {

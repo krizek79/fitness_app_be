@@ -58,7 +58,8 @@ public class WeekWorkout extends AuditableEntity {
     private Integer orderInTheDay = 1;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Boolean completed = false;
+    private WorkoutStatus status = WorkoutStatus.NOT_STARTED;
 
 }

@@ -31,6 +31,7 @@ public class WorkoutCloner extends AbstractCloner<Workout> {
         clone.setDescription(original.getDescription());
         clone.addToTags(original.getTags());
         clone.setWeightUnit(original.getWeightUnit());
+        clone.setDistanceUnit(original.getDistanceUnit());
 
         List<WorkoutExercise> clonedWorkoutExercises = original.getWorkoutExercises().stream()
                 .map(workoutExerciseCloner::clone)

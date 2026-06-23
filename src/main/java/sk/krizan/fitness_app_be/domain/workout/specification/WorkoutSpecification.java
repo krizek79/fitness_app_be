@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import sk.krizan.fitness_app_be.common.util.PredicateUtils;
 import sk.krizan.fitness_app_be.domain.coaching_contract.specification.CoachingContractSpecification;
@@ -12,6 +13,7 @@ import sk.krizan.fitness_app_be.domain.plan.entity.Plan;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
 import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutFilterRequest;
 
@@ -36,15 +38,25 @@ public class WorkoutSpecification {
                 predicate = criteriaBuilder.and(predicate, tagPredicate);
             }
 
-            if (request.isTemplate() != null) {
-                Predicate isTemplatePredicate = criteriaBuilder.equal(root.get(Workout.Fields.isTemplate), request.isTemplate());
-                predicate = criteriaBuilder.and(predicate, isTemplatePredicate);
-            }
+            Predicate isTemplatePredicate = criteriaBuilder.equal(root.get(Workout.Fields.isTemplate), request.isTemplate());
+            predicate = criteriaBuilder.and(predicate, isTemplatePredicate);
 
             if (request.authorId() != null) {
                 Join<Workout, Profile> profileJoin = root.join(Workout.Fields.author);
                 Predicate authorPredicate = criteriaBuilder.equal(profileJoin.get(Profile.Fields.id), request.authorId());
                 predicate = criteriaBuilder.and(predicate, authorPredicate);
+            }
+
+            if (request.isQuick()) {
+                Subquery<Long> weekWorkoutSubquery = query.subquery(Long.class);
+                Root<WeekWorkout> weekWorkoutRoot = weekWorkoutSubquery.from(WeekWorkout.class);
+                weekWorkoutSubquery.select(weekWorkoutRoot.get(WeekWorkout.Fields.workout).get(Workout.Fields.id))
+                        .where(criteriaBuilder.equal(
+                                weekWorkoutRoot.get(WeekWorkout.Fields.workout).get(Workout.Fields.id),
+                                root.get(Workout.Fields.id)
+                        ));
+
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.not(criteriaBuilder.exists(weekWorkoutSubquery)));
             }
 
             if (!isUserAdmin) {

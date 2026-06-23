@@ -20,23 +20,13 @@ public record WorkoutExerciseSetResponse(
 
         Integer goalRepetitions,
 
-        Integer actualRepetitions,
-
         BigDecimal goalWeight,
-
-        BigDecimal actualWeight,
 
         Long goalTimeSeconds,
 
-        Long actualTimeSeconds,
-
         BigDecimal goalDistanceMeters,
 
-        BigDecimal actualDistanceMeters,
-
         Long restDurationSeconds,
-
-        Boolean completed,
 
         String note
 

@@ -36,6 +36,7 @@ import sk.krizan.fitness_app_be.domain.week.helper.WeekHelper;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.domain.week_workout.helper.WeekWorkoutHelper;
 import sk.krizan.fitness_app_be.domain.week_workout.repository.WeekWorkoutRepository;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WorkoutStatus;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
@@ -132,7 +133,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
         Week week = plan.getWeeks().get(0);
 
         boolean isWorkoutTemplate = false;
-        List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(WorkoutExerciseSetHelper.createWorkoutExerciseSet(1, isWorkoutTemplate)));
+        List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(WorkoutExerciseSetHelper.createWorkoutExerciseSet(1)));
         List<WorkoutExercise> workoutExercises = new ArrayList<>(List.of(WorkoutExerciseHelper.createWorkoutExercise(exercises.get(0), workoutExerciseSets, 1)));
         Workout workout = workoutRepository.save(WorkoutHelper.createWorkout(mockProfile, new HashSet<>(), workoutExercises, DEFAULT_VALUE, isWorkoutTemplate));
 
@@ -167,11 +168,11 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
         //  Workout exercise set input requests
         List<WorkoutExerciseSetInputRequest> workoutExerciseSetInputRequests = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.WARMUP, false, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 60L),
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.TOP_SET, false, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 90L),
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.WARMUP, false, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 100L),
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.STRAIGHT_SET, false, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 30L),
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.STRAIGHT_SET, false, 3, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 150L)
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.WARMUP, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 60L),
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.TOP_SET, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 90L),
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.WARMUP, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 100L),
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.STRAIGHT_SET, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 30L),
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.STRAIGHT_SET, 3, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 150L)
         ));
 
         //  Workout exercise input requests
@@ -196,7 +197,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 workoutInputRequest,
                 DayOfWeek.TUESDAY,
                 1,
-                false
+                null
         );
 
         WeekWorkoutResponse response = performPost(
@@ -234,8 +235,8 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
         //  Workout exercise sets of clonable workout
         List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1, isClonableWorkoutTemplate),
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1, isClonableWorkoutTemplate)
+                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1),
+                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1)
         ));
 
         //  Workout exercises of clonable workout
@@ -253,7 +254,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 null,
                 DayOfWeek.MONDAY,
                 1,
-                false
+                null
         );
 
         WeekWorkoutResponse response = performPost(
@@ -293,9 +294,9 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
         //  Workout exercise sets
         List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1, isWorkoutTemplate),
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(2, isWorkoutTemplate),
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(3, isWorkoutTemplate)
+                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1),
+                WorkoutExerciseSetHelper.createWorkoutExerciseSet(2),
+                WorkoutExerciseSetHelper.createWorkoutExerciseSet(3)
         ));
 
         //  Workout exercises
@@ -317,14 +318,14 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
 
         //  Workout exercise set input requests
         List<WorkoutExerciseSetInputRequest> workoutExerciseSetInputRequests1 = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createInputRequest(workout.getWorkoutExercises().get(0).getWorkoutExerciseSets().get(0).getId(), WorkoutExerciseSetType.WARMUP, true, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 30L),
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.TOP_SET, false, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 90L),
-                WorkoutExerciseSetHelper.createInputRequest(workout.getWorkoutExercises().get(0).getWorkoutExerciseSets().get(1).getId(), WorkoutExerciseSetType.BACKOFF_SET, false, 3, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 150L)
+                WorkoutExerciseSetHelper.createInputRequest(workout.getWorkoutExercises().get(0).getWorkoutExerciseSets().get(0).getId(), WorkoutExerciseSetType.WARMUP, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 30L),
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.TOP_SET, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 90L),
+                WorkoutExerciseSetHelper.createInputRequest(workout.getWorkoutExercises().get(0).getWorkoutExerciseSets().get(1).getId(), WorkoutExerciseSetType.BACKOFF_SET, 3, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 150L)
         ));
 
         List<WorkoutExerciseSetInputRequest> workoutExerciseSetInputRequests2 = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.WARMUP, false, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 30L),
-                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.STRAIGHT_SET, false, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), null, RandomHelper.getRandomInt(1, 8), null, null, null, 60L)
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.WARMUP, 1, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 30L),
+                WorkoutExerciseSetHelper.createInputRequest(null, WorkoutExerciseSetType.STRAIGHT_SET, 2, RandomHelper.getRandomBigDecimal(BigDecimal.valueOf(5), BigDecimal.valueOf(150), 2), RandomHelper.getRandomInt(1, 8), null, 60L)
 
         ));
 
@@ -350,7 +351,7 @@ class WeekWorkoutIntegrationTest extends BaseIntegrationTest {
                 workoutInputRequest,
                 DayOfWeek.TUESDAY,
                 1,
-                isWorkoutTemplate
+                WorkoutStatus.IN_PROGRESS
         );
 
         WeekWorkoutResponse response = performPut(

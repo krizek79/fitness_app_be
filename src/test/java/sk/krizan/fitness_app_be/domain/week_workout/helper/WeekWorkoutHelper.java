@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WorkoutStatus;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.response.WeekWorkoutResponse;
 import sk.krizan.fitness_app_be.domain.workout.entity.Workout;
@@ -32,7 +33,7 @@ public final class WeekWorkoutHelper {
             WorkoutInputRequest workout,
             DayOfWeek dayOfWeek,
             Integer orderInTheDay,
-            Boolean completed
+            WorkoutStatus status
     ) {
         return WeekWorkoutInputRequest.builder()
                 .weekId(weekId)
@@ -41,7 +42,7 @@ public final class WeekWorkoutHelper {
                 .workout(workout)
                 .dayOfWeek(dayOfWeek)
                 .orderInTheDay(orderInTheDay)
-                .completed(completed)
+                .status(status)
                 .build();
     }
 
@@ -50,7 +51,7 @@ public final class WeekWorkoutHelper {
         Assertions.assertEquals(weekWorkout.getId(), response.id());
         Assertions.assertEquals(weekWorkout.getWeek().getId(), response.weekId());
         Assertions.assertEquals(weekWorkout.getDayOfWeek(), response.dayOfWeek());
-        Assertions.assertEquals(weekWorkout.getCompleted(), response.completed());
+        Assertions.assertEquals(weekWorkout.getStatus(), response.status());
 
         WorkoutHelper.assertWorkoutSimpleResponse(weekWorkout.getWorkout(), response.workout());
     }
@@ -75,7 +76,7 @@ public final class WeekWorkoutHelper {
         Assertions.assertNotNull(weekWorkout);
         Assertions.assertEquals(request.weekId(), weekWorkout.getWeek().getId());
         Assertions.assertEquals(request.dayOfWeek(), weekWorkout.getDayOfWeek());
-        Assertions.assertEquals(request.completed(), weekWorkout.getCompleted());
+        Assertions.assertEquals(request.status() != null ? request.status() : WorkoutStatus.NOT_STARTED, weekWorkout.getStatus());
 
         if ((request.workoutToUpdateId() != null && request.workout() != null)
                 || (request.workoutToUpdateId() == null && request.workout() != null)

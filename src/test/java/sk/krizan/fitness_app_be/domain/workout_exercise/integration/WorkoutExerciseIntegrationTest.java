@@ -87,7 +87,7 @@ class WorkoutExerciseIntegrationTest extends BaseIntegrationTest {
 
         Boolean isWorkoutTemplate = false;
         List<WorkoutExerciseSet> workoutExerciseSets = new ArrayList<>(List.of(
-                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1, isWorkoutTemplate))
+                WorkoutExerciseSetHelper.createWorkoutExerciseSet(1))
         );
         List<WorkoutExercise> workoutExercises = new ArrayList<>(List.of(
                 WorkoutExerciseHelper.createWorkoutExercise(exercise, workoutExerciseSets, 1)

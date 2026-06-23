@@ -25,6 +25,7 @@ public record WorkoutFilterRequest(
         String title,
         List<Long> tagIdList,
         Long authorId,
-        Boolean isTemplate
+        boolean isTemplate,
+        boolean isQuick
 ) {
 }

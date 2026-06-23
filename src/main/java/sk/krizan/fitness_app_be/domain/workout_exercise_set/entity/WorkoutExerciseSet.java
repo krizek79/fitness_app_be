@@ -55,30 +55,15 @@ public class WorkoutExerciseSet extends AuditableEntity {
     @Min(1)
     private Integer goalRepetitions;
 
-    @Min(1)
-    private Integer actualRepetitions;
-
     @DecimalMin("0.125")
     @Column(precision = 10, scale = 3)
     private BigDecimal goalWeight;
 
-    @DecimalMin("0.125")
-    @Column(precision = 10, scale = 3)
-    private BigDecimal actualWeight;
-
     private Duration goalTimeSeconds;
-
-    private Duration actualTimeSeconds;
 
     private BigDecimal goalDistanceMeters;
 
-    private BigDecimal actualDistanceMeters;
-
     private Duration restDurationSeconds;
-
-    @NotNull
-    @Builder.Default
-    private Boolean completed = false;
 
     @Length(max = 1024)
     private String note;

@@ -9,6 +9,7 @@ import sk.krizan.fitness_app_be.domain.week.rest.dto.request.WeekInputRequest;
 import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekDetailResponse;
 import sk.krizan.fitness_app_be.domain.week.rest.dto.response.WeekSimpleResponse;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WorkoutStatus;
 import sk.krizan.fitness_app_be.domain.week_workout.mapper.WeekWorkoutMapper;
 
 import java.util.Comparator;
@@ -24,7 +25,7 @@ public class WeekMapper {
                 .order(week.getOrder())
                 .completed(week.getCompleted())
                 .numberOfWorkouts(week.getWeekWorkouts().size())
-                .numberOfCompletedWorkouts((int) week.getWeekWorkouts().stream().filter(WeekWorkout::getCompleted).count())
+                .numberOfCompletedWorkouts((int) week.getWeekWorkouts().stream().filter(ww -> ww.getStatus() == WorkoutStatus.COMPLETED || ww.getStatus() == WorkoutStatus.SKIPPED).count())
                 .build();
     }
 

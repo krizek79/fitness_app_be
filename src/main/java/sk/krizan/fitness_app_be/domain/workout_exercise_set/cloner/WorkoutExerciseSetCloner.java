@@ -19,11 +19,6 @@ public class WorkoutExerciseSetCloner extends AbstractCloner<WorkoutExerciseSet>
         clone.setWorkoutExerciseSetType(original.getWorkoutExerciseSetType());
         clone.setRestDurationSeconds(original.getRestDurationSeconds());
 
-        //  Set only goal attributes
-        clone.setGoalRepetitions(original.getGoalRepetitions());
-        clone.setGoalWeight(original.getGoalWeight());
-        clone.setGoalTimeSeconds(original.getGoalTimeSeconds());
-
         return clone;
     }
 

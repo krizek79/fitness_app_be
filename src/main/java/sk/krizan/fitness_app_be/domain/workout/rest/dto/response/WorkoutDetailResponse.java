@@ -20,6 +20,7 @@ public record WorkoutDetailResponse(
         String description,
         Boolean isTemplate,
         ReferenceDataResponse weightUnit,
+        ReferenceDataResponse distanceUnit,
         String note,
         List<WorkoutExerciseResponse> workoutExercises
 ) {

@@ -7,6 +7,7 @@ import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.week.entity.Week;
 import sk.krizan.fitness_app_be.domain.week.repository.WeekRepository;
 import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WorkoutStatus;
 import sk.krizan.fitness_app_be.domain.week_workout.mapper.WeekWorkoutMapper;
 import sk.krizan.fitness_app_be.domain.week_workout.repository.WeekWorkoutRepository;
 import sk.krizan.fitness_app_be.domain.week_workout.rest.dto.request.WeekWorkoutInputRequest;
@@ -101,7 +102,9 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
 
         Workout workout = weekWorkout.getWorkout();
         workout.getAuthor().removeFromAuthoredWorkouts(workout);
-        workout.getTrainee().removeFromAssignedWorkouts(workout);
+        if (workout.getTrainee() != null) {
+            workout.getTrainee().removeFromAssignedWorkouts(workout);
+        }
 
         Week week = weekWorkout.getWeek();
         week.removeFromWeekWorkouts(weekWorkout);
@@ -115,7 +118,7 @@ public class WeekWorkoutServiceImpl implements WeekWorkoutService {
 
     private void handleWeekCompletedStatus(Week week) {
         week.getWeekWorkouts().stream()
-                .filter(ww -> !ww.getCompleted())
+                .filter(ww -> ww.getStatus() != WorkoutStatus.COMPLETED && ww.getStatus() != WorkoutStatus.SKIPPED)
                 .findAny()
                 .ifPresentOrElse(
                         w -> week.setCompleted(false),

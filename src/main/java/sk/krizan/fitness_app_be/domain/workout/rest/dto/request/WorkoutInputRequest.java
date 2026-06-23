@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.tag.rest.dto.request.TagCreateRequest;
 import sk.krizan.fitness_app_be.domain.workout_exercise.rest.dto.request.WorkoutExerciseInputRequest;
@@ -31,6 +32,9 @@ public record WorkoutInputRequest(
 
         @NotNull
         WeightUnit weightUnit,
+
+        @NotNull
+        DistanceUnit distanceUnit,
 
         @Length(max = 1024)
         String note,

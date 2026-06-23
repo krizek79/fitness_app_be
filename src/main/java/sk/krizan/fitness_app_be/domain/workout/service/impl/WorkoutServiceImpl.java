@@ -201,7 +201,9 @@ public class WorkoutServiceImpl implements WorkoutService {
         Workout workout = getWorkoutById(id);
 
         workout.getAuthor().removeFromAuthoredWorkouts(workout);
-        workout.getTrainee().removeFromAssignedWorkouts(workout);
+        if (workout.getTrainee() != null) {
+            workout.getTrainee().removeFromAssignedWorkouts(workout);
+        }
 
         workoutRepository.delete(workout);
     }

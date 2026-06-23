@@ -21,7 +21,7 @@ public class WeekWorkoutMapper {
                 .workout(weekWorkout.getWorkout() != null ? WorkoutMapper.entityToSimpleResponse(weekWorkout.getWorkout()) : null)
                 .dayOfWeek(weekWorkout.getDayOfWeek())
                 .orderInTheDay(weekWorkout.getOrderInTheDay())
-                .completed(weekWorkout.getCompleted())
+                .status(weekWorkout.getStatus())
                 .build();
     }
 
@@ -44,10 +44,13 @@ public class WeekWorkoutMapper {
         }
 
         weekWorkout.setWorkout(workout);
+        workout.setWeekWorkout(weekWorkout);
 
         weekWorkout.setDayOfWeek(request.dayOfWeek());
         weekWorkout.setOrderInTheDay(request.orderInTheDay());
-        weekWorkout.setCompleted(request.completed());
+        if (request.status() != null) {
+            weekWorkout.setStatus(request.status());
+        }
 
         return weekWorkout;
     }

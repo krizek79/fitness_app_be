@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Null;
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.common.validation.group.CreateGroup;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WorkoutStatus;
 import sk.krizan.fitness_app_be.domain.workout.rest.dto.request.WorkoutInputRequest;
 
 import java.time.DayOfWeek;
@@ -38,8 +39,8 @@ public record WeekWorkoutInputRequest(
         @Schema(description = "Order of the workout within the same day. Defaults to 1.")
         Integer orderInTheDay,
 
-        @NotNull
         @Null(groups = CreateGroup.class)
-        Boolean completed
+        @Schema(description = "Workout status. Cannot be set on creation — defaults to NOT_STARTED.")
+        WorkoutStatus status
 ) {
 }

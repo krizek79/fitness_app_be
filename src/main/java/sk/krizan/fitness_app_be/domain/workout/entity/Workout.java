@@ -14,6 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +25,10 @@ import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.reference.entity.DistanceUnit;
 import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.tag.entity.Tag;
+import sk.krizan.fitness_app_be.domain.week_workout.entity.WeekWorkout;
 import sk.krizan.fitness_app_be.domain.workout_exercise.entity.WorkoutExercise;
 
 import java.util.ArrayList;
@@ -48,6 +51,9 @@ public class Workout extends AuditableEntity {
 
     private String title;
 
+    @OneToOne(mappedBy = WeekWorkout.Fields.workout)
+    private WeekWorkout weekWorkout;
+
     @NotNull
     @ManyToOne
     private Profile author;
@@ -65,6 +71,10 @@ public class Workout extends AuditableEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private WeightUnit weightUnit;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private DistanceUnit distanceUnit;
 
     @Length(max = 1024)
     private String note;

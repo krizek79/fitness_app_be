@@ -45,6 +45,8 @@ class MediaServiceImplTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(mediaService, "imageMaxSize", MAX_SIZE_MB);
+        ReflectionTestUtils.setField(mediaService, "basePath", "local");
+        ReflectionTestUtils.setField(mediaService, "subPath", "");
     }
 
     @Test
@@ -110,6 +112,55 @@ class MediaServiceImplTest {
                 .isInstanceOf(ApplicationException.class)
                 .hasFieldOrPropertyWithValue(ApplicationException.Fields.httpStatus, HttpStatus.INTERNAL_SERVER_ERROR)
                 .hasMessage("Upload failed");
+    }
+
+    @Test
+    void deleteFile_Success() throws IOException {
+        String url = "https://res.cloudinary.com/demo/image/upload/local/exercise/42/image.jpg";
+
+        when(cloudinary.uploader()).thenReturn(uploader);
+        when(uploader.destroy(any(String.class), anyMap())).thenReturn(Map.of("result", "ok"));
+
+        mediaService.deleteFile(url);
+
+        verify(uploader, times(1)).destroy(org.mockito.ArgumentMatchers.eq("local/exercise/42/image"), anyMap());
+    }
+
+    @Test
+    void deleteFile_WithVersionSegment_Success() throws IOException {
+        String url = "https://res.cloudinary.com/demo/image/upload/v1234567890/local/exercise/42/image.jpg";
+
+        when(cloudinary.uploader()).thenReturn(uploader);
+        when(uploader.destroy(any(String.class), anyMap())).thenReturn(Map.of("result", "ok"));
+
+        mediaService.deleteFile(url);
+
+        verify(uploader, times(1)).destroy(org.mockito.ArgumentMatchers.eq("local/exercise/42/image"), anyMap());
+    }
+
+    @Test
+    void deleteFile_InvalidUrl_ThrowsException() {
+        String invalidUrl = "https://example.com/not-a-cloudinary-url/image.jpg";
+
+        assertThatThrownBy(() -> mediaService.deleteFile(invalidUrl))
+                .isInstanceOf(ApplicationException.class)
+                .hasFieldOrPropertyWithValue(ApplicationException.Fields.httpStatus, HttpStatus.BAD_REQUEST)
+                .hasMessage("Invalid Cloudinary URL");
+
+        verifyNoInteractions(cloudinary);
+    }
+
+    @Test
+    void deleteFile_CloudinaryError_ThrowsException() throws IOException {
+        String url = "https://res.cloudinary.com/demo/image/upload/local/exercise/42/image.jpg";
+
+        when(cloudinary.uploader()).thenReturn(uploader);
+        when(uploader.destroy(any(String.class), anyMap())).thenThrow(new IOException("Network error"));
+
+        assertThatThrownBy(() -> mediaService.deleteFile(url))
+                .isInstanceOf(ApplicationException.class)
+                .hasFieldOrPropertyWithValue(ApplicationException.Fields.httpStatus, HttpStatus.INTERNAL_SERVER_ERROR)
+                .hasMessage("Delete failed");
     }
 
 }

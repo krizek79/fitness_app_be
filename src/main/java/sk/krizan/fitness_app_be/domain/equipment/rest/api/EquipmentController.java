@@ -160,6 +160,35 @@ public interface EquipmentController {
     );
 
     @Operation(
+            summary = "Delete equipment thumbnail",
+            description = "Deletes the thumbnail image of an equipment from Cloudinary and clears the thumbnail URL.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Thumbnail deleted successfully"),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Equipment has no thumbnail",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Equipment not found",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
+            }
+    )
+    @DeleteMapping("{id}/thumbnail")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteThumbnail(@PathVariable Long id);
+
+    @Operation(
             summary = "Delete equipment",
             description = "Deletes equipment by its ID.",
             responses = {

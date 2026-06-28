@@ -21,14 +21,20 @@ public class MediaServiceImpl implements MediaService {
     @Value("${media.image.max-size-mb}")
     private int imageMaxSize;
 
+    @Value("${media.upload.base-path}")
+    private String basePath;
+
+    @Value("${media.upload.sub-path:}")
+    private String subPath;
+
     @Override
-    public String uploadFile(MultipartFile file, String folderName) {
+    public String uploadFile(MultipartFile file, String path) {
         validateImage(file);
 
         try {
             Map<String, Object> options = Map.of(
                     "resource_type", "auto",
-                    "folder", folderName
+                    "folder", resolveFolder(path)
             );
 
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), options);
@@ -37,6 +43,41 @@ public class MediaServiceImpl implements MediaService {
         } catch (IOException e) {
             throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload failed", e);
         }
+    }
+
+    @Override
+    public void deleteFile(String url) {
+        try {
+            String publicId = extractPublicId(url);
+            cloudinary.uploader().destroy(publicId, Map.of("resource_type", "image"));
+        } catch (IOException e) {
+            throw new ApplicationException(HttpStatus.INTERNAL_SERVER_ERROR, "Delete failed", e);
+        }
+    }
+
+    private String extractPublicId(String url) {
+        String marker = "/upload/";
+        int uploadIndex = url.indexOf(marker);
+        if (uploadIndex == -1) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, "Invalid Cloudinary URL");
+        }
+        String afterUpload = url.substring(uploadIndex + marker.length());
+        // strip optional version segment (v1234567890/)
+        if (afterUpload.startsWith("v") && afterUpload.indexOf('/') > 1) {
+            String version = afterUpload.substring(1, afterUpload.indexOf('/'));
+            if (version.chars().allMatch(Character::isDigit)) {
+                afterUpload = afterUpload.substring(afterUpload.indexOf('/') + 1);
+            }
+        }
+        int dotIndex = afterUpload.lastIndexOf('.');
+        return dotIndex != -1 ? afterUpload.substring(0, dotIndex) : afterUpload;
+    }
+
+    private String resolveFolder(String path) {
+        if (subPath != null && !subPath.isBlank()) {
+            return basePath + "/" + subPath + "/" + path;
+        }
+        return basePath + "/" + path;
     }
 
     private void validateImage(MultipartFile file) {

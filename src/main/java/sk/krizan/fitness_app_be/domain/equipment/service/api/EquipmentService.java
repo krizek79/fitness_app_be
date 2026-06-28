@@ -15,6 +15,8 @@ public interface EquipmentService {
 
     Equipment createUpdateEquipment(Long id, EquipmentInputRequest request, MultipartFile thumbnail);
 
+    void deleteThumbnail(Long id);
+
     void deleteEquipment(Long id);
 
 }

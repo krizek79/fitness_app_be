@@ -2,6 +2,8 @@ package sk.krizan.fitness_app_be.domain.exercise.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -82,7 +84,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         exercise = exerciseRepository.save(exercise);
 
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            String thumbnailUrl = mediaService.uploadFile(thumbnail, "exercise-" + exercise.getId());
+            String thumbnailUrl = mediaService.uploadFile(thumbnail, "exercise/" + exercise.getId());
             exercise.setThumbnailUrl(thumbnailUrl);
         }
 
@@ -110,6 +112,18 @@ public class ExerciseServiceImpl implements ExerciseService {
         for (ExerciseMuscleRoleInputRequest muscleInputRequest : muscles) {
             exerciseMuscleRoleService.createOrUpdateExerciseMuscleRole(exercise, muscleInputRequest);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteThumbnail(Long id) {
+        Exercise exercise = getExerciseById(id);
+        if (exercise.getThumbnailUrl() == null) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, "Exercise has no thumbnail");
+        }
+        mediaService.deleteFile(exercise.getThumbnailUrl());
+        exercise.setThumbnailUrl(null);
+        exerciseRepository.save(exercise);
     }
 
     @Override

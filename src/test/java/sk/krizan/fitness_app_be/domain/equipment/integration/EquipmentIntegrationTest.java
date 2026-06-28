@@ -25,6 +25,7 @@ import sk.krizan.fitness_app_be.domain.media.helper.MediaHelper;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class EquipmentIntegrationTest extends BaseIntegrationTest {
@@ -41,6 +42,7 @@ public class EquipmentIntegrationTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         when(mediaService.uploadFile(any(), any())).thenReturn(faker.internet().image());
+        doNothing().when(mediaService).deleteFile(any());
     }
 
     @Test
@@ -126,6 +128,29 @@ public class EquipmentIntegrationTest extends BaseIntegrationTest {
         equipment = equipmentRepository.getByIdOrThrow(response.id());
         EquipmentHelper.assertInputRequestToEntity(request, equipment);
         EquipmentHelper.assertEquipmentResponse(equipment, response);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteThumbnail() throws Exception {
+        Equipment equipment = equipmentRepository.save(EquipmentHelper.createEquipment());
+        equipment.setThumbnailUrl("https://res.cloudinary.com/demo/image/upload/local/equipment/" + equipment.getId() + "/image.jpg");
+        equipment = equipmentRepository.save(equipment);
+
+        performDeleteNoResponse(BASE_URL + "/" + equipment.getId() + "/thumbnail", HttpStatus.NO_CONTENT);
+
+        equipment = equipmentRepository.findById(equipment.getId()).orElseThrow();
+        Assertions.assertNull(equipment.getThumbnailUrl());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteThumbnail_NoThumbnail_ReturnsBadRequest() throws Exception {
+        Equipment equipment = new Equipment();
+        equipment.setTitle("No thumbnail equipment");
+        equipment = equipmentRepository.save(equipment);
+
+        performDeleteNoResponse(BASE_URL + "/" + equipment.getId() + "/thumbnail", HttpStatus.BAD_REQUEST);
     }
 
     @Test

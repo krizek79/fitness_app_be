@@ -161,6 +161,35 @@ public interface ExerciseController {
     );
 
     @Operation(
+            summary = "Delete exercise thumbnail",
+            description = "Deletes the thumbnail image of an exercise from Cloudinary and clears the thumbnail URL.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Thumbnail deleted successfully"),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Exercise has no thumbnail",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Exercise not found",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
+            }
+    )
+    @DeleteMapping("{id}/thumbnail")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteThumbnail(@PathVariable Long id);
+
+    @Operation(
             summary = "Delete an exercise",
             description = "Deletes an exercise by its ID and returns the ID of the deleted exercise.",
             responses = {

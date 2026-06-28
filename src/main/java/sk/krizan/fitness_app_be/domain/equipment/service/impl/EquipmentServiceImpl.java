@@ -2,6 +2,8 @@ package sk.krizan.fitness_app_be.domain.equipment.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -71,12 +73,24 @@ public class EquipmentServiceImpl implements EquipmentService {
         equipment = equipmentRepository.save(equipment);
 
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            String thumbnailUrl = mediaService.uploadFile(thumbnail, "requiredEquipment-" + equipment.getId());
+            String thumbnailUrl = mediaService.uploadFile(thumbnail, "equipment/" + equipment.getId());
             equipment.setThumbnailUrl(thumbnailUrl);
             equipment = equipmentRepository.save(equipment);
         }
 
         return equipment;
+    }
+
+    @Override
+    @Transactional
+    public void deleteThumbnail(Long id) {
+        Equipment equipment = getEquipmentById(id);
+        if (equipment.getThumbnailUrl() == null) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, "Equipment has no thumbnail");
+        }
+        mediaService.deleteFile(equipment.getThumbnailUrl());
+        equipment.setThumbnailUrl(null);
+        equipmentRepository.save(equipment);
     }
 
     @Override

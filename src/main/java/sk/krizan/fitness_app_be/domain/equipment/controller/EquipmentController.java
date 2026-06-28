@@ -41,6 +41,12 @@ public class EquipmentController implements sk.krizan.fitness_app_be.domain.equi
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
+    public void deleteThumbnail(Long id) {
+        equipmentService.deleteThumbnail(id);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Override
     public void deleteEquipment(Long id) {
         equipmentService.deleteEquipment(id);
     }

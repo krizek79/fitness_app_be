@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class ExerciseIntegrationTest extends BaseIntegrationTest {
@@ -66,6 +67,7 @@ public class ExerciseIntegrationTest extends BaseIntegrationTest {
         ));
 
         when(mediaService.uploadFile(any(), any())).thenReturn(faker.internet().image());
+        doNothing().when(mediaService).deleteFile(any());
     }
 
     @Test
@@ -244,6 +246,27 @@ public class ExerciseIntegrationTest extends BaseIntegrationTest {
 
         ExerciseHelper.assertInputToEntity(request, exercise);
         ExerciseHelper.assertExerciseDetailResponse(exercise, response);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteThumbnail() throws Exception {
+        Exercise exercise = exerciseRepository.save(ExerciseHelper.createExercise("Bench press", ExerciseCategory.STRENGTH, List.of(MovementPattern.HORIZONTAL_PUSH), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.CHEST, ExerciseMuscleRoleType.PRIMARY)), equipment));
+        exercise.setThumbnailUrl("https://res.cloudinary.com/demo/image/upload/local/exercise/" + exercise.getId() + "/image.jpg");
+        exercise = exerciseRepository.save(exercise);
+
+        performDeleteNoResponse(BASE_URL + "/" + exercise.getId() + "/thumbnail", HttpStatus.NO_CONTENT);
+
+        exercise = exerciseRepository.findById(exercise.getId()).orElseThrow();
+        Assertions.assertNull(exercise.getThumbnailUrl());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteThumbnail_NoThumbnail_ReturnsBadRequest() throws Exception {
+        Exercise exercise = exerciseRepository.save(ExerciseHelper.createExercise("Bench press", ExerciseCategory.STRENGTH, List.of(MovementPattern.HORIZONTAL_PUSH), List.of(ExerciseMuscleRoleHelper.createExerciseMuscleRole(Muscle.CHEST, ExerciseMuscleRoleType.PRIMARY)), equipment));
+
+        performDeleteNoResponse(BASE_URL + "/" + exercise.getId() + "/thumbnail", HttpStatus.BAD_REQUEST);
     }
 
     @Test

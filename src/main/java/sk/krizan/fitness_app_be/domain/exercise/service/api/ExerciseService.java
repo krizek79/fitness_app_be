@@ -15,6 +15,8 @@ public interface ExerciseService {
 
     Exercise createUpdateExercise(Long id, ExerciseInputRequest request, MultipartFile thumbnail);
 
+    void deleteThumbnail(Long id);
+
     void deleteExercise(Long id);
 
 }

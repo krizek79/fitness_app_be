@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.wrapper.CoachingContractClientPageResponse;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.wrapper.CoachingContractPageResponse;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
 
 @Tag(
         name = "CoachingContract",
@@ -98,6 +101,27 @@ public interface CoachingContractController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CoachingContractResponse createCoachingContract(@Valid @RequestBody CoachingContractCreateRequest request);
+
+    @Operation(
+            summary = "Filter clients",
+            description = "Returns a paginated list of profiles — the current user's own profile (page 0 only) plus all active clients of the current user as coach.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Profiles retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = CoachingContractClientPageResponse.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
+            }
+    )
+    @PostMapping("clients")
+    PageResponse<ProfileSimpleResponse> filterClients(@Valid @RequestBody CoachingContractFilterClientsRequest request);
 
 }
 

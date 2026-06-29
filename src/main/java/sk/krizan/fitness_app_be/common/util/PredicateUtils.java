@@ -11,6 +11,10 @@ import lombok.NoArgsConstructor;
 public class PredicateUtils {
 
     public static <T> Predicate sanitizedLike(Root<T> root, CriteriaBuilder criteriaBuilder, String fieldName, String value) {
+        return sanitizedLike(criteriaBuilder, root.get(fieldName), value);
+    }
+
+    public static Predicate sanitizedLike(CriteriaBuilder criteriaBuilder, Expression<String> fieldExpression, String value) {
         if (value == null) {
             return criteriaBuilder.conjunction();
         } else {
@@ -20,12 +24,11 @@ public class PredicateUtils {
                     criteriaBuilder.function(
                             "REPLACE",
                             String.class,
-                            root.get(fieldName),
+                            fieldExpression,
                             criteriaBuilder.literal(" "),
                             criteriaBuilder.literal("")));
-            Expression<String> sanitizedValueExpression = criteriaBuilder.literal(sanitizedValue);
 
-            return criteriaBuilder.like(sanitizedFieldExpression, sanitizedValueExpression);
+            return criteriaBuilder.like(sanitizedFieldExpression, criteriaBuilder.literal(sanitizedValue));
         }
     }
 

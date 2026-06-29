@@ -1,6 +1,7 @@
 package sk.krizan.fitness_app_be.domain.coaching_contract.integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,13 @@ import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract
 import sk.krizan.fitness_app_be.domain.coaching_contract.helper.CoachingContractHelper;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 import sk.krizan.fitness_app_be.domain.profile.repository.ProfileRepository;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.helper.UserHelper;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
@@ -127,6 +130,123 @@ class CoachingContractIntegrationTest extends BaseIntegrationTest {
                 HttpStatus.OK);
 
         CoachingContractHelper.assertCoachingContractResponse(coachingContract, response);
+    }
+
+    @Test
+    @WithMockUser
+    void filterCoachingContracts_nonMemberSeesNothing() throws Exception {
+        User mockUser2 = userRepository.save(UserHelper.createUser());
+        User mockUser3 = userRepository.save(UserHelper.createUser());
+        when(userService.getOrCreateCurrentUser()).thenReturn(mockUser3);
+        when(userService.isUserAdmin(mockUser3)).thenReturn(false);
+
+        Profile profile1 = profileRepository.save(ProfileHelper.createProfile(mockUser1));
+        Profile profile2 = profileRepository.save(ProfileHelper.createProfile(mockUser2));
+        profileRepository.save(ProfileHelper.createProfile(mockUser3));
+
+        coachingContractRepository.saveAll(List.of(
+                CoachingContractHelper.createCoachingContract(profile1, profile2),
+                CoachingContractHelper.createCoachingContract(profile2, profile1)
+        ));
+
+        CoachingContractFilterRequest request = CoachingContractHelper.createFilterRequest(
+                0, 10, CoachingContract.Fields.id, Sort.Direction.ASC.name(), null, null);
+
+        PageResponse<CoachingContractResponse> response = performPost(
+                BASE_URL + "/filter",
+                request,
+                new TypeReference<>() {},
+                HttpStatus.OK);
+
+        Assertions.assertEquals(0, response.getTotalElements());
+        Assertions.assertTrue(response.getResults().isEmpty());
+    }
+
+    @Test
+    @WithMockUser
+    void filterClients_ownProfileOnPageZero() throws Exception {
+        User mockUser2 = userRepository.save(UserHelper.createUser());
+        User mockUser3 = userRepository.save(UserHelper.createUser());
+        when(userService.getOrCreateCurrentUser()).thenReturn(mockUser1);
+
+        Profile coach = profileRepository.save(ProfileHelper.createProfile(mockUser1));
+        Profile client1 = profileRepository.save(ProfileHelper.createProfile(mockUser2));
+        Profile client2 = profileRepository.save(ProfileHelper.createProfile(mockUser3));
+
+        coachingContractRepository.saveAll(List.of(
+                CoachingContractHelper.createCoachingContract(coach, client1),
+                CoachingContractHelper.createCoachingContract(coach, client2)
+        ));
+
+        CoachingContractFilterClientsRequest request = CoachingContractHelper.createFilterClientsRequest(
+                0, 10, CoachingContract.Fields.id, Sort.Direction.ASC.name(), null);
+
+        PageResponse<ProfileSimpleResponse> response = performPost(
+                BASE_URL + "/clients",
+                request,
+                new TypeReference<>() {},
+                HttpStatus.OK);
+
+        Assertions.assertEquals(3, response.getTotalElements());
+        Assertions.assertEquals(3, response.getResults().size());
+        ProfileHelper.assertProfileSimpleResponse(coach, response.getResults().get(0));
+    }
+
+    @Test
+    @WithMockUser
+    void filterClients_inactiveContractsExcluded() throws Exception {
+        User mockUser2 = userRepository.save(UserHelper.createUser());
+        when(userService.getOrCreateCurrentUser()).thenReturn(mockUser1);
+
+        Profile coach = profileRepository.save(ProfileHelper.createProfile(mockUser1));
+        Profile client = profileRepository.save(ProfileHelper.createProfile(mockUser2));
+
+        CoachingContract inactiveContract = CoachingContractHelper.createCoachingContract(coach, client);
+        inactiveContract.setActive(false);
+        coachingContractRepository.save(inactiveContract);
+
+        CoachingContractFilterClientsRequest request = CoachingContractHelper.createFilterClientsRequest(
+                0, 10, CoachingContract.Fields.id, Sort.Direction.ASC.name(), null);
+
+        PageResponse<ProfileSimpleResponse> response = performPost(
+                BASE_URL + "/clients",
+                request,
+                new TypeReference<>() {},
+                HttpStatus.OK);
+
+        Assertions.assertEquals(1, response.getTotalElements());
+        Assertions.assertEquals(1, response.getResults().size());
+        ProfileHelper.assertProfileSimpleResponse(coach, response.getResults().get(0));
+    }
+
+    @Test
+    @WithMockUser
+    void filterClients_ownProfileNotOnSubsequentPages() throws Exception {
+        User mockUser2 = userRepository.save(UserHelper.createUser());
+        User mockUser3 = userRepository.save(UserHelper.createUser());
+        when(userService.getOrCreateCurrentUser()).thenReturn(mockUser1);
+
+        Profile coach = profileRepository.save(ProfileHelper.createProfile(mockUser1));
+        Profile client1 = profileRepository.save(ProfileHelper.createProfile(mockUser2));
+        Profile client2 = profileRepository.save(ProfileHelper.createProfile(mockUser3));
+
+        coachingContractRepository.saveAll(List.of(
+                CoachingContractHelper.createCoachingContract(coach, client1),
+                CoachingContractHelper.createCoachingContract(coach, client2)
+        ));
+
+        // size=1, page=1 → DB page 1 returns client2; own profile must not appear
+        CoachingContractFilterClientsRequest request = CoachingContractHelper.createFilterClientsRequest(
+                1, 1, CoachingContract.Fields.id, Sort.Direction.ASC.name(), null);
+
+        PageResponse<ProfileSimpleResponse> response = performPost(
+                BASE_URL + "/clients",
+                request,
+                new TypeReference<>() {},
+                HttpStatus.OK);
+
+        Assertions.assertEquals(1, response.getResults().size());
+        Assertions.assertNotEquals(coach.getId(), response.getResults().get(0).id());
     }
 
     @Test

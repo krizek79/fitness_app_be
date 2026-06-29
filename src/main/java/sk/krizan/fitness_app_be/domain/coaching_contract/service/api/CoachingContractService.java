@@ -3,7 +3,9 @@ package sk.krizan.fitness_app_be.domain.coaching_contract.service.api;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
@@ -49,5 +51,7 @@ public interface CoachingContractService {
      * @throws ApplicationException with HttpStatus 403 if the author is not the trainee's coach
      */
     Profile resolveTrainee(Long requestTraineeId, Profile author, Profile defaultTrainee);
+
+    PageResponse<ProfileSimpleResponse> filterClients(CoachingContractFilterClientsRequest request);
 
 }

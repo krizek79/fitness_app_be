@@ -8,13 +8,16 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
+import sk.krizan.fitness_app_be.common.util.PredicateUtils;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.user.entity.User;
 
 public class CoachingContractSpecification {
 
-    public static Specification<CoachingContract> filter(CoachingContractFilterRequest request) {
+    public static Specification<CoachingContract> filter(CoachingContractFilterRequest request, User currentUser, boolean isUserAdmin) {
         return (Root<CoachingContract> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
@@ -28,6 +31,31 @@ public class CoachingContractSpecification {
                 Join<CoachingContract, Profile> profileJoin = root.join(CoachingContract.Fields.client);
                 Predicate clientIdPredicate = criteriaBuilder.equal(profileJoin.get(Profile.Fields.id), request.clientId());
                 predicate = criteriaBuilder.and(predicate, clientIdPredicate);
+            }
+
+            if (!isUserAdmin) {
+                Profile currentProfile = currentUser.getProfile();
+                Predicate isCoach = criteriaBuilder.equal(root.get(CoachingContract.Fields.coach), currentProfile);
+                Predicate isClient = criteriaBuilder.equal(root.get(CoachingContract.Fields.client), currentProfile);
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(isCoach, isClient));
+            }
+
+            return predicate;
+        };
+    }
+
+    public static Specification<CoachingContract> filterClients(CoachingContractFilterClientsRequest request, Profile currentProfile) {
+        return (Root<CoachingContract> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+
+            predicate = criteriaBuilder.and(predicate,
+                    criteriaBuilder.equal(root.get(CoachingContract.Fields.coach), currentProfile));
+            predicate = criteriaBuilder.and(predicate,
+                    criteriaBuilder.isTrue(root.get(CoachingContract.Fields.active)));
+
+            if (request.name() != null) {
+                Join<CoachingContract, Profile> clientJoin = root.join(CoachingContract.Fields.client);
+                predicate = criteriaBuilder.and(predicate, PredicateUtils.sanitizedLike(criteriaBuilder, clientJoin.get(Profile.Fields.name), request.name()));
             }
 
             return predicate;

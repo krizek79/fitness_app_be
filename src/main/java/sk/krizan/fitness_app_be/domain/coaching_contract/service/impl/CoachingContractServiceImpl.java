@@ -13,13 +13,19 @@ import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract
 import sk.krizan.fitness_app_be.domain.coaching_contract.mapper.CoachingContractMapper;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.domain.coaching_contract.service.api.CoachingContractService;
 import sk.krizan.fitness_app_be.domain.coaching_contract.specification.CoachingContractSpecification;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
+import sk.krizan.fitness_app_be.domain.profile.mapper.ProfileMapper;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
 import sk.krizan.fitness_app_be.domain.profile.service.api.ProfileService;
+import sk.krizan.fitness_app_be.domain.user.entity.User;
+import sk.krizan.fitness_app_be.domain.user.service.api.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CoachingContractServiceImpl implements CoachingContractService {
 
+    private final UserService userService;
     private final ProfileService profileService;
     private final CoachingContractRepository coachingContractRepository;
 
@@ -42,7 +49,9 @@ public class CoachingContractServiceImpl implements CoachingContractService {
      */
     @Override
     public PageResponse<CoachingContractResponse> filterCoachingContracts(CoachingContractFilterRequest request) {
-        Specification<CoachingContract> specification = CoachingContractSpecification.filter(request);
+        User currentUser = userService.getOrCreateCurrentUser();
+        boolean isUserAdmin = userService.isUserAdmin(currentUser);
+        Specification<CoachingContract> specification = CoachingContractSpecification.filter(request, currentUser, isUserAdmin);
         Pageable pageable = PageUtils.createPageable(
                 request.page(),
                 request.size(),
@@ -117,5 +126,41 @@ public class CoachingContractServiceImpl implements CoachingContractService {
         return coachingContractRepository.findByCoachIdAndClientIdAndActiveTrue(author.getId(), requestTraineeId)
                 .map(CoachingContract::getClient)
                 .orElseThrow(() -> new ApplicationException(HttpStatus.FORBIDDEN, ""));
+    }
+
+    @Override
+    public PageResponse<ProfileSimpleResponse> filterClients(CoachingContractFilterClientsRequest request) {
+        User currentUser = userService.getOrCreateCurrentUser();
+        Profile currentProfile = currentUser.getProfile();
+
+        Specification<CoachingContract> specification = CoachingContractSpecification.filterClients(request, currentProfile);
+        Pageable pageable = PageUtils.createPageable(
+                request.page(),
+                request.size(),
+                request.sortBy(),
+                request.sortDirection(),
+                supportedSortFields
+        );
+        Page<CoachingContract> page = coachingContractRepository.findAll(specification, pageable);
+
+        List<ProfileSimpleResponse> results = new ArrayList<>();
+        if (request.page() == 0) {
+            results.add(ProfileMapper.entityToSimpleResponse(currentProfile));
+        }
+        page.stream()
+                .map(CoachingContract::getClient)
+                .map(ProfileMapper::entityToSimpleResponse)
+                .forEach(results::add);
+
+        long totalElements = page.getTotalElements() + 1;
+        int totalPages = (int) Math.ceil((double) totalElements / request.size());
+
+        return PageResponse.<ProfileSimpleResponse>builder()
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .results(results)
+                .build();
     }
 }

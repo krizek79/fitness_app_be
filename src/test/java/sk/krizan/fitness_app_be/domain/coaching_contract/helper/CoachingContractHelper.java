@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
@@ -43,6 +44,22 @@ public final class CoachingContractHelper {
                 .sortDirection(sortDirection)
                 .coachId(coachId)
                 .clientId(clientId)
+                .build();
+    }
+
+    public static CoachingContractFilterClientsRequest createFilterClientsRequest(
+            @NotNull Integer page,
+            @NotNull Integer size,
+            @NotNull String sortBy,
+            @NotNull String sortDirection,
+            String name
+    ) {
+        return CoachingContractFilterClientsRequest.builder()
+                .page(page)
+                .size(size)
+                .sortBy(sortBy)
+                .sortDirection(sortDirection)
+                .name(name)
                 .build();
     }
 

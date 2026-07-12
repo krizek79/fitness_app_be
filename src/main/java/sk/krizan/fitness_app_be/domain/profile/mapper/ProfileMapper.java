@@ -34,6 +34,7 @@ public class ProfileMapper {
         return ProfileSimpleResponse.builder()
                 .id(profile.getId())
                 .name(profile.getName())
+                .profilePictureUrl(profile.getProfilePictureUrl())
                 .build();
     }
 

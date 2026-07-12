@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,10 +19,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
-import sk.krizan.fitness_app_be.domain.reference.entity.WeightUnit;
 import sk.krizan.fitness_app_be.domain.user.entity.Role;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
 import sk.krizan.fitness_app_be.domain.user.repository.UserRepository;
+import sk.krizan.fitness_app_be.domain.user.service.impl.UserProvisioningService;
 import sk.krizan.fitness_app_be.domain.user.service.impl.UserServiceImpl;
 
 import java.util.List;
@@ -47,6 +48,9 @@ public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserProvisioningService userProvisioningService;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -97,14 +101,9 @@ public class UserServiceImplTest {
         void shouldCreateAndReturnNewUser_WhenUserDoesNotExistInDb() {
             String keycloakId = "kc-new-456";
             String email = "newuser@fitness.sk";
-            String name = "Ján Novák";
-            String picture = "http://photo.com/me.png";
 
             Jwt jwt = mock(Jwt.class);
             when(jwt.getSubject()).thenReturn(keycloakId);
-            when(jwt.getClaimAsString("email")).thenReturn(email);
-            when(jwt.getClaimAsString("title")).thenReturn(name);
-            when(jwt.getClaimAsString("picture")).thenReturn(picture);
 
             JwtAuthenticationToken authentication = mock(JwtAuthenticationToken.class);
             when(authentication.getToken()).thenReturn(jwt);
@@ -112,7 +111,10 @@ public class UserServiceImplTest {
 
             when(userRepository.findByKeycloakId(keycloakId)).thenReturn(Optional.empty());
 
-            when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            User createdUser = new User();
+            createdUser.setKeycloakId(keycloakId);
+            createdUser.setEmail(email);
+            when(userProvisioningService.createNewUserWithProfileFromToken(jwt, keycloakId)).thenReturn(createdUser);
 
             User result = userService.getOrCreateCurrentUser();
 
@@ -120,14 +122,34 @@ public class UserServiceImplTest {
             assertEquals(keycloakId, result.getKeycloakId());
             assertEquals(email, result.getEmail());
 
-            assertNotNull(result.getProfile());
-            assertEquals(name, result.getProfile().getName());
-            assertEquals(picture, result.getProfile().getProfilePictureUrl());
-            assertEquals(WeightUnit.KG, result.getProfile().getPreferredWeightUnit());
-            assertEquals(result, result.getProfile().getUser());
-
             verify(userRepository, times(1)).findByKeycloakId(keycloakId);
-            verify(userRepository, times(1)).save(any(User.class));
+            verify(userProvisioningService, times(1)).createNewUserWithProfileFromToken(jwt, keycloakId);
+        }
+
+        @Test
+        void shouldReturnExistingUser_WhenConcurrentInsertCausesConstraintViolation() {
+            String keycloakId = "kc-race-789";
+
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getSubject()).thenReturn(keycloakId);
+
+            JwtAuthenticationToken authentication = mock(JwtAuthenticationToken.class);
+            when(authentication.getToken()).thenReturn(jwt);
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+
+            User winningUser = new User();
+            winningUser.setKeycloakId(keycloakId);
+
+            when(userRepository.findByKeycloakId(keycloakId))
+                    .thenReturn(Optional.empty())
+                    .thenReturn(Optional.of(winningUser));
+            when(userProvisioningService.createNewUserWithProfileFromToken(jwt, keycloakId))
+                    .thenThrow(new DataIntegrityViolationException("duplicate key"));
+
+            User result = userService.getOrCreateCurrentUser();
+
+            assertEquals(winningUser, result);
+            verify(userRepository, times(2)).findByKeycloakId(keycloakId);
         }
 
         @Test

@@ -112,6 +112,7 @@ public final class WorkoutHelper {
             String sortBy,
             String sortDirection,
             Long authorId,
+            Long traineeId,
             List<Long> tagIdList,
             String title,
             Boolean isTemplate,
@@ -123,6 +124,7 @@ public final class WorkoutHelper {
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
                 .authorId(authorId)
+                .traineeId(traineeId)
                 .tagIdList(tagIdList)
                 .title(title)
                 .isTemplate(isTemplate)

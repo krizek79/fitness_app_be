@@ -141,13 +141,23 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
         filterWorkouts_ByName(originalWorkoutList);
         filterWorkouts_ByTagNameList(originalWorkoutList);
         filterWorkouts_ByAuthorId(originalWorkoutList);
+        filterWorkouts_ByTraineeId(originalWorkoutList);
         filterWorkouts_ByIsTemplate(originalWorkoutList);
     }
 
     private void filterWorkouts_ByAuthorId(List<Workout> originalWorkoutList) throws Exception {
         List<Workout> expectedWorkouts = List.of(originalWorkoutList.get(1));
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), expectedWorkouts.get(0).getAuthor().getId(), null, null, false, false);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), expectedWorkouts.get(0).getAuthor().getId(), null, null, null, false, false);
+        PageResponse<WorkoutSimpleResponse> response = filter(request);
+
+        FilterAssertionUtils.assertFilterResults(expectedWorkouts, response, Workout::getId, WorkoutSimpleResponse::id, WorkoutHelper::assertWorkoutSimpleResponse);
+    }
+
+    private void filterWorkouts_ByTraineeId(List<Workout> originalWorkoutList) throws Exception {
+        List<Workout> expectedWorkouts = List.of(originalWorkoutList.get(1));
+
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, expectedWorkouts.get(0).getTrainee().getId(), null, null, false, false);
         PageResponse<WorkoutSimpleResponse> response = filter(request);
 
         FilterAssertionUtils.assertFilterResults(expectedWorkouts, response, Workout::getId, WorkoutSimpleResponse::id, WorkoutHelper::assertWorkoutSimpleResponse);
@@ -156,7 +166,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     private void filterWorkouts_ByTagNameList(List<Workout> originalWorkoutList) throws Exception {
         List<Workout> expectedWorkouts = List.of(originalWorkoutList.get(2));
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, expectedWorkouts.get(0).getTags().stream().map(Tag::getId).collect(Collectors.toList()), null, false, false);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, expectedWorkouts.get(0).getTags().stream().map(Tag::getId).collect(Collectors.toList()), null, false, false);
         PageResponse<WorkoutSimpleResponse> response = filter(request);
 
         FilterAssertionUtils.assertFilterResults(expectedWorkouts, response, Workout::getId, WorkoutSimpleResponse::id, WorkoutHelper::assertWorkoutSimpleResponse);
@@ -165,7 +175,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     private void filterWorkouts_ByName(List<Workout> originalWorkoutList) throws Exception {
         List<Workout> expectedWorkouts = List.of(originalWorkoutList.get(0));
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, expectedWorkouts.get(0).getTitle().substring(0, 5), false, false);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, null, expectedWorkouts.get(0).getTitle().substring(0, 5), false, false);
         PageResponse<WorkoutSimpleResponse> response = filter(request);
 
         FilterAssertionUtils.assertFilterResults(expectedWorkouts, response, Workout::getId, WorkoutSimpleResponse::id, WorkoutHelper::assertWorkoutSimpleResponse);
@@ -174,7 +184,7 @@ class WorkoutIntegrationTest extends BaseIntegrationTest {
     private void filterWorkouts_ByIsTemplate(List<Workout> originalWorkoutList) throws Exception {
         List<Workout> expectedWorkouts = List.of(originalWorkoutList.get(3));
 
-        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, null, true, false);
+        WorkoutFilterRequest request = WorkoutHelper.createFilterRequest(0, originalWorkoutList.size(), Workout.Fields.id, Sort.Direction.DESC.name(), null, null, null, null, true, false);
         PageResponse<WorkoutSimpleResponse> response = filter(request);
 
         FilterAssertionUtils.assertFilterResults(expectedWorkouts, response, Workout::getId, WorkoutSimpleResponse::id, WorkoutHelper::assertWorkoutSimpleResponse);

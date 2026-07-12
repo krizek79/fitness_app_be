@@ -49,10 +49,10 @@ public class WorkoutSessionSpecification {
                 Join<WorkoutSession, Workout> workoutJoin = root.join(WorkoutSession.Fields.workout);
                 Predicate authorPredicate = criteriaBuilder.equal(workoutJoin.get(Workout.Fields.author), currentProfile);
                 Predicate traineePredicate = criteriaBuilder.equal(workoutJoin.get(Workout.Fields.trainee), currentProfile);
-                Predicate isCoachPredicate = CoachingContractSpecification.getIsCoachPredicate(
+                Predicate contractAccessPredicate = CoachingContractSpecification.getTraineeContractAccessPredicate(
                         currentProfile, workoutJoin.get(Workout.Fields.author), query, criteriaBuilder);
                 predicate = criteriaBuilder.and(predicate,
-                        criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate));
+                        criteriaBuilder.or(authorPredicate, criteriaBuilder.and(traineePredicate, contractAccessPredicate)));
             }
 
             return predicate;

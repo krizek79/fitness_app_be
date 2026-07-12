@@ -9,17 +9,22 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import sk.krizan.fitness_app_be.common.util.PredicateUtils;
+import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContractStatus;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCallerRole;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
-import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterConnectionsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.user.entity.User;
+
+import java.util.List;
 
 public class CoachingContractSpecification {
 
     public static Specification<CoachingContract> filter(CoachingContractFilterRequest request, User currentUser, boolean isUserAdmin) {
         return (Root<CoachingContract> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
+            Profile currentProfile = currentUser.getProfile();
 
             if (request.coachId() != null) {
                 Join<CoachingContract, Profile> profileJoin = root.join(CoachingContract.Fields.coach);
@@ -33,8 +38,17 @@ public class CoachingContractSpecification {
                 predicate = criteriaBuilder.and(predicate, clientIdPredicate);
             }
 
+            if (request.statuses() != null && !request.statuses().isEmpty()) {
+                predicate = criteriaBuilder.and(predicate, root.get(CoachingContract.Fields.status).in(request.statuses()));
+            }
+
+            if (request.callerRole() == CoachingContractCallerRole.COACH) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(CoachingContract.Fields.coach), currentProfile));
+            } else if (request.callerRole() == CoachingContractCallerRole.CLIENT) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(CoachingContract.Fields.client), currentProfile));
+            }
+
             if (!isUserAdmin) {
-                Profile currentProfile = currentUser.getProfile();
                 Predicate isCoach = criteriaBuilder.equal(root.get(CoachingContract.Fields.coach), currentProfile);
                 Predicate isClient = criteriaBuilder.equal(root.get(CoachingContract.Fields.client), currentProfile);
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(isCoach, isClient));
@@ -44,18 +58,27 @@ public class CoachingContractSpecification {
         };
     }
 
-    public static Specification<CoachingContract> filterClients(CoachingContractFilterClientsRequest request, Profile currentProfile) {
+    /**
+     * Builds a predicate for listing the "other side" profiles (clients of a coach, or coaches of a client)
+     * of the current user's ACTIVE coaching contracts, optionally filtered by that other profile's name.
+     *
+     * @param callerRole whether the current user is acting as COACH (returns their clients) or CLIENT (returns their coaches)
+     */
+    public static Specification<CoachingContract> filterConnections(CoachingContractFilterConnectionsRequest request, Profile currentProfile, CoachingContractCallerRole callerRole) {
+        String selfField = callerRole == CoachingContractCallerRole.COACH ? CoachingContract.Fields.coach : CoachingContract.Fields.client;
+        String otherField = callerRole == CoachingContractCallerRole.COACH ? CoachingContract.Fields.client : CoachingContract.Fields.coach;
+
         return (Root<CoachingContract> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
             predicate = criteriaBuilder.and(predicate,
-                    criteriaBuilder.equal(root.get(CoachingContract.Fields.coach), currentProfile));
+                    criteriaBuilder.equal(root.get(selfField), currentProfile));
             predicate = criteriaBuilder.and(predicate,
-                    criteriaBuilder.isTrue(root.get(CoachingContract.Fields.active)));
+                    criteriaBuilder.equal(root.get(CoachingContract.Fields.status), CoachingContractStatus.ACTIVE));
 
             if (request.name() != null) {
-                Join<CoachingContract, Profile> clientJoin = root.join(CoachingContract.Fields.client);
-                predicate = criteriaBuilder.and(predicate, PredicateUtils.sanitizedLike(criteriaBuilder, clientJoin.get(Profile.Fields.name), request.name()));
+                Join<CoachingContract, Profile> otherJoin = root.join(otherField);
+                predicate = criteriaBuilder.and(predicate, PredicateUtils.sanitizedLike(criteriaBuilder, otherJoin.get(Profile.Fields.name), request.name()));
             }
 
             return predicate;
@@ -63,18 +86,21 @@ public class CoachingContractSpecification {
     }
 
     /**
-     * Creates a predicate checking if the current user has access to a resource through an active coaching contract.
+     * Creates a predicate checking if the current user has trainee-side access to a resource through a
+     * coaching contract with the resource's author, mirroring {@code SecurityAccessValidator.checkCoachingContractAccess}.
      * <p>
-     * It builds an EXISTS subquery evaluating to true if there is an active coaching contract
-     * where the current user is either the coach or the client of the resource's author.
+     * Must be combined (AND) with a predicate asserting the resource's trainee is the current user -
+     * this only checks that a qualifying contract exists between the current user (as client) and the
+     * resource author (as coach). ACTIVE grants access; EXPIRED/TERMINATED grant read-only history access,
+     * which is safe here since filter/list endpoints are read-only.
      *
-     * @param currentProfile   the profile of the logged-in user
+     * @param currentProfile   the profile of the logged-in user (the client side of the contract)
      * @param authorExpression the path or expression leading to the resource author's Profile (e.g., root.get(Plan.Fields.author))
      * @param query            the criteria query for building the subquery
      * @param criteriaBuilder  the criteria builder for constructing predicates
-     * @return a predicate checking the existence of an active coaching contract with the resource author
+     * @return a predicate checking the existence of a qualifying coaching contract with the resource author
      */
-    public static Predicate getIsCoachPredicate(
+    public static Predicate getTraineeContractAccessPredicate(
             Profile currentProfile,
             Expression<Profile> authorExpression,
             CriteriaQuery<?> query,
@@ -83,20 +109,15 @@ public class CoachingContractSpecification {
         Subquery<Long> contractSubquery = query.subquery(Long.class);
         Root<CoachingContract> contractRoot = contractSubquery.from(CoachingContract.class);
 
-        Predicate currentProfileIsCoach = criteriaBuilder.and(
-                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.coach), currentProfile),
-                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.client), authorExpression)
-        );
-
-        Predicate currentProfileIsClient = criteriaBuilder.and(
-                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.client), currentProfile),
-                criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.coach), authorExpression)
-        );
-
         contractSubquery.select(criteriaBuilder.literal(1L))
                 .where(criteriaBuilder.and(
-                        criteriaBuilder.isTrue(contractRoot.get(CoachingContract.Fields.active)),
-                        criteriaBuilder.or(currentProfileIsCoach, currentProfileIsClient)
+                        criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.coach), authorExpression),
+                        criteriaBuilder.equal(contractRoot.get(CoachingContract.Fields.client), currentProfile),
+                        contractRoot.get(CoachingContract.Fields.status).in(List.of(
+                                CoachingContractStatus.ACTIVE,
+                                CoachingContractStatus.EXPIRED,
+                                CoachingContractStatus.TERMINATED
+                        ))
                 ));
 
         return criteriaBuilder.exists(contractSubquery);

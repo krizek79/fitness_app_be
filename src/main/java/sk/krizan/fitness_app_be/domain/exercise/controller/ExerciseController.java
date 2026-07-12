@@ -18,7 +18,6 @@ public class ExerciseController implements sk.krizan.fitness_app_be.domain.exerc
 
     private final ExerciseService exerciseService;
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public PageResponse<ExerciseSimpleResponse> filterExercises(ExerciseFilterRequest request) {
         return exerciseService.filterExercises(request);

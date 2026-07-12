@@ -15,6 +15,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -188,6 +189,39 @@ public final class MockMvcHelper {
                 responseType,
                 expectedStatus
         );
+    }
+
+    // ===== PATCH =====
+
+    /**
+     * Perform a PATCH request and parse response as JSON
+     *
+     * @param mockMvc        MockMvc instance
+     * @param objectMapper   ObjectMapper for JSON parsing
+     * @param endpoint       request endpoint
+     * @param requestBody    request body object (will be serialized to JSON)
+     * @param responseType   response type for deserialization
+     * @param expectedStatus expected HTTP status
+     * @return parsed response object
+     * @throws Exception if request fails
+     */
+    public static <REQUEST, RESPONSE> RESPONSE performPatch(
+            MockMvc mockMvc,
+            ObjectMapper objectMapper,
+            String endpoint,
+            REQUEST requestBody,
+            TypeReference<RESPONSE> responseType,
+            HttpStatus expectedStatus
+    ) throws Exception {
+        MvcResult result = mockMvc.perform(
+                        patch(endpoint)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(requestBody))
+                ).andExpect(status().is(expectedStatus.value()))
+                .andReturn();
+
+        return parseResponse(objectMapper, result, responseType);
     }
 
     // ===== DELETE =====

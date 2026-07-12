@@ -42,9 +42,15 @@ public class WorkoutSpecification {
             predicate = criteriaBuilder.and(predicate, isTemplatePredicate);
 
             if (request.authorId() != null) {
-                Join<Workout, Profile> profileJoin = root.join(Workout.Fields.author);
-                Predicate authorPredicate = criteriaBuilder.equal(profileJoin.get(Profile.Fields.id), request.authorId());
+                Join<Workout, Profile> authorJoin = root.join(Workout.Fields.author);
+                Predicate authorPredicate = criteriaBuilder.equal(authorJoin.get(Profile.Fields.id), request.authorId());
                 predicate = criteriaBuilder.and(predicate, authorPredicate);
+            }
+
+            if (request.traineeId() != null) {
+                Join<Workout, Profile> traineeJoin = root.join(Workout.Fields.trainee);
+                Predicate traineePredicate = criteriaBuilder.equal(traineeJoin.get(Profile.Fields.id), request.traineeId());
+                predicate = criteriaBuilder.and(predicate, traineePredicate);
             }
 
             if (request.isQuick()) {
@@ -64,9 +70,9 @@ public class WorkoutSpecification {
                 Predicate authorPredicate = criteriaBuilder.equal(root.get(Plan.Fields.author), currentProfile);
                 Predicate traineePredicate = criteriaBuilder.equal(root.get(Plan.Fields.trainee), currentProfile);
 
-                Predicate isCoachPredicate = CoachingContractSpecification.getIsCoachPredicate(currentProfile, root.get(Workout.Fields.author), query, criteriaBuilder);
+                Predicate contractAccessPredicate = CoachingContractSpecification.getTraineeContractAccessPredicate(currentProfile, root.get(Workout.Fields.author), query, criteriaBuilder);
 
-                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate);
+                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.and(traineePredicate, contractAccessPredicate));
                 predicate = criteriaBuilder.and(predicate, accessPredicate);
             }
 

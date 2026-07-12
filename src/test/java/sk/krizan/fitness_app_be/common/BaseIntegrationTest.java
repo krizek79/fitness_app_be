@@ -142,6 +142,31 @@ public abstract class BaseIntegrationTest {
     }
 
     /**
+     * Perform a PATCH request with custom status and return parsed response
+     *
+     * @param endpoint       request endpoint path
+     * @param requestBody    request payload
+     * @param responseType   expected response type
+     * @param expectedStatus expected HTTP status code
+     * @return parsed response object
+     * @throws Exception if request fails
+     */
+    protected <REQUEST, RESPONSE> RESPONSE performPatch(
+            String endpoint,
+            REQUEST requestBody,
+            TypeReference<RESPONSE> responseType,
+            HttpStatus expectedStatus
+    ) throws Exception {
+        return MockMvcHelper.performPatch(
+                mockMvc,
+                objectMapper,
+                endpoint,
+                requestBody,
+                responseType,
+                expectedStatus);
+    }
+
+    /**
      * Perform a GET request with custom status and return parsed response
      *
      * @param endpoint       request endpoint path

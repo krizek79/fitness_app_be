@@ -8,8 +8,6 @@ import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.Coach
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.mapper.ProfileMapper;
 
-import java.time.Instant;
-
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CoachingContractMapper {
@@ -19,14 +17,12 @@ public class CoachingContractMapper {
                 .id(coachingContract.getId())
                 .coach(ProfileMapper.entityToSimpleResponse(coachingContract.getCoach()))
                 .client(ProfileMapper.entityToSimpleResponse(coachingContract.getClient()))
-                .active(coachingContract.getActive())
-                .startedAt(coachingContract.getStartedAt())
+                .status(coachingContract.getStatus())
                 .build();
     }
 
     public static CoachingContract createRequestToEntity(Profile coach, Profile client) {
         CoachingContract coachingContract = new CoachingContract();
-        coachingContract.setStartedAt(Instant.now());
         coach.addToCoaching(coachingContract);
         client.addToCoachedBy(coachingContract);
 

@@ -7,6 +7,7 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 public record ProfileSimpleResponse(
         Long id,
-        String name
+        String name,
+        String profilePictureUrl
 ) {
 }

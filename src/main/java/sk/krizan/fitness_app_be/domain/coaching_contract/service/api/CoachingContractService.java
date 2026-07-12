@@ -3,8 +3,9 @@ package sk.krizan.fitness_app_be.domain.coaching_contract.service.api;
 import sk.krizan.fitness_app_be.common.exception.ApplicationException;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
-import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterConnectionsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractStatusUpdateRequest;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
@@ -37,6 +38,19 @@ public interface CoachingContractService {
     CoachingContract createCoachingContract(CoachingContractCreateRequest request);
 
     /**
+     * Transitions a coaching contract to a new status based on the requested action.
+     * <p>
+     * Validates that the action is legal given the contract's current status and the caller's
+     * role (coach vs client) on the contract, per the coaching contract state machine.
+     *
+     * @param id      ID of the coaching contract to transition
+     * @param request the request containing the action to apply
+     * @return the updated {@link CoachingContract} entity
+     * @throws ApplicationException with HttpStatus 409 if the action is not valid for the contract's current status/caller role
+     */
+    CoachingContract updateStatus(Long id, CoachingContractStatusUpdateRequest request);
+
+    /**
      * Resolves the correct trainee profile to use in a plan or workout.
      * <p>
      * If {@code requestTraineeId} is {@code null}, returns the provided {@code defaultTrainee}.
@@ -52,6 +66,22 @@ public interface CoachingContractService {
      */
     Profile resolveTrainee(Long requestTraineeId, Profile author, Profile defaultTrainee);
 
-    PageResponse<ProfileSimpleResponse> filterClients(CoachingContractFilterClientsRequest request);
+    /**
+     * Retrieves a paginated list of profiles - the current user's own profile (page 0 only) plus all
+     * active clients of the current user acting as coach.
+     *
+     * @param request the request containing the necessary information to filter clients.
+     * @return a paginated response containing the current user's profile (on page 0) and their active clients.
+     */
+    PageResponse<ProfileSimpleResponse> filterClients(CoachingContractFilterConnectionsRequest request);
+
+    /**
+     * Retrieves a paginated list of profiles - the current user's own profile (page 0 only) plus all
+     * active coaches of the current user acting as client.
+     *
+     * @param request the request containing the necessary information to filter coaches.
+     * @return a paginated response containing the current user's profile (on page 0) and their active coaches.
+     */
+    PageResponse<ProfileSimpleResponse> filterCoaches(CoachingContractFilterConnectionsRequest request);
 
 }

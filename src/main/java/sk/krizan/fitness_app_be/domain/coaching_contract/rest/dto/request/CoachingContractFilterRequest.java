@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
+import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContractStatus;
+
+import java.util.List;
 
 @Builder
 @FieldNameConstants
@@ -18,6 +21,8 @@ public record CoachingContractFilterRequest(
         @Pattern(regexp = "ASC|DESC|asc|desc")
         String sortDirection,
         Long coachId,
-        Long clientId
+        Long clientId,
+        List<CoachingContractStatus> statuses,
+        CoachingContractCallerRole callerRole
 ) {
 }

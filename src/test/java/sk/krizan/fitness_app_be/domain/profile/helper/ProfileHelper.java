@@ -68,6 +68,7 @@ public final class ProfileHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(profile.getId(), response.id());
         Assertions.assertEquals(profile.getName(), response.name());
+        Assertions.assertEquals(profile.getProfilePictureUrl(), response.profilePictureUrl());
     }
 
 }

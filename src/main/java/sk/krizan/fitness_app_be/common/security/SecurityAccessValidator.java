@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
+import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContractStatus;
 import sk.krizan.fitness_app_be.domain.coaching_contract.repository.CoachingContractRepository;
 import sk.krizan.fitness_app_be.domain.draft.entity.Draft;
 import sk.krizan.fitness_app_be.domain.draft.repository.DraftRepository;
@@ -24,6 +25,7 @@ import sk.krizan.fitness_app_be.domain.workout_exercise_session.repository.Worko
 import sk.krizan.fitness_app_be.domain.workout_session.entity.WorkoutSession;
 import sk.krizan.fitness_app_be.domain.workout_session.repository.WorkoutSessionRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -101,6 +103,16 @@ public class SecurityAccessValidator {
         return checkResourceAccess(draft.getProfile().getId(), draft.getProfile().getId(), profileId, mappedPermission);
     }
 
+    @Transactional(readOnly = true)
+    public boolean canAccessCoachingContract(Long contractId, Long profileId, Permission permission) {
+        CoachingContract contract = coachingContractRepository.getByIdOrThrow(contractId);
+        boolean isParty = contract.getCoach().getId().equals(profileId) || contract.getClient().getId().equals(profileId);
+        if (!isParty) {
+            return false;
+        }
+        return permission == Permission.READ || permission == Permission.UPDATE;
+    }
+
     /**
      * Checks if the current user has access to a resource.
      *
@@ -144,16 +156,20 @@ public class SecurityAccessValidator {
      * @return true if the coaching contract allows the permission, false otherwise
      */
     private boolean checkCoachingContractAccess(Long coachId, Long clientId, Permission permission) {
-        Optional<CoachingContract> contract = coachingContractRepository.findByCoachIdAndClientIdAndActiveTrue(coachId, clientId);
+        Optional<CoachingContract> contract = coachingContractRepository.findByCoachIdAndClientIdAndStatus(coachId, clientId, CoachingContractStatus.ACTIVE);
 
         if (contract.isPresent()) {
             // Active contract - client has full access
             return true;
         }
 
-        // No active contract - check if there's an inactive one
-        if (coachingContractRepository.existsByCoachIdAndClientId(coachId, clientId)) {
-            // Inactive contract - client has read-only access
+        // No active contract - check if there was a previously active one that has since ended
+        // (PENDING/DENIED/CANCELLED are deliberately excluded - the relationship was never active)
+        if (coachingContractRepository.existsByCoachIdAndClientIdAndStatusIn(coachId, clientId, List.of(
+                CoachingContractStatus.EXPIRED,
+                CoachingContractStatus.TERMINATED
+        ))) {
+            // Ended contract - client has read-only access to history
             return permission == Permission.READ;
         }
 

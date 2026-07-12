@@ -1,6 +1,8 @@
 package sk.krizan.fitness_app_be.domain.coaching_contract.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,8 +16,6 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import sk.krizan.fitness_app_be.common.audit.AuditableEntity;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
-
-import java.time.Instant;
 
 @Getter
 @Setter
@@ -39,10 +39,8 @@ public class CoachingContract extends AuditableEntity {
     private Profile client;
 
     @NotNull
-    private Instant startedAt;
-
-    @NotNull
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Boolean active = true;
+    private CoachingContractStatus status = CoachingContractStatus.PENDING;
 
 }

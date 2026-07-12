@@ -5,14 +5,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContract;
+import sk.krizan.fitness_app_be.domain.coaching_contract.entity.CoachingContractStatus;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCallerRole;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractCreateRequest;
-import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterClientsRequest;
+import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterConnectionsRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.request.CoachingContractFilterRequest;
 import sk.krizan.fitness_app_be.domain.coaching_contract.rest.dto.response.CoachingContractResponse;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.helper.ProfileHelper;
 
-import java.time.Instant;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CoachingContractHelper {
@@ -21,8 +23,16 @@ public final class CoachingContractHelper {
             @NotNull Profile coach,
             @NotNull Profile client
     ) {
+        return createCoachingContract(coach, client, CoachingContractStatus.ACTIVE);
+    }
+
+    public static CoachingContract createCoachingContract(
+            @NotNull Profile coach,
+            @NotNull Profile client,
+            @NotNull CoachingContractStatus status
+    ) {
         CoachingContract coachingContract = new CoachingContract();
-        coachingContract.setStartedAt(Instant.now());
+        coachingContract.setStatus(status);
         coach.addToCoaching(coachingContract);
         client.addToCoachedBy(coachingContract);
 
@@ -37,6 +47,19 @@ public final class CoachingContractHelper {
             Long coachId,
             Long clientId
     ) {
+        return createFilterRequest(page, size, sortBy, sortDirection, coachId, clientId, null, null);
+    }
+
+    public static CoachingContractFilterRequest createFilterRequest(
+            @NotNull Integer page,
+            @NotNull Integer size,
+            @NotNull String sortBy,
+            @NotNull String sortDirection,
+            Long coachId,
+            Long clientId,
+            List<CoachingContractStatus> statuses,
+            CoachingContractCallerRole callerRole
+    ) {
         return CoachingContractFilterRequest.builder()
                 .page(page)
                 .size(size)
@@ -44,17 +67,19 @@ public final class CoachingContractHelper {
                 .sortDirection(sortDirection)
                 .coachId(coachId)
                 .clientId(clientId)
+                .statuses(statuses)
+                .callerRole(callerRole)
                 .build();
     }
 
-    public static CoachingContractFilterClientsRequest createFilterClientsRequest(
+    public static CoachingContractFilterConnectionsRequest createFilterConnectionsRequest(
             @NotNull Integer page,
             @NotNull Integer size,
             @NotNull String sortBy,
             @NotNull String sortDirection,
             String name
     ) {
-        return CoachingContractFilterClientsRequest.builder()
+        return CoachingContractFilterConnectionsRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
@@ -83,8 +108,7 @@ public final class CoachingContractHelper {
         ProfileHelper.assertProfileSimpleResponse(coachingContract.getCoach(), response.coach());
         ProfileHelper.assertProfileSimpleResponse(coachingContract.getClient(), response.client());
 
-        Assertions.assertEquals(coachingContract.getActive(), response.active());
-        Assertions.assertEquals(coachingContract.getStartedAt(), response.startedAt());
+        Assertions.assertEquals(coachingContract.getStatus(), response.status());
     }
 
     public static void assertCreate(
@@ -97,8 +121,7 @@ public final class CoachingContractHelper {
         ProfileHelper.assertProfileSimpleResponse(coach, response.coach());
         ProfileHelper.assertProfileSimpleResponse(client, response.client());
 
-        Assertions.assertTrue(response.active());
-        Assertions.assertNotNull(response.startedAt());
+        Assertions.assertEquals(CoachingContractStatus.PENDING, response.status());
 
         Assertions.assertNotNull(coach.getCoaching());
         Assertions.assertFalse(coach.getCoaching().isEmpty());

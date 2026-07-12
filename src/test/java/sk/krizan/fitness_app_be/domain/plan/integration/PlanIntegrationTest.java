@@ -138,6 +138,38 @@ class PlanIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser
+    void filterPlans_clientCannotSeeCoachesPlansForOtherTrainees() throws Exception {
+        User coachUser = userRepository.save(UserHelper.createUser());
+        Profile coachProfile = profileRepository.save(ProfileHelper.createProfile(coachUser));
+        User clientUser = userRepository.save(UserHelper.createUser());
+        Profile clientProfile = profileRepository.save(ProfileHelper.createProfile(clientUser));
+        User otherClientUser = userRepository.save(UserHelper.createUser());
+        Profile otherClientProfile = profileRepository.save(ProfileHelper.createProfile(otherClientUser));
+
+        when(userService.getOrCreateCurrentUser()).thenReturn(clientUser);
+        when(userService.isUserAdmin(clientUser)).thenReturn(false);
+
+        coachingContractRepository.save(CoachingContractHelper.createCoachingContract(coachProfile, clientProfile));
+
+        Plan ownPlan = planRepository.save(PlanHelper.createPlan(coachProfile, clientProfile, new ArrayList<>()));
+        planRepository.save(PlanHelper.createPlan(coachProfile, otherClientProfile, new ArrayList<>()));
+        planRepository.save(PlanHelper.createPlan(coachProfile, null, new ArrayList<>()));
+
+        PlanFilterRequest request = PlanHelper.createFilterRequest(
+                0, 10, Plan.Fields.id, Sort.Direction.ASC.name(), coachProfile.getId(), null, null);
+
+        PageResponse<PlanSimpleResponse> response = filter(request);
+
+        FilterAssertionUtils.assertFilterResults(
+                new ArrayList<>(List.of(ownPlan)),
+                response,
+                Plan::getId,
+                PlanSimpleResponse::id,
+                PlanHelper::assertPlanSimpleResponse);
+    }
+
+    @Test
     @WithMockUser(roles = "ADMIN")
     void getPlanById() throws Exception {
         List<Week> weeks = new ArrayList<>();

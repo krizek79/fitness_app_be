@@ -55,9 +55,9 @@ public class PlanSpecification {
                 Predicate authorPredicate = criteriaBuilder.equal(root.get(Plan.Fields.author), currentProfile);
                 Predicate traineePredicate = criteriaBuilder.equal(root.get(Plan.Fields.trainee), currentProfile);
 
-                Predicate isCoachPredicate = CoachingContractSpecification.getIsCoachPredicate(currentProfile, root.get(Plan.Fields.author), query, criteriaBuilder);
+                Predicate contractAccessPredicate = CoachingContractSpecification.getTraineeContractAccessPredicate(currentProfile, root.get(Plan.Fields.author), query, criteriaBuilder);
 
-                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, traineePredicate, isCoachPredicate);
+                Predicate accessPredicate = criteriaBuilder.or(authorPredicate, criteriaBuilder.and(traineePredicate, contractAccessPredicate));
                 predicate = criteriaBuilder.and(predicate, accessPredicate);
             }
 

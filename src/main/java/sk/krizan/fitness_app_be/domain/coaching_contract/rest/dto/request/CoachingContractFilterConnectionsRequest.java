@@ -8,7 +8,7 @@ import lombok.experimental.FieldNameConstants;
 
 @Builder
 @FieldNameConstants
-public record CoachingContractFilterClientsRequest(
+public record CoachingContractFilterConnectionsRequest(
         @NotNull
         @Min(0)
         Integer page,

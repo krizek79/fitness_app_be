@@ -10,6 +10,7 @@ public enum ResourceType {
     WORKOUT_SESSION,
     WORKOUT_EXERCISE_SESSION,
     GOAL,
-    DRAFT
+    DRAFT,
+    COACHING_CONTRACT
 
 }

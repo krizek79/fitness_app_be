@@ -59,4 +59,9 @@ public class ProfileServiceImpl implements ProfileService {
         return profileRepository.getByIdOrThrow(id);
     }
 
+    @Override
+    public Profile getProfileByPublicId(String publicId) {
+        return profileRepository.getByPublicIdOrThrow(publicId);
+    }
+
 }

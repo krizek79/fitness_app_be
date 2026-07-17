@@ -38,10 +38,10 @@ public class SecurityAccessValidator {
     private final DraftRepository draftRepository;
     private final WorkoutRepository workoutRepository;
     private final WeekWorkoutRepository weekWorkoutRepository;
-    private final WorkoutExerciseRepository workoutExerciseRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
-    private final WorkoutExerciseSessionRepository workoutExerciseSessionRepository;
+    private final WorkoutExerciseRepository workoutExerciseRepository;
     private final CoachingContractRepository coachingContractRepository;
+    private final WorkoutExerciseSessionRepository workoutExerciseSessionRepository;
 
     @Transactional(readOnly = true)
     public boolean canAccessPlan(Long planId, Long profileId, Permission permission) {
@@ -111,6 +111,20 @@ public class SecurityAccessValidator {
             return false;
         }
         return permission == Permission.READ || permission == Permission.UPDATE;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canAccessProfile(Long targetProfileId, Long profileId, Permission permission) {
+        if (targetProfileId.equals(profileId)) {
+            return true;
+        }
+
+        if (permission != Permission.READ) {
+            return false;
+        }
+
+        return coachingContractRepository.findByCoachIdAndClientIdAndStatus(profileId, targetProfileId, CoachingContractStatus.ACTIVE).isPresent()
+                || coachingContractRepository.findByCoachIdAndClientIdAndStatus(targetProfileId, profileId, CoachingContractStatus.ACTIVE).isPresent();
     }
 
     /**

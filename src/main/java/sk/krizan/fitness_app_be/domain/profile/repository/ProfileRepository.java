@@ -16,10 +16,18 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     Optional<Profile> findByIdAndDeletedFalse(Long id);
 
+    Optional<Profile> findByPublicIdAndDeletedFalse(String publicId);
+
+    boolean existsByPublicId(String publicId);
+
     Page<Profile> findAll(Specification<Profile> specification, Pageable pageable);
 
     default Profile getByIdOrThrow(Long id) {
         return findByIdAndDeletedFalse(id).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, Profile.class.getSimpleName() + " with id { %s } does not exist.".formatted(id)));
+    }
+
+    default Profile getByPublicIdOrThrow(String publicId) {
+        return findByPublicIdAndDeletedFalse(publicId).orElseThrow(() -> new ApplicationException(HttpStatus.NOT_FOUND, Profile.class.getSimpleName() + " with publicId { %s } does not exist.".formatted(publicId)));
     }
 
 }

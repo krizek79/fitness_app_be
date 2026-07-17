@@ -15,6 +15,7 @@ import sk.krizan.fitness_app_be.common.exception.ProblemDetails;
 import sk.krizan.fitness_app_be.common.rest.dto.response.PageResponse;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
+import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileSimpleResponse;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.wrapper.ProfilePageResponse;
 
 @Tag(
@@ -69,5 +70,30 @@ public interface ProfileController {
     )
     @GetMapping("{id}")
     ProfileDetailResponse getProfileById(@PathVariable Long id);
+
+    @Operation(
+            summary = "Get profile by public ID",
+            description = "Retrieves a specific profile by its exact, sharable public ID. Used to look up a profile to invite into a coaching contract without exposing name-based search.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Profile found",
+                            content = @Content(schema = @Schema(implementation = ProfileSimpleResponse.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Profile not found",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal server error",
+                            content = @Content(schema = @Schema(implementation = ProblemDetails.class)))
+            }
+    )
+    @GetMapping("by-public-id/{publicId}")
+    ProfileSimpleResponse getProfileByPublicId(@PathVariable String publicId);
 
 }

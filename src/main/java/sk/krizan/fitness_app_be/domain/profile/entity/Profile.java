@@ -51,6 +51,9 @@ public class Profile extends AuditableEntity {
     @Column(length = 64)
     private String name;
 
+    @Column(length = 9, unique = true, updatable = false)
+    private String publicId;
+
     private String profilePictureUrl;
 
     @Column(length = 128)
@@ -168,15 +171,6 @@ public class Profile extends AuditableEntity {
         this.coaching.add(coachingContract);
     }
 
-    public void removeFromCoaching(CoachingContract coachingContract) {
-        if (coachingContract == null) {
-            return;
-        }
-
-        coachingContract.setCoach(null);
-        this.coaching.remove(coachingContract);
-    }
-
     public void addToCoachedBy(CoachingContract coachingContract) {
         if (coachingContract == null) {
             return;
@@ -184,15 +178,6 @@ public class Profile extends AuditableEntity {
 
         coachingContract.setClient(this);
         this.coachedBy.add(coachingContract);
-    }
-
-    public void removeFromCoachedBy(CoachingContract coachingContract) {
-        if (coachingContract == null) {
-            return;
-        }
-
-        coachingContract.setClient(null);
-        this.coachedBy.remove(coachingContract);
     }
 
     public void addToGoals(Goal goal) {

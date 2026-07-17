@@ -20,6 +20,7 @@ public class ProfileMapper {
         return ProfileDetailResponse.builder()
                 .id(profile.getId())
                 .name(profile.getName())
+                .publicId(profile.getPublicId())
                 .profilePictureUrl(profile.getProfilePictureUrl())
                 .preferredWeightUnit(ReferenceDataMapper.enumToResponse(profile.getPreferredWeightUnit()))
                 .preferredDistanceUnit(ReferenceDataMapper.enumToResponse(profile.getPreferredDistanceUnit()))

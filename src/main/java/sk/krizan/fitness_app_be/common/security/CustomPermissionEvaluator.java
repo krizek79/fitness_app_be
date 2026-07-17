@@ -51,6 +51,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             case GOAL -> securityAccessValidator.canAccessGoal((Long) targetId, currentProfile.getId(), mappedPermission);
             case DRAFT -> securityAccessValidator.canAccessDraft((Long) targetId, currentProfile.getId(), mappedPermission);
             case COACHING_CONTRACT -> securityAccessValidator.canAccessCoachingContract((Long) targetId, currentProfile.getId(), mappedPermission);
+            case PROFILE -> securityAccessValidator.canAccessProfile((Long) targetId, currentProfile.getId(), mappedPermission);
         };
     }
 }

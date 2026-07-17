@@ -9,6 +9,7 @@ import sk.krizan.fitness_app_be.domain.reference.rest.dto.response.ReferenceData
 public record ProfileDetailResponse(
         Long id,
         String name,
+        String publicId,
         String profilePictureUrl,
         ReferenceDataResponse preferredWeightUnit,
         ReferenceDataResponse preferredDistanceUnit

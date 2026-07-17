@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import sk.krizan.fitness_app_be.common.util.PublicIdGenerator;
 import sk.krizan.fitness_app_be.domain.profile.entity.Profile;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.request.ProfileFilterRequest;
 import sk.krizan.fitness_app_be.domain.profile.rest.dto.response.ProfileDetailResponse;
@@ -24,6 +25,7 @@ public final class ProfileHelper {
         Profile profile = new Profile();
         profile.setUser(user);
         profile.setName(faker.funnyName().name());
+        profile.setPublicId(PublicIdGenerator.generate());
         profile.setBio(DEFAULT_VALUE);
         profile.setPreferredWeightUnit(WeightUnit.KG);
         profile.setPreferredDistanceUnit(DistanceUnit.KM);
@@ -55,6 +57,7 @@ public final class ProfileHelper {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(profile.getId(), response.id());
         Assertions.assertEquals(profile.getName(), response.name());
+        Assertions.assertEquals(profile.getPublicId(), response.publicId());
         Assertions.assertEquals(profile.getProfilePictureUrl(), response.profilePictureUrl());
         ReferenceDataHelper.assertReferenceDataResponse(profile.getPreferredWeightUnit(), response.preferredWeightUnit());
         ReferenceDataHelper.assertReferenceDataResponse(profile.getPreferredDistanceUnit(), response.preferredDistanceUnit());
